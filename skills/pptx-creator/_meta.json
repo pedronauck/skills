@@ -1,0 +1,11 @@
+{
+  "owner": "dbhurley",
+  "slug": "pptx-creator",
+  "displayName": "PowerPoint Creator",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1768324070897,
+    "commit": "https://github.com/clawdbot/skills/commit/3748bfe5433847b5104e84651faf40a521f7b0e8"
+  },
+  "history": []
+}

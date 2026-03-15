@@ -1,0 +1,22 @@
+{
+  "owner": "jdrhyne",
+  "slug": "google-ads",
+  "displayName": "Google Ads",
+  "latest": {
+    "version": "1.1.0",
+    "publishedAt": 1770969683223,
+    "commit": "https://github.com/openclaw/skills/commit/5ee802dfd16d90ba0ecc8fe0f417c594e5fd6959"
+  },
+  "history": [
+    {
+      "version": "1.0.3",
+      "publishedAt": 1768840602714,
+      "commit": "https://github.com/clawdbot/skills/commit/e1dcb3f2efe0b09dd8f5eafc2329c4e54cde25b7"
+    },
+    {
+      "version": "1.0.2",
+      "publishedAt": 1768840295506,
+      "commit": "https://github.com/clawdbot/skills/commit/a86c7288ab249ab026192a3e205e147c0b5155d5"
+    }
+  ]
+}

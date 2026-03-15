@@ -1,0 +1,22 @@
+{
+  "owner": "nextfrontierbuilds",
+  "slug": "ai-pdf-builder",
+  "displayName": "Ai Pdf Builder",
+  "latest": {
+    "version": "1.2.3",
+    "publishedAt": 1770798811113,
+    "commit": "https://github.com/openclaw/skills/commit/91af3ce38ae30d9693dc0f4eb9dab6366c23e5bb"
+  },
+  "history": [
+    {
+      "version": "1.2.2",
+      "publishedAt": 1770220750164,
+      "commit": "https://github.com/clawdbot/skills/commit/dfc813a883a48baa32c4104132492ee70aceaf25"
+    },
+    {
+      "version": "1.1.0",
+      "publishedAt": 1769527084530,
+      "commit": "https://github.com/clawdbot/skills/commit/fd7dccda893ee707307f5f75112c4973c50f58f2"
+    }
+  ]
+}

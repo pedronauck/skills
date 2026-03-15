@@ -1,0 +1,15 @@
+{
+  "authors": [
+    "liqiongyu"
+  ],
+  "category": "Career",
+  "contributors": [],
+  "origin": "refound",
+  "schema_version": 1,
+  "skill_slug": "fundraising",
+  "upstream": {
+    "page_url": "https://refoundai.com/lenny-skills/s/fundraising",
+    "skill_md_url": "https://refoundai.com/skills/fundraising/SKILL.md"
+  },
+  "version": "0.1.0"
+}

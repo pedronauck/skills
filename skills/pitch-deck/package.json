@@ -1,0 +1,11 @@
+{
+  "name": "@ai-labs-claude-skills/pitch-deck",
+  "version": "1.0.0",
+  "description": "Claude AI skill: pitch-deck",
+  "main": "index.js",
+  "files": [
+    "."
+  ],
+  "license": "MIT",
+  "author": "AI Labs"
+}

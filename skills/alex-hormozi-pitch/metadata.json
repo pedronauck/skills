@@ -1,0 +1,14 @@
+{
+  "id": "danielmiessler-personal-ai-infrastructure-claude-skills-alex-hormozi-pitch-skill-md",
+  "name": "alex-hormozi-pitch",
+  "author": "danielmiessler",
+  "authorAvatar": "https://avatars.githubusercontent.com/u/50654?v=4",
+  "description": "Create irresistible offers and pitches using Alex Hormozi's methodology from $100M Offers. Guides through value equation, guarantee frameworks, pricing psychology, and creating offers \"too good not to take\" for any product or service.",
+  "githubUrl": "https://github.com/danielmiessler/Personal_AI_Infrastructure/tree/main/.claude/skills/alex-hormozi-pitch",
+  "stars": 1085,
+  "forks": 237,
+  "updatedAt": 1764213577,
+  "hasMarketplace": false,
+  "path": "SKILL.md",
+  "branch": "main"
+}

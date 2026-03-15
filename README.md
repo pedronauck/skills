@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **95+ agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **129 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## What are Skills?
 
@@ -109,6 +109,10 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[mastra](./skills/mastra)** — Mastra framework for building AI agents and workflows
 - **[develop-ai-functions-example](./skills/develop-ai-functions-example)** — Develop examples for AI SDK functions to validate provider support
 - **[skills-best-practices](./skills/skills-best-practices)** — Author professional-grade agent skills following the agentskills.io spec
+- **[skill-writter](./skills/skill-writter)** — Guide users through creating Agent Skills for Claude Code
+- **[agent-md-refactor](./skills/agent-md-refactor)** — Refactor bloated AGENTS.md/CLAUDE.md files into organized, linked documentation
+- **[nano-banana-pro](./skills/nano-banana-pro)** — Generate or edit images via Gemini 3 Pro Image (Nano Banana Pro)
+- **[nano-banana-prompting](./skills/nano-banana-prompting)** — Craft effective prompts for Nano Banana Pro image generation
 - **[find-skills](./skills/find-skills)** — Discover and install agent skills from the open agent skills ecosystem
 - **[pal](./skills/pal)** — Pal MCP toolkit for code analysis, debugging, planning, refactoring, and tracing
 - **[sourcebot](./skills/sourcebot)** — Search external libraries and frameworks using Sourcebot MCP
@@ -118,6 +122,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[vitest](./skills/vitest)** — Fast unit testing with Vite -- Jest-compatible API, mocking, coverage, and fixtures
 - **[a11y-testing](./skills/a11y-testing)** — Automated accessibility testing with axe-core, Playwright, and jest-axe
 - **[test-antipatterns](./skills/test-antipatterns)** — Prevent common testing anti-patterns like testing mock behavior
+- **[qa-test-planner](./skills/qa-test-planner)** — Generate test plans, manual test cases, regression suites, and bug reports
 - **[verification-before-completion](./skills/verification-before-completion)** — Run verification commands and confirm output before claiming success
 - **[adversarial-review](./skills/adversarial-review)** — Spawn opposing AI model reviewers to adversarially challenge work
 
@@ -139,18 +144,56 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[executing-plans](./skills/executing-plans)** — Execute implementation plans in batches with review checkpoints
 - **[dispatching-parallel-agents](./skills/dispatching-parallel-agents)** — Dispatch independent tasks to parallel agents to avoid bottlenecks
 - **[crafting-effective-readmes](./skills/crafting-effective-readmes)** — Templates and guidance for writing README files matched to audience and project
+- **[requirements-clarity](./skills/requirements-clarity)** — Clarify ambiguous requirements through focused dialogue before implementation
+- **[lesson-learned](./skills/lesson-learned)** — Extract software engineering lessons from git history and recent code changes
+- **[ship-learn-next](./skills/ship-learn-next)** — Transform learning content into actionable implementation plans
 
 ### Web Scraping & Search
 
 - **[firecrawl](./skills/firecrawl)** — Web scraping, search, crawling, and browser automation via the Firecrawl CLI
 - **[exa-web-search-free](./skills/exa-web-search-free)** — Free AI-powered web, code, and company search via Exa MCP
+- **[perplexity](./skills/perplexity)** — Web search and research using Perplexity AI
 - **[agent-browser](./skills/agent-browser)** — Automate browser interactions for testing, form filling, and data extraction
+
+### Content & Writing
+
+- **[content-research-writer](./skills/content-research-writer)** — Writing partner for research, outlining, drafting, and refining content
+- **[copywriting](./skills/copywriting)** — Conversion copywriting for marketing pages, CTAs, and headlines
+- **[humanizer](./skills/humanizer)** — Remove signs of AI-generated writing from text
+- **[writing-clearly-and-concisely](./skills/writing-clearly-and-concisely)** — Strunk's timeless rules for clearer, stronger, more professional prose
+- **[professional-communication](./skills/professional-communication)** — Technical communication for emails, team messaging, and meeting agendas
+
+### Business & Strategy
+
+- **[alex-hormozi-pitch](./skills/alex-hormozi-pitch)** — Create irresistible offers using Hormozi's $100M Offers methodology
+- **[brand-storytelling](./skills/brand-storytelling)** — Craft compelling brand narratives and positioning
+- **[fundraising](./skills/fundraising)** — Plan and run early-stage fundraising with pitch narrative, investor pipeline, and outreach
+- **[game-changing-features](./skills/game-changing-features)** — Find 10x product opportunities and high-leverage improvements
+- **[startup-validator](./skills/startup-validator)** — Comprehensive startup idea validation and market analysis
+- **[sales-methodology-implementer](./skills/sales-methodology-implementer)** — Implement proven sales methodologies (MEDDIC, BANT, Sandler, Challenger, SPIN)
+
+### Presentations & Documents
+
+- **[pitch-deck](./skills/pitch-deck)** — Generate professional PowerPoint pitch decks for startups
+- **[pitch-deck-visuals](./skills/pitch-deck-visuals)** — Investor pitch deck visuals with slide-by-slide framework and design rules
+- **[pitch-gen](./skills/pitch-gen)** — Generate startup pitch deck content with AI
+- **[pptx-creator](./skills/pptx-creator)** — Create professional PowerPoint presentations from outlines or data
+- **[ai-pdf-builder](./skills/ai-pdf-builder)** — AI-powered PDF generator for legal docs, pitch decks, and reports
+- **[mermaid-diagrams](./skills/mermaid-diagrams)** — Software diagrams using Mermaid syntax -- class, sequence, flowcharts, ERD, C4
+
+### Video & Media
+
+- **[promo-video](./skills/promo-video)** — Create promotional videos using Remotion with AI voiceover and background music
+- **[remotion-best-practices](./skills/remotion-best-practices)** — Best practices for Remotion video creation in React
+
+### Marketing & Advertising
+
+- **[google-ads](./skills/google-ads)** — Query, audit, and optimize Google Ads campaigns
 
 ### Architecture & Patterns
 
 - **[app-renderer-systems](./skills/app-renderer-systems)** — Domain feature systems organized under a `systems/` directory
 - **[organization-best-practices](./skills/organization-best-practices)** — Multi-tenant organizations, RBAC, teams, and permissions with Better Auth
-- **[trading-strategies](./skills/trading-strategies)** — Framework for developing, testing, and deploying prediction market trading strategies
 
 ### Utilities
 
