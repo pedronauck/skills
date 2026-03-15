@@ -1,0 +1,7 @@
+{
+  "name": "rivetkit-client-react",
+  "description": "RivetKit React client guidance. Use for React apps that connect to Rivet Actors with @rivetkit/react, create hooks with createRivetKit, or manage realtime state with useActor.",
+  "skill_url": "/metadata/skills/rivetkit-client-react/SKILL.md",
+  "generated_at": "2026-02-24T11:03:05.833Z",
+  "references": []
+}

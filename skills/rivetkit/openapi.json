@@ -1,0 +1,1251 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "2.1.0-rc.2",
+    "title": "RivetKit API"
+  },
+  "components": {
+    "schemas": {},
+    "parameters": {}
+  },
+  "paths": {
+    "/actors": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "actor_ids",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "key",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "actors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "actor_id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "key": {
+                            "type": "string"
+                          },
+                          "namespace_id": {
+                            "type": "string"
+                          },
+                          "runner_name_selector": {
+                            "type": "string"
+                          },
+                          "create_ts": {
+                            "type": "number"
+                          },
+                          "connectable_ts": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "destroy_ts": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "sleep_ts": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "start_ts": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "error": {
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "actor_id",
+                          "name",
+                          "key",
+                          "namespace_id",
+                          "runner_name_selector",
+                          "create_ts"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "actors"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User error"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        }
+      },
+      "put": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "datacenter": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "key": {
+                    "type": "string"
+                  },
+                  "runner_name_selector": {
+                    "type": "string"
+                  },
+                  "crash_policy": {
+                    "type": "string"
+                  },
+                  "input": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "key",
+                  "runner_name_selector",
+                  "crash_policy"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "actor": {
+                      "type": "object",
+                      "properties": {
+                        "actor_id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "key": {
+                          "type": "string"
+                        },
+                        "namespace_id": {
+                          "type": "string"
+                        },
+                        "runner_name_selector": {
+                          "type": "string"
+                        },
+                        "create_ts": {
+                          "type": "number"
+                        },
+                        "connectable_ts": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "destroy_ts": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "sleep_ts": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "start_ts": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "error": {
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "actor_id",
+                        "name",
+                        "key",
+                        "namespace_id",
+                        "runner_name_selector",
+                        "create_ts"
+                      ]
+                    },
+                    "created": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "actor",
+                    "created"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User error"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        }
+      },
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "datacenter": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "runner_name_selector": {
+                    "type": "string"
+                  },
+                  "crash_policy": {
+                    "type": "string"
+                  },
+                  "key": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "input": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "runner_name_selector",
+                  "crash_policy"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "actor": {
+                      "type": "object",
+                      "properties": {
+                        "actor_id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "key": {
+                          "type": "string"
+                        },
+                        "namespace_id": {
+                          "type": "string"
+                        },
+                        "runner_name_selector": {
+                          "type": "string"
+                        },
+                        "create_ts": {
+                          "type": "number"
+                        },
+                        "connectable_ts": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "destroy_ts": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "sleep_ts": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "start_ts": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "error": {
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "actor_id",
+                        "name",
+                        "key",
+                        "namespace_id",
+                        "runner_name_selector",
+                        "create_ts"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "actor"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User error"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        }
+      }
+    },
+    "/actors/names": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "namespace",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "names": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "metadata": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "nullable": true
+                            }
+                          }
+                        },
+                        "required": [
+                          "metadata"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "names"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User error"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        }
+      }
+    },
+    "/actors/{actor_id}/kv/keys/{key}": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "actor_id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "key",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User error"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/health": {
+      "get": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Health check",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/action/{action}": {
+      "post": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The name of the action to execute"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "args": {}
+                },
+                "required": [
+                  "args"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Action executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "output": {}
+                  },
+                  "required": [
+                    "output"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid action"
+          },
+          "500": {
+            "description": "Internal error"
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/request/{path}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The HTTP path to forward to the actor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response from actor's raw HTTP handler"
+          }
+        }
+      },
+      "post": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The HTTP path to forward to the actor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response from actor's raw HTTP handler"
+          }
+        }
+      },
+      "put": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The HTTP path to forward to the actor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response from actor's raw HTTP handler"
+          }
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The HTTP path to forward to the actor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response from actor's raw HTTP handler"
+          }
+        }
+      },
+      "patch": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The HTTP path to forward to the actor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response from actor's raw HTTP handler"
+          }
+        }
+      },
+      "head": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The HTTP path to forward to the actor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response from actor's raw HTTP handler"
+          }
+        }
+      },
+      "options": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The HTTP path to forward to the actor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response from actor's raw HTTP handler"
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/inspector/state": {
+      "get": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Bearer token for inspector authentication. Required in production, optional in development."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current actor state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "patch": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Bearer token for inspector authentication. Required in production, optional in development."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "state": {}
+                },
+                "required": [
+                  "state"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "State updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/inspector/connections": {
+      "get": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Bearer token for inspector authentication. Required in production, optional in development."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current actor connections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "connections": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/inspector/rpcs": {
+      "get": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Bearer token for inspector authentication. Required in production, optional in development."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Available actor actions/RPCs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "rpcs": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/inspector/action/{name}": {
+      "post": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The name of the action to execute"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Bearer token for inspector authentication. Required in production, optional in development."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "args": {
+                    "type": "array",
+                    "items": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Action executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "output": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/inspector/queue": {
+      "get": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50
+            },
+            "description": "Maximum number of queue messages to return"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Bearer token for inspector authentication. Required in production, optional in development."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Queue status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "size": {
+                      "type": "integer"
+                    },
+                    "maxSize": {
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    },
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "createdAtMs": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/inspector/traces": {
+      "get": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "startMs",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            },
+            "description": "Start of time range in epoch milliseconds"
+          },
+          {
+            "name": "endMs",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "End of time range in epoch milliseconds. Defaults to now."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1000
+            },
+            "description": "Maximum number of spans to return"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Bearer token for inspector authentication. Required in production, optional in development."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trace spans in OTLP JSON format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "otlp": {
+                      "type": "object"
+                    },
+                    "clamped": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/inspector/workflow-history": {
+      "get": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Bearer token for inspector authentication. Required in production, optional in development."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workflow history and status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "history": {},
+                    "isWorkflowEnabled": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/gateway/{actorId}/inspector/summary": {
+      "get": {
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the actor to target"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Bearer token for inspector authentication. Required in production, optional in development."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full actor inspector summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "state": {},
+                    "connections": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "rpcs": {
+                      "type": "object"
+                    },
+                    "queueSize": {
+                      "type": "integer"
+                    },
+                    "isStateEnabled": {
+                      "type": "boolean"
+                    },
+                    "isDatabaseEnabled": {
+                      "type": "boolean"
+                    },
+                    "isWorkflowEnabled": {
+                      "type": "boolean"
+                    },
+                    "workflowHistory": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  }
+}

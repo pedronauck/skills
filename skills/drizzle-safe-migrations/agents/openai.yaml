@@ -1,0 +1,4 @@
+interface:
+  display_name: "Drizzle Safe Migrations"
+  short_description: "Guide safe Drizzle schema/data migration rollouts"
+  default_prompt: "Use $drizzle-safe-migrations to plan and execute a safe Drizzle migration with backfills and constraint changes."

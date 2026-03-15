@@ -1,0 +1,269 @@
+# React
+
+> Source: `src/content/docs/clients/react.mdx`
+> Canonical URL: https://rivet.dev/docs/clients/react
+> Description: Connect React apps to Rivet Actors.
+
+---
+## Getting Started
+
+See the [React quickstart guide](/docs/actors/quickstart/react) for getting started.
+
+## Install
+
+## Minimal Client
+
+```tsx Counter.tsx
+import { createRivetKit } from "@rivetkit/react";
+import type { registry } from "./actors";
+
+const { useActor } = createRivetKit<typeof registry>({
+  endpoint: "https://my-namespace:pk_...@api.rivet.dev",
+});
+
+function Counter() {
+  const { connection, connStatus } = useActor({ name: "counter", key: ["my-counter"] });
+
+  if (connStatus !== "connected" || !connection) return <div>Connecting...</div>;
+  return <button onClick={() => connection.increment(1)}>+</button>;
+}
+```
+
+```ts actors.ts @hide
+import { actor, setup } from "rivetkit";
+
+export const counter = actor({
+  state: { count: 0 },
+  actions: {
+    increment: (c, x: number) => {
+      c.state.count += x;
+      c.broadcast("newCount", c.state.count);
+      return c.state.count;
+    },
+  },
+});
+
+export const registry = setup({
+  use: { counter },
+});
+```
+
+## Stateless vs Stateful
+
+```tsx
+import { createRivetKit } from "@rivetkit/react";
+
+const { useActor } = createRivetKit();
+
+function Counter() {
+  const counter = useActor({ name: "counter", key: ["my-counter"] });
+
+  const increment = async () => {
+    await counter.connection?.increment(1);
+  };
+
+  return <button onClick={increment}>+</button>;
+}
+```
+
+```tsx
+// Stateless: use createClient for one-off calls (SSR or utilities)
+import { createClient } from "rivetkit/client";
+
+const client = createClient();
+await client.counter.getOrCreate(["my-counter"]).increment(1);
+```
+
+## Getting Actors
+
+```tsx
+import { createRivetKit } from "@rivetkit/react";
+import { createClient } from "rivetkit/client";
+
+const { useActor } = createRivetKit();
+
+function ChatRoom() {
+  const room = useActor({ name: "chatRoom", key: ["room-42"] });
+  return <div>{room.connStatus}</div>;
+}
+
+// For get/getOrCreate/create/getForId, use createClient
+const client = createClient();
+const handle = client.chatRoom.getOrCreate(["room-42"]);
+const existing = client.chatRoom.get(["room-42"]);
+const created = await client.game.create(["game-1"], { input: { mode: "ranked" } });
+const byId = client.chatRoom.getForId("actor-id");
+const resolvedId = await handle.resolve();
+```
+
+## Connection Parameters
+
+```tsx
+import { createRivetKit } from "@rivetkit/react";
+
+const { useActor } = createRivetKit();
+
+function Chat() {
+  const chat = useActor({
+    name: "chatRoom",
+    key: ["general"],
+    params: { authToken: "jwt-token-here" },
+  });
+
+  return <div>{chat.connStatus}</div>;
+}
+```
+
+## Subscribing to Events
+
+```tsx
+import { createRivetKit } from "@rivetkit/react";
+
+const { useActor } = createRivetKit();
+
+function Chat() {
+  const chat = useActor({ name: "chatRoom", key: ["general"] });
+
+  chat.useEvent("message", (msg) => {
+    console.log("message:", msg);
+  });
+
+  return null;
+}
+```
+
+## Connection Lifecycle
+
+```tsx
+import { createRivetKit } from "@rivetkit/react";
+
+const { useActor } = createRivetKit();
+
+function CounterStatus() {
+  const actor = useActor({ name: "counter", key: ["my-counter"] });
+
+  if (actor.connStatus === "connected") {
+    console.log("connected");
+  }
+
+  if (actor.error) {
+    console.error(actor.error);
+  }
+
+  return null;
+}
+```
+
+## Low-Level HTTP & WebSocket
+
+Use the JavaScript client for raw HTTP and WebSocket access:
+
+```tsx @nocheck
+import { createClient } from "rivetkit/client";
+
+const client = createClient();
+const handle = client.chatRoom.getOrCreate(["general"]);
+
+const response = await handle.fetch("history");
+const history = await response.json();
+
+const ws = await handle.webSocket("stream");
+ws.addEventListener("message", (event) => {
+  console.log("message:", event.data);
+});
+ws.send("hello");
+```
+
+## Calling from Backend
+
+Use the JavaScript client on your backend (Node.js/Bun). See the [JavaScript client docs](/docs/clients/javascript).
+
+## Error Handling
+
+```tsx
+import { ActorError } from "rivetkit/client";
+import { createRivetKit } from "@rivetkit/react";
+
+const { useActor } = createRivetKit();
+
+function Profile() {
+  const actor = useActor({ name: "user", key: ["user-123"] });
+
+  const updateUsername = async () => {
+    try {
+      await actor.connection?.updateUsername("ab");
+    } catch (error) {
+      if (error instanceof ActorError) {
+        console.log(error.code, error.metadata);
+      }
+    }
+  };
+
+  return <button onClick={updateUsername}>Update</button>;
+}
+```
+
+## Concepts
+
+### Keys
+
+Keys uniquely identify actor instances. Use compound keys (arrays) for hierarchical addressing:
+
+```tsx ChatRoom.tsx
+import { createRivetKit } from "@rivetkit/react";
+import type { registry } from "./actors";
+
+const { useActor } = createRivetKit<typeof registry>();
+
+function ChatRoom() {
+  const room = useActor({ name: "chatRoom", key: ["org-acme", "general"] });
+  return <div>{room.connStatus}</div>;
+}
+```
+
+```ts actors.ts @hide
+import { actor, setup } from "rivetkit";
+
+export const chatRoom = actor({
+  state: { messages: [] as string[] },
+  actions: {
+    getRoomInfo: (c) => ({ org: c.key[0], room: c.key[1] }),
+  },
+});
+
+export const registry = setup({
+  use: { chatRoom },
+});
+```
+
+Don't build keys with string interpolation like `"org:${userId}"` when `userId` contains user data. Use arrays instead to prevent key injection attacks.
+
+### Environment Variables
+
+`createRivetKit()` (and the underlying `createClient()` instance) automatically read:
+
+- `RIVET_ENDPOINT`
+- `RIVET_NAMESPACE`
+- `RIVET_TOKEN`
+- `RIVET_RUNNER`
+
+Defaults to `window.location.origin + "/api/rivet"` in the browser or `http://127.0.0.1:6420` on the server when unset.
+
+### Endpoint Format
+
+Endpoints support URL auth syntax:
+
+```
+https://namespace:token@api.rivet.dev
+```
+
+You can also pass the endpoint without auth and provide `RIVET_NAMESPACE` and `RIVET_TOKEN` separately. For serverless deployments, use your app's `/api/rivet` URL. See [Endpoints](/docs/general/endpoints#url-auth-syntax) for details.
+
+## API Reference
+
+**Package:** [@rivetkit/react](https://www.npmjs.com/package/@rivetkit/react)
+
+- [`createRivetKit`](/docs/clients/react) - Create hooks for React
+- [`useActor`](/docs/clients/react) - Hook for actor instances
+
+_Source doc path: /docs/clients/react_

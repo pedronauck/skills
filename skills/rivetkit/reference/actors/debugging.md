@@ -1,0 +1,379 @@
+# Debugging
+
+> Source: `src/content/docs/actors/debugging.mdx`
+> Canonical URL: https://rivet.dev/docs/actors/debugging
+> Description: Inspect and debug running Rivet Actors using the management and actor inspector HTTP APIs.
+
+---
+## Management API
+
+The management API runs on the manager base path (default root path) and is used to list, create, and look up actors.
+
+### Authentication
+
+| Environment | Authentication |
+|---|---|
+| **Local development** | No authentication required. All endpoints are accessible without tokens. |
+| **Self-hosted engine** | Set `RIVET_TOKEN` to enable authenticated access to restricted endpoints like KV. |
+| **Rivet Cloud** | Authentication is enforced by your deployment entrypoint. For manager KV access, use the manager token header below when enabled. |
+
+Restricted endpoints (like KV reads) require the `x-rivet-token` header when `RIVET_TOKEN` is configured:
+
+```bash
+curl http://localhost:6420/actors/{actor_id}/kv/keys/{base64_key} \
+  -H 'x-rivet-token: YOUR_RIVET_TOKEN'
+```
+
+### List Actors
+
+```bash
+# List all actors with a given name
+curl http://localhost:6420/actors?name=my-actor
+
+# Look up one actor by key (name is required when key is provided)
+curl "http://localhost:6420/actors?name=my-actor&key=%5B%22my-key%22%5D"
+
+# List actors by IDs (comma-separated)
+curl http://localhost:6420/actors?actor_ids=id1,id2
+```
+
+Rules:
+
+- `key` requires `name`.
+- `actor_ids` cannot be combined with `name` or `key`.
+
+Returns:
+
+```json
+{
+  "actors": [
+    {
+      "actor_id": "abc123",
+      "name": "my-actor",
+      "key": "[\"default\"]",
+      "namespace_id": "default",
+      "create_ts": 1706000000000
+    }
+  ]
+}
+```
+
+### Create Actor
+
+`POST /actors` creates a new actor.
+
+```bash
+curl -X POST http://localhost:6420/actors \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "my-actor",
+    "runner_name_selector": "default",
+    "crash_policy": "restart"
+  }'
+```
+
+### Create or Get Actor
+
+`PUT /actors` creates an actor if it does not exist, otherwise returns the existing one.
+
+```bash
+curl -X PUT http://localhost:6420/actors \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "my-actor",
+    "key": "[\"default\"]",
+    "runner_name_selector": "default",
+    "crash_policy": "restart"
+  }'
+```
+
+Returns the actor object with its `actor_id`.
+
+### List Actor Names
+
+```bash
+curl http://localhost:6420/actors/names?namespace=default
+```
+
+Returns all registered actor names and their metadata.
+
+### Read Actor KV
+
+Requires authentication (see above).
+
+```bash
+curl http://localhost:6420/actors/{actor_id}/kv/keys/{base64_key} \
+  -H 'x-rivet-token: YOUR_RIVET_TOKEN'
+```
+
+Returns the value stored at the given key.
+
+See the [OpenAPI spec](https://github.com/rivet-dev/rivet/tree/main/rivetkit-openapi) for the full schema of all management endpoints.
+
+## Actor API
+
+All actor-level endpoints are accessed through the gateway. The gateway routes requests to the correct actor instance using the actor ID in the URL path:
+
+```
+http://localhost:6420/gateway/{actor_id}/{path}
+```
+
+The gateway only accepts actor IDs, not names. Use `GET /actors?name=...` from the management API to look up actor IDs first.
+
+### Authentication
+
+Standard actor endpoints (health, actions, requests) and inspector endpoints have separate authentication requirements.
+
+#### Standard Endpoints
+
+| Environment | Authentication |
+|---|---|
+| **Local development** | No authentication required. |
+| **Self-hosted engine** | The Rivet Engine handles authentication at the gateway level. |
+| **Rivet Cloud** | Authentication is handled by the Rivet Cloud platform at the gateway level. |
+
+#### Inspector Endpoints
+
+| Environment | Authentication |
+|---|---|
+| **Local development** | No authentication required if `RIVET_INSPECTOR_TOKEN` is not set. A warning is logged. |
+| **Self-hosted engine** | Set the `RIVET_INSPECTOR_TOKEN` environment variable. Pass it as a bearer token in the `Authorization` header. |
+| **Rivet Cloud** | Token is required. Pass it as a bearer token in the `Authorization` header. |
+
+```bash
+curl http://localhost:6420/gateway/{actor_id}/inspector/summary \
+  -H 'Authorization: Bearer YOUR_INSPECTOR_TOKEN'
+```
+
+### Standard Actor Endpoints
+
+These are the built-in actor endpoints available through the gateway:
+
+```bash
+# Health check
+curl http://localhost:6420/gateway/{actor_id}/health
+
+# Metadata
+curl http://localhost:6420/gateway/{actor_id}/metadata
+
+# Call an action
+curl -X POST http://localhost:6420/gateway/{actor_id}/action/myAction \
+  -H 'Content-Type: application/json' \
+  -d '{"args": [1, 2, 3]}'
+
+# Send queue message (body includes queue name)
+curl -X POST http://localhost:6420/gateway/{actor_id}/queue \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"jobs","body":{"id":"job-1"}}'
+
+# Send queue message (queue name in path)
+curl -X POST http://localhost:6420/gateway/{actor_id}/queue/jobs \
+  -H 'Content-Type: application/json' \
+  -d '{"body":{"id":"job-1"}}'
+
+# Send queue message and wait for completion (optional timeout in ms)
+curl -X POST http://localhost:6420/gateway/{actor_id}/queue/jobs \
+  -H 'Content-Type: application/json' \
+  -d '{"body":{"id":"job-1"},"wait":true,"timeout":5000}'
+
+# Forward an HTTP request to the actor's onRequest handler
+curl http://localhost:6420/gateway/{actor_id}/request/my/custom/path
+```
+
+Queue send responses include:
+
+```json
+{ "status": "completed", "response": null }
+```
+
+If `wait: true` and the timeout is reached, `status` is `"timedOut"`.
+
+### Inspector Endpoints
+
+The inspector HTTP API exposes JSON endpoints for querying and modifying actor internals at runtime. These are designed for agent-based debugging and tooling.
+
+#### Get State
+
+```bash
+curl http://localhost:6420/gateway/{actor_id}/inspector/state
+```
+
+Returns the actor's current persisted state:
+
+```json
+{
+  "state": { "count": 42, "users": [] },
+  "isStateEnabled": true
+}
+```
+
+#### Set State
+
+```bash
+curl -X PATCH http://localhost:6420/gateway/{actor_id}/inspector/state \
+  -H 'Content-Type: application/json' \
+  -d '{"state": {"count": 0, "users": []}}'
+```
+
+Returns:
+
+```json
+{ "ok": true }
+```
+
+#### Get Connections
+
+```bash
+curl http://localhost:6420/gateway/{actor_id}/inspector/connections
+```
+
+Returns all active connections with their params, state, and metadata:
+
+```json
+{
+  "connections": [
+    {
+      "type": "websocket",
+      "id": "conn-id",
+      "details": {
+        "type": "websocket",
+        "params": {},
+        "stateEnabled": true,
+        "state": {},
+        "subscriptions": 2,
+        "isHibernatable": true
+      }
+    }
+  ]
+}
+```
+
+#### Get RPCs
+
+```bash
+curl http://localhost:6420/gateway/{actor_id}/inspector/rpcs
+```
+
+Returns a list of available actions:
+
+```json
+{ "rpcs": ["increment", "getCount"] }
+```
+
+#### Execute Action
+
+```bash
+curl -X POST http://localhost:6420/gateway/{actor_id}/inspector/action/increment \
+  -H 'Content-Type: application/json' \
+  -d '{"args": [5]}'
+```
+
+Returns:
+
+```json
+{ "output": 47 }
+```
+
+#### Get Queue Status
+
+```bash
+curl http://localhost:6420/gateway/{actor_id}/inspector/queue?limit=10
+```
+
+Returns queue status with messages:
+
+```json
+{
+  "size": 3,
+  "maxSize": 1000,
+  "truncated": false,
+  "messages": [
+    { "id": 1, "name": "process", "createdAtMs": 1706000000000 }
+  ]
+}
+```
+
+#### Get Traces
+
+Query trace spans in OTLP JSON format:
+
+```bash
+curl "http://localhost:6420/gateway/{actor_id}/inspector/traces?startMs=0&endMs=9999999999999&limit=100"
+```
+
+Returns:
+
+```json
+{
+  "otlp": {
+    "resourceSpans": [
+      {
+        "scopeSpans": [
+          {
+            "spans": [
+              {
+                "traceId": "abc123",
+                "spanId": "def456",
+                "name": "increment",
+                "startTimeUnixNano": "1706000000000000000"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "clamped": false
+}
+```
+
+#### Get Workflow History
+
+```bash
+curl http://localhost:6420/gateway/{actor_id}/inspector/workflow-history
+```
+
+Returns:
+
+```json
+{
+  "history": null,
+  "isWorkflowEnabled": false
+}
+```
+
+#### Summary
+
+Get a full snapshot of the actor in a single request:
+
+```bash
+curl http://localhost:6420/gateway/{actor_id}/inspector/summary
+```
+
+Returns:
+
+```json
+{
+  "state": { "count": 42 },
+  "connections": [],
+  "rpcs": ["increment", "getCount"],
+  "queueSize": 0,
+  "isStateEnabled": true,
+  "isDatabaseEnabled": false,
+  "isWorkflowEnabled": false,
+  "workflowHistory": null
+}
+```
+
+### Polling
+
+Inspector endpoints are safe to poll. For live monitoring, poll at 1-5 second intervals. The `/inspector/summary` endpoint is useful for periodic snapshots since it returns all data in a single request.
+
+## OpenAPI Spec
+
+The full OpenAPI specification including all management and actor endpoints is available:
+
+- In the repository at [`rivetkit-openapi/openapi.json`](https://github.com/rivet-dev/rivet/tree/main/rivetkit-openapi)
+- Served at `/doc` on the manager when running locally
+
+_Source doc path: /docs/actors/debugging_
