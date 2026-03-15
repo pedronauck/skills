@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **129 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **130 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## What are Skills?
 
@@ -28,6 +28,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[tanstack-router-best-practices](./skills/tanstack-router-best-practices)** — Type-safe routing, data loading, search params, and navigation
 - **[tanstack-start-best-practices](./skills/tanstack-start-best-practices)** — Full-stack React with server functions, middleware, SSR, and deployment
 - **[vercel-composition-patterns](./skills/vercel-composition-patterns)** — React composition patterns for refactoring boolean prop proliferation
+- **[next-best-practices](./skills/next-best-practices)** — Next.js best practices -- file conventions, RSC boundaries, data patterns, async APIs, metadata, error handling, and optimization
 - **[vercel-react-best-practices](./skills/vercel-react-best-practices)** — React/Next.js performance optimization from Vercel Engineering
 
 ### UI/UX Design
