@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **130 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **131 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## What are Skills?
 
@@ -190,6 +190,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 ### Marketing & Advertising
 
 - **[google-ads](./skills/google-ads)** — Query, audit, and optimize Google Ads campaigns
+- **[hormozi-ad-factory](./skills/hormozi-ad-factory)** — Generate 150-750+ ad variations using Hormozi's combinatorial Hook x Meat x CTA framework
 
 ### Architecture & Patterns
 
