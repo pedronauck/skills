@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **131 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **129 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## What are Skills?
 
@@ -68,10 +68,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 ### Rust
 
-- **[rust-engineer](./skills/rust-engineer)** — Senior Rust engineer persona for memory-safe systems-level applications
-- **[rust-best-practices](./skills/rust-best-practices)** — Idiomatic Rust based on Apollo GraphQL's best practices handbook
-- **[rust-coding-guidelines](./skills/rust-coding-guidelines)** — 50 core rules for Rust code style, naming, formatting, and best practices
-- **[rust-async-patterns](./skills/rust-async-patterns)** — Async programming with Tokio, async traits, error handling, and concurrency
+- **[rust-best-practices](./skills/rust-best-practices)** — Unified Rust guidelines covering ownership, error handling, async/Tokio, traits, testing, performance, clippy, and documentation
 - **[ratatui-tui](./skills/ratatui-tui)** — Terminal UIs with ratatui v0.30.0+ -- Elm Architecture, StatefulWidget, async events
 
 ### Desktop Applications
@@ -110,6 +107,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[mastra](./skills/mastra)** — Mastra framework for building AI agents and workflows
 - **[develop-ai-functions-example](./skills/develop-ai-functions-example)** — Develop examples for AI SDK functions to validate provider support
 - **[skills-best-practices](./skills/skills-best-practices)** — Author professional-grade agent skills following the agentskills.io spec
+- **[autoresearch](./skills/autoresearch-skill-main)** — Autonomously optimize any skill by running evals, mutating prompts, and keeping improvements
 - **[skill-writter](./skills/skill-writter)** — Guide users through creating Agent Skills for Claude Code
 - **[agent-md-refactor](./skills/agent-md-refactor)** — Refactor bloated AGENTS.md/CLAUDE.md files into organized, linked documentation
 - **[nano-banana-pro](./skills/nano-banana-pro)** — Generate or edit images via Gemini 3 Pro Image (Nano Banana Pro)

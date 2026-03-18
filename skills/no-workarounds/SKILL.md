@@ -16,26 +16,6 @@ A workaround is any change that makes a problem stop manifesting without address
 
 **Philosophical foundation:** Read `references/philosophical-foundations.md` for the engineering principles behind this skill, drawn from Toyota's Jidoka, Fowler's Technical Debt Quadrant, Torvalds' "good taste," and the Broken Windows Theory.
 
-## When to Use
-
-Activate this skill for ANY of:
-
-- Debugging bugs or test failures
-- Fixing errors or unexpected behavior
-- Planning implementation approaches
-- Reviewing code changes (own or others')
-- Resolving build, lint, or typecheck failures
-- Making architectural decisions
-- Addressing performance problems
-- Responding to code review feedback
-
-**Activate ESPECIALLY when:**
-
-- Under time pressure (urgency creates workaround temptation)
-- A "quick fix" seems obvious (obvious fixes are often symptom patches)
-- Fixing someone else's code (unfamiliarity breeds workarounds)
-- A test is flaky or failing intermittently (timing workarounds are the worst kind)
-
 ## The Workaround Detection Gate
 
 ```
@@ -58,7 +38,7 @@ IF root cause is in external code or truly unfixable:
 
 ## The Seven Categories of Workarounds
 
-### Category 1: Type System Evasion
+### Category 1 — TYPE: Type System Evasion
 
 **The signal being silenced:** The type system is telling the code is wrong.
 
@@ -92,7 +72,7 @@ BEFORE using `as`, `any`, `unknown` cast, or `!` (non-null assertion):
   NEVER use type assertions to bypass compiler errors
 ```
 
-### Category 2: Lint and Warning Suppression
+### Category 2 — LINT: Lint and Warning Suppression
 
 **The signal being silenced:** Static analysis found a real problem.
 
@@ -128,7 +108,7 @@ BEFORE adding eslint-disable, @ts-ignore, @ts-expect-error, or any suppression:
   NEVER suppress a warning without understanding it
 ```
 
-### Category 3: Error Swallowing
+### Category 3 — SWALLOW: Error Swallowing
 
 **The signal being silenced:** Something failed and the code pretends it didn't.
 
@@ -175,7 +155,7 @@ BEFORE writing a catch block:
   NEVER catch Exception/Error broadly without re-throwing specific types
 ```
 
-### Category 4: Timing and Lifecycle Hacks
+### Category 4 — TIMING: Timing and Lifecycle Hacks
 
 **The signal being silenced:** Code runs in the wrong order or at the wrong time.
 
@@ -224,7 +204,7 @@ BEFORE adding setTimeout, delay, sleep, or retry loops:
   NEVER use arbitrary delays to "wait for things to settle"
 ```
 
-### Category 5: Monkey Patching and Runtime Mutation
+### Category 5 — PATCH: Monkey Patching and Runtime Mutation
 
 **The signal being silenced:** The API doesn't do what the code needs.
 
@@ -252,7 +232,7 @@ BEFORE modifying prototypes, globals, or third-party internals:
   NEVER modify objects the code doesn't own
 ```
 
-### Category 6: Defensive Duplication
+### Category 6 — SCATTER: Defensive Duplication
 
 **The signal being silenced:** The data is unreliable at its source.
 
@@ -291,7 +271,7 @@ BEFORE adding optional chaining (?.) or nullish coalescing (??) deeply:
   NEVER scatter optional chains as a substitute for proper validation
 ```
 
-### Category 7: Copy-Paste Adaptation
+### Category 7 — CLONE: Copy-Paste Adaptation
 
 **The signal being silenced:** The abstraction doesn't fit but the developer forces it.
 
@@ -332,17 +312,9 @@ BEFORE copying code and modifying it:
   NEVER copy-paste more than 5 lines without questioning why
 ```
 
-## The Compound Cost Formula
+## The Compound Cost
 
-```
-Cost of workaround = immediate_time_saved
-                   + (confusion_cost × number_of_developers)
-                   + (debugging_time × number_of_incidents)
-                   + (copy_spread × number_of_imitators)
-                   + (technical_debt_interest × months_until_fix)
-```
-
-A workaround that saves 30 minutes today costs 30 hours when copied to 5 places, debugged 3 times, and confused 4 developers over 6 months.
+A workaround that saves 30 minutes today costs 30 hours when copied to 5 places, debugged 3 times, and confused 4 developers over 6 months. The interest rate on workarounds is predatory.
 
 ## Red Flags — STOP and Rethink
 
@@ -350,13 +322,13 @@ Catch these thought patterns and STOP:
 
 | Thought                                      | What It Means                        |
 | -------------------------------------------- | ------------------------------------ |
-| "Just add `as any` to make it compile"       | Type system evasion (Category 1)     |
-| "Disable the lint rule for this line"        | Warning suppression (Category 2)     |
-| "Wrap it in try-catch and ignore the error"  | Error swallowing (Category 3)        |
-| "Add a setTimeout to fix the timing"         | Lifecycle hack (Category 4)          |
-| "Override the prototype/global"              | Monkey patching (Category 5)         |
-| "Add `?.` everywhere just to be safe"        | Defensive duplication (Category 6)   |
-| "Copy this code and change a few things"     | Copy-paste adaptation (Category 7)   |
+| "Just add `as any` to make it compile"       | TYPE — Type system evasion           |
+| "Disable the lint rule for this line"        | LINT — Warning suppression           |
+| "Wrap it in try-catch and ignore the error"  | SWALLOW — Error swallowing           |
+| "Add a setTimeout to fix the timing"         | TIMING — Lifecycle hack              |
+| "Override the prototype/global"              | PATCH — Monkey patching              |
+| "Add `?.` everywhere just to be safe"        | SCATTER — Defensive duplication      |
+| "Copy this code and change a few things"     | CLONE — Copy-paste adaptation        |
 | "It works, don't touch it"                   | Fear masking a fragile workaround    |
 | "We'll fix it properly later"                | Later never comes                    |
 | "It's just temporary"                        | Nothing is more permanent            |
@@ -383,35 +355,6 @@ IF any condition is NOT met:
   Fix the root cause. No exceptions.
 ```
 
-## Quick Reference Decision Tree
-
-```
-Problem detected
-  │
-  ├─ "I know a quick fix" ──→ STOP. Why does the problem exist?
-  │                              │
-  │                              ├─ Root cause identified ──→ Fix root cause
-  │                              │
-  │                              └─ Root cause unclear ──→ Investigate more
-  │                                                         (systematic-debugging)
-  │
-  ├─ "The compiler/linter is wrong" ──→ It's almost never wrong.
-  │                                       │
-  │                                       ├─ Code is wrong ──→ Fix the code
-  │                                       │
-  │                                       └─ Rule is wrong ──→ Change rule in config
-  │                                                             (not inline suppress)
-  │
-  ├─ "The test is flaky" ──→ Flaky = race condition or shared state
-  │                            │
-  │                            ├─ Race condition ──→ Fix ordering/synchronization
-  │                            │
-  │                            └─ Shared state ──→ Isolate test state
-  │
-  └─ "It works but I don't know why" ──→ STOP. Understand before shipping.
-                                           Not understanding = guaranteed future bug.
-```
-
 ## Common Rationalizations
 
 | Excuse                                         | Reality                                                      |
@@ -424,15 +367,6 @@ Problem detected
 | "The test passes"                              | A passing test with a workaround tests the workaround, not the code |
 | "I'll create a tech debt ticket"               | 93% of tech debt tickets are never resolved                  |
 | "The external library forces this"             | Use The Escape Valve process above, with all 5 requirements  |
-
-## Integration with Other Skills
-
-This skill works alongside:
-
-- **systematic-debugging** — Provides the root cause investigation methodology
-- **test-anti-patterns** — Prevents workarounds in test code specifically
-- **verification-before-completion** — Ensures the real fix is verified, not the workaround
-- **receiving-code-review** — Evaluates whether review suggestions introduce workarounds
 
 ## The Bottom Line
 
