@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **129 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **130 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## What are Skills?
 
@@ -152,6 +152,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[firecrawl](./skills/firecrawl)** — Web scraping, search, crawling, and browser automation via the Firecrawl CLI
 - **[exa-web-search-free](./skills/exa-web-search-free)** — Free AI-powered web, code, and company search via Exa MCP
 - **[perplexity](./skills/perplexity)** — Web search and research using Perplexity AI
+- **[context7](./skills/context7)** — Retrieve up-to-date technical documentation, API references, and code examples for any library via Context7 CLI
 - **[agent-browser](./skills/agent-browser)** — Automate browser interactions for testing, form filling, and data extraction
 
 ### Content & Writing
