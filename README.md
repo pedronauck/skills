@@ -2,6 +2,32 @@
 
 A curated collection of **131 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
+## Installation
+
+### Quick install (recommended)
+
+Install this repository into your agent skills directory with the [`skills`](https://www.npmjs.com/package/skills) CLI:
+
+```bash
+npx skills add https://github.com/pedronauck/skills
+```
+
+### Manual install
+
+Copy or symlink the skills you need into your Claude Code configuration:
+
+```bash
+# Copy a single skill
+cp -r skills/react ~/.claude/skills/react
+
+# Or symlink the entire collection
+ln -s $(pwd)/skills ~/.claude/skills
+```
+
+## Usage
+
+Skills are automatically picked up by Claude Code when placed in the `~/.claude/skills/` directory. The agent matches tasks to relevant skills based on the `description` field in each `SKILL.md` frontmatter.
+
 ## What are Skills?
 
 Skills are structured instruction sets that give AI agents deep expertise in specific domains. Each skill lives in its own directory under `skills/` and contains a `SKILL.md` file with metadata, procedures, and reference material. Skills follow the [agentskills.io](https://agentskills.io) specification.
@@ -215,20 +241,6 @@ skills/<skill-name>/
   scripts/              # Automation scripts and validators
   checklists/           # Step-by-step verification checklists
 ```
-
-## Usage
-
-Copy or symlink the skills you need into your Claude Code configuration:
-
-```bash
-# Copy a single skill
-cp -r skills/react ~/.claude/skills/react
-
-# Or symlink the entire collection
-ln -s $(pwd)/skills ~/.claude/skills
-```
-
-Skills are automatically picked up by Claude Code when placed in the `~/.claude/skills/` directory. The agent matches tasks to relevant skills based on the `description` field in each `SKILL.md` frontmatter.
 
 ## Contributing
 
