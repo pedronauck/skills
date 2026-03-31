@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **130 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **131 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## What are Skills?
 
@@ -115,6 +115,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[find-skills](./skills/find-skills)** — Discover and install agent skills from the open agent skills ecosystem
 - **[pal](./skills/pal)** — Pal MCP toolkit for code analysis, debugging, planning, refactoring, and tracing
 - **[sourcebot](./skills/sourcebot)** — Search external libraries and frameworks using Sourcebot MCP
+- **[llm-council](./skills/llm-concil)** — Run decisions through 5 independent advisors, anonymous peer review, and a chairman synthesis (Karpathy-style LLM Council)
 
 ### Testing & Quality
 
