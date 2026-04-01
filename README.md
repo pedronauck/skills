@@ -96,8 +96,8 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 - **[rust-best-practices](./skills/rust-best-practices)** — Unified Rust guidelines covering ownership, error handling, async/Tokio, traits, testing, performance, clippy, and documentation
 - **[ratatui-tui](./skills/ratatui-tui)** — Terminal UIs with ratatui v0.30.0+ -- Elm Architecture, StatefulWidget, async events
-- **[opentui](./.agents/skills/opentui)** — OpenTUI platform for building TUIs -- core API, React reconciler, Solid reconciler, components, layout, and testing
-- **[tui-design](./.agents/skills/tui-design)** — Universal TUI design patterns -- layouts, color schemes, keyboard navigation, dashboards, and accessibility
+- **[opentui](./skills/opentui)** — OpenTUI platform for building TUIs -- core API, React reconciler, Solid reconciler, components, layout, and testing
+- **[tui-design](./skills/tui-design)** — Universal TUI design patterns -- layouts, color schemes, keyboard navigation, dashboards, and accessibility
 
 ### Desktop Applications
 
