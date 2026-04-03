@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **133 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **134 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -158,6 +158,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 - **[architectural-analysis](./skills/architectural-analysis)** — Deep architectural audit for dead code, duplication, anti-patterns, and code smells
 - **[systematic-debugging](./skills/systematic-debugging)** — Root-cause investigation before proposing fixes for bugs or test failures
+- **[extreme-software-optimization](./skills/extreme-software-optimization)** — Profile-driven performance optimization with behavior proofs, opportunity scoring, and isomorphism guarantees
 - **[no-workarounds](./skills/no-workarounds)** — Enforce root-cause fixes over workarounds, hacks, and symptom patches
 - **[receiving-code-review](./skills/receiving-code-review)** — Handle code review feedback with technical rigor and verification
 - **[fix-coderabbit-review](./skills/fix-coderabbit-review)** — End-to-end remediation workflow for PR review feedback
