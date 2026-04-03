@@ -1,6 +1,6 @@
 # System Implementation Patterns
 
-> **Note on project-specific imports**: The patterns below use placeholder imports (`your-http-client`, `your-query-client`, etc.). Replace these with the actual paths used in the target project. Before writing code, read the existing systems in the codebase to confirm the exact import paths for the HTTP client, query client, error base class, and collection registry.
+> **Note on project-specific imports**: The patterns below use placeholder imports (`your-http-client`, `your-query-client`, etc.). Replace these with the actual paths used in the target project. Before writing code, read the existing systems in the codebase to confirm the exact import paths for the HTTP client, query client, error base class, and other shared utilities.
 
 ---
 
@@ -38,11 +38,12 @@ function extractErrorMessage(error: unknown, fallback: string): string {
 async function handleResponse<T>(response: Response, fallback: string): Promise<T> {
   if (!response.ok) {
     let body: unknown;
-    try { body = await response.json(); } catch { /* ignore */ }
-    throw new FooApiError(
-      extractErrorMessage(body, fallback),
-      response.status
-    );
+    try {
+      body = await response.json();
+    } catch {
+      /* ignore */
+    }
+    throw new FooApiError(extractErrorMessage(body, fallback), response.status);
   }
   if (response.status === 204) return null as T;
   return response.json() as Promise<T>;
@@ -92,15 +93,66 @@ export const fooApi = {
 
 ## Query Keys (`lib/query-keys.ts`)
 
+Use hierarchical key structure for granular invalidation. Each level enables broader or narrower cache operations.
+
 ```ts
 export const fooKeys = {
   all: ["foo"] as const,
-  // Scope by any ID that isolates the cache (userId, orgId, tenantId, etc.)
-  list: (scopeId: string | null) =>
-    [...fooKeys.all, "list", scopeId] as const,
-  detail: (fooId: string) =>
-    [...fooKeys.all, "detail", fooId] as const,
+  // Granular levels for targeted invalidation
+  lists: () => [...fooKeys.all, "list"] as const,
+  list: (scopeId: string | null) => [...fooKeys.lists(), scopeId] as const,
+  details: () => [...fooKeys.all, "detail"] as const,
+  detail: (fooId: string) => [...fooKeys.details(), fooId] as const,
 };
+
+// Invalidation examples:
+// queryClient.invalidateQueries({ queryKey: fooKeys.all })       — invalidates everything
+// queryClient.invalidateQueries({ queryKey: fooKeys.lists() })   — invalidates all lists
+// queryClient.invalidateQueries({ queryKey: fooKeys.list("x") }) — invalidates one specific list
+```
+
+---
+
+## Query Options (`lib/query-options.ts`)
+
+Co-locate `queryKey` and `queryFn` via `queryOptions` for type safety, reuse across hooks, prefetching, and route loaders.
+
+```ts
+import { queryOptions } from "@tanstack/react-query";
+import { fooApi } from "../adapters/foo-api";
+import { fooKeys } from "./query-keys";
+
+const STALE_TIME = 1000 * 60; // 1 min
+
+export function fooListOptions(scopeId: string | null) {
+  return queryOptions({
+    queryKey: fooKeys.list(scopeId),
+    queryFn: ({ signal }) => fooApi.list(scopeId!, signal),
+    staleTime: STALE_TIME,
+    enabled: Boolean(scopeId),
+  });
+}
+
+export function fooDetailOptions(fooId: string) {
+  return queryOptions({
+    queryKey: fooKeys.detail(fooId),
+    queryFn: ({ signal }) => fooApi.get(fooId, signal),
+    enabled: Boolean(fooId),
+  });
+}
+```
+
+Usage across the system:
+
+```ts
+// In a hook
+useQuery(fooListOptions(scopeId));
+
+// In a route loader for prefetching
+queryClient.ensureQueryData(fooListOptions(scopeId));
+
+// For manual cache reads
+queryClient.getQueryData(fooListOptions(scopeId).queryKey);
 ```
 
 ---
@@ -120,201 +172,185 @@ export const fooSchema = z.object({
   updatedAt: z.string().datetime(),
 });
 
-// The schema passed to the DB collection's `schema` option
-export const fooListItemSchema = fooSchema;
-
 export type FooStatus = z.infer<typeof fooStatusSchema>;
-```
-
----
-
-## DB Collection (`db/<domain>-collection.ts`)
-
-Only create this layer when optimistic updates or fine-grained reactivity are needed.
-The collection must be treated as a singleton per scope — share it via context.
-
-```ts
-import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/react-db";
-
-// Import the project's queryClient instance
-import { queryClient } from "your-query-client";
-
-import { fooApi } from "../adapters/foo-api";
-import { fooListItemSchema } from "../lib/foo-schemas";
-import { fooKeys } from "../lib/query-keys";
-import type { FooResponse } from "../types";
-
-const FOO_COLLECTION_PREFIX = "foo:";
-const STALE_TIME = 1000 * 60 * 5;  // 5 min
-const GC_TIME    = 1000 * 60 * 30; // 30 min
-
-export function fooQueryOptions(scopeId: string) {
-  return {
-    queryKey: fooKeys.list(scopeId),
-    queryFn: () => fooApi.list(scopeId),
-    staleTime: STALE_TIME,
-    gcTime: GC_TIME,
-    retry: false,
-  } as const;
-}
-
-export function fooCollectionKey(scopeId: string): string {
-  return `${FOO_COLLECTION_PREFIX}${JSON.stringify(fooQueryOptions(scopeId).queryKey)}`;
-}
-
-export function createFooCollection(scopeId: string) {
-  const { queryKey, queryFn } = fooQueryOptions(scopeId);
-
-  return createCollection(
-    queryCollectionOptions({
-      id: queryKey.join("-"),
-      queryKey,
-      queryClient,
-      queryFn,
-      select: (data) => (Array.isArray(data) ? data : []),
-      schema: fooListItemSchema,
-      getKey: (item: FooResponse) => item.id,
-      staleTime: STALE_TIME,
-      gcTime: GC_TIME,
-      retry: false,
-
-      onInsert: async ({ transaction }) => {
-        await Promise.all(
-          transaction.mutations.map((m) => fooApi.create(m.modified as FooResponse))
-        );
-        return { refetch: false }; // Always false — avoids double-fetch after mutation
-      },
-
-      onUpdate: async ({ transaction }) => {
-        const m = transaction.mutations[0];
-        const original = m.original as FooResponse;
-        await fooApi.update(original.id, m.changes as Partial<FooResponse>);
-        return { refetch: false };
-      },
-
-      onDelete: async ({ transaction }) => {
-        await Promise.all(
-          transaction.mutations.map((m) => fooApi.delete((m.original as FooResponse).id))
-        );
-        return { refetch: false };
-      },
-    })
-  );
-}
-
-export type FooCollectionInstance = ReturnType<typeof createFooCollection>;
-```
-
----
-
-## Collection Hook (`hooks/use-<domain>-collection.ts`)
-
-If the project has a shared collection registry, use it to share the instance:
-
-```ts
-import { useCallback, useMemo } from "react";
-// If the project has a shared collection registry:
-import { useSharedCollection } from "your-collection-registry";
-import { createFooCollection, fooCollectionKey } from "../db/foo-collection";
-import type { FooCollectionInstance } from "../db/foo-collection";
-
-export function useFooCollection(scopeId: string): FooCollectionInstance {
-  const key = useMemo(() => fooCollectionKey(scopeId), [scopeId]);
-  const factory = useCallback(() => createFooCollection(scopeId), [scopeId]);
-  return useSharedCollection(key, factory);
-}
-```
-
-If the project has no shared registry, manage the instance in the provider:
-
-```ts
-import { useMemo } from "react";
-import { createFooCollection } from "../db/foo-collection";
-
-export function useFooCollection(scopeId: string) {
-  // useMemo is safe here because scopeId changes cause a new collection
-  return useMemo(() => createFooCollection(scopeId), [scopeId]);
-}
 ```
 
 ---
 
 ## Query Hook (`hooks/use-<action>.ts`)
 
-```ts
-import { queryOptions, useQuery } from "@tanstack/react-query";
-import { fooApi } from "../adapters/foo-api";
-import { fooKeys } from "../lib/query-keys";
-import type { FooResponse } from "../types";
+Wrap `queryOptions` in a hook. Accept scope parameters and optional overrides.
 
-// Export queryOptions separately for route loaders and prefetching
-export function fooListQueryOptions(scopeId: string | null) {
-  return queryOptions({
-    queryKey: fooKeys.list(scopeId),
-    queryFn: ({ signal }) => fooApi.list(scopeId!, signal),
-    staleTime: 60_000,
-    enabled: Boolean(scopeId),
-  });
-}
+```ts
+import { useQuery } from "@tanstack/react-query";
+import { fooListOptions, fooDetailOptions } from "../lib/query-options";
 
 export function useFooList(scopeId: string | null, options?: { enabled?: boolean }) {
   const enabled = Boolean(scopeId) && (options?.enabled ?? true);
-  return useQuery({ ...fooListQueryOptions(scopeId), enabled });
+  return useQuery({ ...fooListOptions(scopeId), enabled });
 }
 
 export function useFooDetail(fooId: string) {
-  return useQuery<FooResponse>({
-    queryKey: fooKeys.detail(fooId),
-    queryFn: ({ signal }) => fooApi.get(fooId, signal),
-    enabled: Boolean(fooId),
+  return useQuery(fooDetailOptions(fooId));
+}
+```
+
+---
+
+## Mutation Hook — Simple (`hooks/use-create-<entity>.ts`)
+
+Use `useMutation` with `onSettled` invalidation. This is the standard pattern when optimistic updates are not needed.
+
+```ts
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { fooApi } from "../adapters/foo-api";
+import { fooKeys } from "../lib/query-keys";
+import type { CreateFooBody, FooResponse } from "../types";
+
+export function useCreateFoo(scopeId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<FooResponse, Error, CreateFooBody>({
+    mutationFn: body => fooApi.create(body),
+    onSuccess: () => {
+      // Invalidate the list to refetch fresh data
+      queryClient.invalidateQueries({ queryKey: fooKeys.list(scopeId) });
+    },
   });
 }
 ```
 
 ---
 
-## Mutation Hook (`hooks/use-create-<entity>.ts`)
+## Mutation Hook — Optimistic via UI Variables (`hooks/use-update-<entity>.ts`)
 
-**CRITICAL**: Always receive `collection` as a parameter. Never create a new collection inside.
+The simplest optimistic pattern. Use when the optimistic change is only visible in one place. No cache manipulation or rollback needed.
 
 ```ts
-import { useCallback, useState } from "react";
-import type { FooCollectionInstance } from "../db/foo-collection";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { fooApi } from "../adapters/foo-api";
+import { fooKeys } from "../lib/query-keys";
+import type { UpdateFooBody, FooResponse } from "../types";
+
+export function useUpdateFoo(scopeId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<FooResponse, Error, { fooId: string; body: UpdateFooBody }>({
+    mutationFn: ({ fooId, body }) => fooApi.update(fooId, body),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: fooKeys.list(scopeId) });
+    },
+  });
+}
+
+// In the component — use `variables` and `isPending` for optimistic UI:
+//
+// const { mutate, variables, isPending } = useUpdateFoo(scopeId);
+// const displayTitle = isPending ? variables?.body.title : foo.title;
+```
+
+---
+
+## Mutation Hook — Optimistic via Cache (`hooks/use-create-<entity>-optimistic.ts`)
+
+Use cache-based optimistic updates when multiple components need to reflect the change immediately.
+
+```ts
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { fooApi } from "../adapters/foo-api";
+import { fooKeys } from "../lib/query-keys";
+import type { CreateFooBody, FooResponse } from "../types";
+
+export function useCreateFooOptimistic(scopeId: string) {
+  const queryClient = useQueryClient();
+  const listKey = fooKeys.list(scopeId);
+
+  return useMutation<
+    FooResponse,
+    Error,
+    CreateFooBody,
+    { previousFoos: FooResponse[] | undefined }
+  >({
+    mutationFn: body => fooApi.create(body),
+
+    onMutate: async newFoo => {
+      // 1. Cancel outgoing refetches to prevent them from overwriting optimistic data
+      await queryClient.cancelQueries({ queryKey: listKey });
+
+      // 2. Snapshot previous data for rollback
+      const previousFoos = queryClient.getQueryData<FooResponse[]>(listKey);
+
+      // 3. Optimistically add the new item to the cache
+      queryClient.setQueryData<FooResponse[]>(listKey, old => [
+        ...(old ?? []),
+        {
+          id: crypto.randomUUID(), // Temporary ID
+          ...newFoo,
+          status: newFoo.status ?? "pending",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        } as FooResponse,
+      ]);
+
+      // 4. Return snapshot for rollback
+      return { previousFoos };
+    },
+
+    onError: (_err, _newFoo, context) => {
+      // Roll back to the previous state on failure
+      if (context?.previousFoos) {
+        queryClient.setQueryData<FooResponse[]>(listKey, context.previousFoos);
+      }
+    },
+
+    onSettled: () => {
+      // Always invalidate to sync with the server
+      queryClient.invalidateQueries({ queryKey: listKey });
+    },
+  });
+}
+```
+
+---
+
+## Delete Mutation Hook (`hooks/use-delete-<entity>.ts`)
+
+```ts
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { fooApi } from "../adapters/foo-api";
+import { fooKeys } from "../lib/query-keys";
 import type { FooResponse } from "../types";
 
-type CreateFooInput = Pick<FooResponse, "title" | "status">;
+export function useDeleteFoo(scopeId: string) {
+  const queryClient = useQueryClient();
+  const listKey = fooKeys.list(scopeId);
 
-export function useCreateFoo(collection: FooCollectionInstance) {
-  const [isPending, setIsPending] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  return useMutation<void, Error, string, { previousFoos: FooResponse[] | undefined }>({
+    mutationFn: fooId => fooApi.delete(fooId),
 
-  const mutateAsync = useCallback(async (input: CreateFooInput): Promise<FooResponse> => {
-    setIsPending(true);
-    setError(null);
-    try {
-      const optimistic: FooResponse = {
-        id: crypto.randomUUID(),
-        ...input,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      const tx = collection.insert(optimistic);
-      await tx.isPersisted.promise;
-      return optimistic;
-    } catch (err) {
-      const resolved = err instanceof Error ? err : new Error("Failed to create foo");
-      setError(resolved);
-      throw resolved;
-    } finally {
-      setIsPending(false);
-    }
-  }, [collection]);
+    onMutate: async fooId => {
+      await queryClient.cancelQueries({ queryKey: listKey });
+      const previousFoos = queryClient.getQueryData<FooResponse[]>(listKey);
 
-  const mutate = useCallback((input: CreateFooInput) => { void mutateAsync(input); }, [mutateAsync]);
-  const reset = useCallback(() => setError(null), []);
+      // Optimistically remove from the list
+      queryClient.setQueryData<FooResponse[]>(
+        listKey,
+        old => old?.filter(item => item.id !== fooId) ?? []
+      );
 
-  return { mutateAsync, mutate, isPending, error, reset };
+      return { previousFoos };
+    },
+
+    onError: (_err, _fooId, context) => {
+      if (context?.previousFoos) {
+        queryClient.setQueryData<FooResponse[]>(listKey, context.previousFoos);
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: listKey });
+    },
+  });
 }
 ```
 
@@ -322,24 +358,27 @@ export function useCreateFoo(collection: FooCollectionInstance) {
 
 ## Context (`contexts/<domain>-context.tsx`)
 
+Use context to share query data or domain state across a component subtree without prop-drilling.
+
 ```ts
 import { createContext, use, useMemo } from "react";
-import type { FooCollectionInstance } from "../db/foo-collection";
+import type { FooResponse } from "../types";
 
 interface FooContextValue {
-  collection: FooCollectionInstance;
+  scopeId: string;
+  items: FooResponse[];
+  isLoading: boolean;
 }
 
 export const FooContext = createContext<FooContextValue | null>(null);
 
 export function FooProvider({
-  collection,
+  scopeId,
+  items,
+  isLoading,
   children,
-}: {
-  collection: FooCollectionInstance;
-  children: React.ReactNode;
-}) {
-  const value = useMemo(() => ({ collection }), [collection]);
+}: FooContextValue & { children: React.ReactNode }) {
+  const value = useMemo(() => ({ scopeId, items, isLoading }), [scopeId, items, isLoading]);
   return <FooContext value={value}>{children}</FooContext>;
 }
 
@@ -430,7 +469,7 @@ export const fooStore = createStore({
       isLoading: false,
     }),
 
-    reset: (_context) => ({ data: null, isLoading: false, error: null }),
+    reset: _context => ({ data: null, isLoading: false, error: null }),
   },
 });
 ```
@@ -442,17 +481,18 @@ export const fooStore = createStore({
 Compose multiple hooks for a single page/shell component. Return a flat object.
 
 ```ts
+import { useFooList } from "./use-foo-list";
 import { useFooDetail } from "./use-foo-detail";
 import { useCreateFoo } from "./use-create-foo";
 import { useDeleteFoo } from "./use-delete-foo";
-import type { FooCollectionInstance } from "../db/foo-collection";
 
-export function useFooDetailViewModel(fooId: string, collection: FooCollectionInstance) {
+export function useFooDetailViewModel(fooId: string, scopeId: string) {
+  const list = useFooList(scopeId);
   const { data: detail, isLoading, error } = useFooDetail(fooId);
-  const create = useCreateFoo(collection);
-  const remove = useDeleteFoo(collection);
+  const create = useCreateFoo(scopeId);
+  const remove = useDeleteFoo(scopeId);
 
-  return { detail, isLoading, error, create, remove };
+  return { detail, isLoading, error, items: list.data, create, remove };
 }
 ```
 

@@ -13,22 +13,16 @@ systems/<domain>/
 │
 ├── lib/
 │   ├── query-keys.ts                # TanStack Query key factory
-│   ├── <domain>-schemas.ts          # Zod schemas (collections + forms)
+│   ├── query-options.ts             # Reusable queryOptions factories
+│   ├── <domain>-schemas.ts          # Zod schemas (API validation + forms)
 │   ├── <domain>-utils.ts            # Pure domain-specific utilities
-│   ├── collection-utils.ts          # Helpers for collection data transforms
 │   └── constants.ts                 # Domain constants (timeouts, limits, etc.)
-│
-├── db/
-│   ├── <domain>-collection.ts       # TanStack DB collection factory
-│   └── __tests__/
-│       └── <domain>-collection.test.ts
 │
 ├── hooks/
 │   ├── __tests__/                   # Subdirectory for complex/integration tests
 │   │   └── use-<action>.test.tsx
-│   ├── use-<domain>-collection.ts   # Hook that manages the shared collection instance
-│   ├── use-<action>.ts              # Query hooks
-│   ├── use-create-<entity>.ts       # Mutation hooks
+│   ├── use-<action>.ts              # Query hooks (useQuery wrappers)
+│   ├── use-create-<entity>.ts       # Mutation hooks (useMutation wrappers)
 │   ├── use-update-<entity>.ts
 │   ├── use-delete-<entity>.ts
 │   └── use-<domain>-view-model.ts   # Composed view-model hook for a page/shell
@@ -55,26 +49,25 @@ systems/<domain>/
 
 ## File Naming Rules
 
-| Layer | Pattern | Example |
-|-------|---------|---------|
-| API service | `<domain>-api.ts` | `issues-api.ts` |
-| Types | `types.ts` | `types.ts` |
-| Query keys | `query-keys.ts` | `query-keys.ts` |
-| Zod schema | `<domain>-schemas.ts` | `issue-schemas.ts` |
-| Collection | `<domain>-collection.ts` | `issues-collection.ts` |
-| Hook | `use-kebab-case.ts` | `use-create-issue.ts` |
-| Context | `<domain>-context.tsx` | `issue-details-context.tsx` |
-| Store | `<domain>-store.ts` | `api-key-store.ts` |
-| Component | `kebab-case.tsx` | `issue-list-item.tsx` |
-| Story | `<component>.stories.tsx` | `issue-list.stories.tsx` |
-| Test | `<file>.test.ts(x)` | `use-delete-issue.test.tsx` |
+| Layer         | Pattern                   | Example                     |
+| ------------- | ------------------------- | --------------------------- |
+| API service   | `<domain>-api.ts`         | `issues-api.ts`             |
+| Types         | `types.ts`                | `types.ts`                  |
+| Query keys    | `query-keys.ts`           | `query-keys.ts`             |
+| Query options | `query-options.ts`        | `query-options.ts`          |
+| Zod schema    | `<domain>-schemas.ts`     | `issue-schemas.ts`          |
+| Hook          | `use-kebab-case.ts`       | `use-create-issue.ts`       |
+| Context       | `<domain>-context.tsx`    | `issue-details-context.tsx` |
+| Store         | `<domain>-store.ts`       | `api-key-store.ts`          |
+| Component     | `kebab-case.tsx`          | `issue-list-item.tsx`       |
+| Story         | `<component>.stories.tsx` | `issue-list.stories.tsx`    |
+| Test          | `<file>.test.ts(x)`       | `use-delete-issue.test.tsx` |
 
 ## Folders That Are Optional
 
 Only create these when the system actually needs them:
 
-- `db/` — only when data requires optimistic updates or fine-grained reactivity
-- `contexts/` — only when a collection instance or state tree must be shared across a subtree
+- `contexts/` — only when query data or state must be shared across a subtree without prop-drilling
 - `stores/` — only for complex async state machines (multi-step flows, polling, event emission)
 - `guards/` — only for route-level or access-control logic
 
@@ -86,9 +79,14 @@ Use explicit named exports organized by labeled sections. No `export * from`:
 // Types
 export type { FooType, FooStatus } from "./types";
 
-// Hooks
+// Hooks — Queries
 export { useFooList } from "./hooks/use-foo-list";
+export { useFooDetail } from "./hooks/use-foo-detail";
+
+// Hooks — Mutations
 export { useCreateFoo } from "./hooks/use-create-foo";
+export { useUpdateFoo } from "./hooks/use-update-foo";
+export { useDeleteFoo } from "./hooks/use-delete-foo";
 
 // Components
 export { FooList, FooDetail } from "./components";
@@ -96,8 +94,9 @@ export { FooList, FooDetail } from "./components";
 // Utilities
 export { fooHelperFn } from "./lib/foo-utils";
 
-// Query Keys
+// Query Keys & Options
 export { fooKeys } from "./lib/query-keys";
+export { fooListOptions, fooDetailOptions } from "./lib/query-options";
 
 // API
 export { fooApi, FooApiError } from "./adapters/foo-api";

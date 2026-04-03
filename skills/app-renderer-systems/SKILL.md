@@ -1,12 +1,12 @@
 ---
 name: app-renderer-systems
-description: Guides creation and modification of domain feature systems organized under a systems/ directory. Covers directory layout, API service layer patterns, TanStack Query and DB collection setup, React context and XState store conventions, hook organization, and public API barrel exports. Use when adding a new domain system, extending an existing one, or fixing bugs in a system-layer codebase. Don't use for generic React component work, backend API implementation, or codebases not organized around a systems/ domain pattern.
+description: Guides creation and modification of domain feature systems organized under a systems/ directory. Covers directory layout, API service layer patterns, TanStack Query hooks (queries, mutations, optimistic updates), React context and XState store conventions, hook organization, and public API barrel exports. Use when adding a new domain system, extending an existing one, or fixing bugs in a system-layer codebase. Don't use for generic React component work, backend API implementation, or codebases not organized around a systems/ domain pattern.
 allowed-tools: Read, Grep, Glob
 ---
 
 # Feature Systems Guide
 
-A "system" is a self-contained, domain-driven module that owns everything related to one domain: its API calls, data layer, hooks, components, and public API. Systems live under a `systems/<domain>/` directory.
+A "system" is a self-contained, domain-driven module that owns everything related to one domain: its API calls, query layer, hooks, components, and public API. Systems live under a `systems/<domain>/` directory.
 
 Read `references/directory-layout.md` for the full directory structure and naming conventions.
 Read `references/patterns.md` for annotated implementation patterns per layer.
@@ -17,14 +17,15 @@ Read `references/patterns.md` for annotated implementation patterns per layer.
 
 Activate alongside this skill — systems span multiple technical domains:
 
-| Situation | Activate |
-|-----------|----------|
-| Any hook or component | `react` + `tanstack` |
-| TanStack DB collection | `tanstack` |
-| XState store | `xstate` |
-| Utility functions | `es-toolkit` |
-| Writing/fixing tests | `test-antipatterns` + `vitest` |
-| Bug fix | `systematic-debugging` + `no-workarounds` |
+| Situation             | Activate                                  |
+| --------------------- | ----------------------------------------- |
+| Any hook or component | `react` + `tanstack-query-best-practices` |
+| Data fetching/caching | `tanstack-query-best-practices`           |
+| Mutations             | `tanstack-query-best-practices`           |
+| XState store          | `xstate`                                  |
+| Utility functions     | `es-toolkit`                              |
+| Writing/fixing tests  | `test-antipatterns` + `vitest`            |
+| Bug fix               | `systematic-debugging` + `no-workarounds` |
 
 ### System Directory at a Glance
 
@@ -36,13 +37,16 @@ systems/<domain>/
 │   └── <domain>-api.ts
 ├── lib/                   # Pure utilities, schemas, constants, query keys
 │   ├── query-keys.ts      # TanStack Query key factory
+│   ├── query-options.ts   # Reusable queryOptions / mutationOptions
 │   ├── <domain>-schemas.ts
 │   └── constants.ts
-├── db/                    # TanStack DB collections (reactive/optimistic data)
-│   └── <domain>-collection.ts
-├── hooks/                 # React hooks
+├── hooks/                 # React hooks (queries, mutations, view-models)
 │   ├── __tests__/
-│   └── use-<action>.ts
+│   ├── use-<action>.ts    # Query hooks
+│   ├── use-create-<entity>.ts  # Mutation hooks
+│   ├── use-update-<entity>.ts
+│   ├── use-delete-<entity>.ts
+│   └── use-<domain>-view-model.ts
 ├── contexts/              # React contexts + providers
 │   └── <domain>-context.tsx
 ├── stores/                # XState stores (complex async state machines)
@@ -75,35 +79,58 @@ systems/<domain>/
 ```ts
 export const <domain>Keys = {
   all: ["<domain>"] as const,
-  list: (scopeId: string | null) => [...<domain>Keys.all, "list", scopeId] as const,
-  detail: (id: string) => [...<domain>Keys.all, "detail", id] as const,
+  lists: () => [...<domain>Keys.all, "list"] as const,
+  list: (scopeId: string | null) => [...<domain>Keys.lists(), scopeId] as const,
+  details: () => [...<domain>Keys.all, "detail"] as const,
+  detail: (id: string) => [...<domain>Keys.details(), id] as const,
 };
 ```
 
+- Use hierarchical key structure for granular invalidation.
 - Scope keys with any identifier (userId, orgId, etc.) that isolates the cache correctly.
 - Use `as const` on every key tuple.
 
-### Step 4 — (Optional) Create a DB collection
+### Step 4 — Add lib/query-options.ts
 
-Create `db/<domain>-collection.ts` **only** when data needs optimistic updates or fine-grained reactivity. Read `references/patterns.md` for the full pattern.
+```ts
+import { queryOptions } from "@tanstack/react-query";
+import { <domain>Api } from "../adapters/<domain>-api";
+import { <domain>Keys } from "./query-keys";
 
-Key rules:
-- Export `create<Domain>Collection(scopeId)` factory function.
-- Export `<domain>CollectionKey(scopeId)` for external registry/cache keying.
-- Export `type <Domain>CollectionInstance = ReturnType<typeof create<Domain>Collection>`.
-- Handlers (`onInsert`, `onUpdate`, `onDelete`) call the API service and sync the query cache.
-- Always return `{ refetch: false }` from handlers to avoid double-fetches.
+export function <domain>ListOptions(scopeId: string | null) {
+  return queryOptions({
+    queryKey: <domain>Keys.list(scopeId),
+    queryFn: ({ signal }) => <domain>Api.list(scopeId!, signal),
+    staleTime: 60_000,
+    enabled: Boolean(scopeId),
+  });
+}
+
+export function <domain>DetailOptions(id: string) {
+  return queryOptions({
+    queryKey: <domain>Keys.detail(id),
+    queryFn: ({ signal }) => <domain>Api.get(id, signal),
+    enabled: Boolean(id),
+  });
+}
+```
+
+- Co-locate `queryKey` and `queryFn` via `queryOptions` for type safety and reuse.
+- Export each option factory for use in hooks, prefetching, and route loaders.
+- Always pass `signal` from the query context through to the API layer.
 
 ### Step 5 — Write hooks
 
-- **Query hooks**: Wrap `useQuery` or `queryOptions`; accept a scope ID + optional `{ enabled? }`.
-- **Mutation hooks**: Accept `collection: <Domain>CollectionInstance` as a parameter — never create a new collection internally.
+- **Query hooks**: Wrap `useQuery` with the `queryOptions` factories; accept a scope ID + optional `{ enabled? }`.
+- **Mutation hooks**: Use `useMutation` with proper `onMutate` / `onError` / `onSettled` callbacks for optimistic updates.
 - **View-model hooks**: Compose multiple hooks for a page/shell component; return a flat object.
 - Place tests in `hooks/__tests__/` or co-locate as `use-xxx.test.tsx`.
 
+Read `references/patterns.md` for complete mutation and optimistic update patterns.
+
 ### Step 6 — (Optional) Add context
 
-Create `contexts/<domain>-context.tsx` when a collection instance or combined state must be shared across a component subtree.
+Create `contexts/<domain>-context.tsx` when query data or combined state must be shared across a component subtree without prop-drilling.
 
 ```ts
 // Always nullable context — consumer hook throws if used outside provider
@@ -139,7 +166,8 @@ Organize the barrel with labeled sections and explicit named exports:
 export type { <Domain>Type } from "./types";
 
 // Hooks
-export { use<Domain>, use<Domain>Mutation } from "./hooks";
+export { use<Domain>List, use<Domain>Detail } from "./hooks";
+export { useCreate<Domain>, useUpdate<Domain>, useDelete<Domain> } from "./hooks";
 
 // Components
 export { <Domain>Component } from "./components";
@@ -147,8 +175,9 @@ export { <Domain>Component } from "./components";
 // Utilities
 export { <domain>HelperFn } from "./lib/<domain>-utils";
 
-// Query Keys
+// Query Keys & Options
 export { <domain>Keys } from "./lib/query-keys";
+export { <domain>ListOptions, <domain>DetailOptions } from "./lib/query-options";
 
 // API
 export { <domain>Api, <Domain>ApiError } from "./adapters/<domain>-api";
@@ -156,21 +185,24 @@ export { <domain>Api, <Domain>ApiError } from "./adapters/<domain>-api";
 
 ## Critical Rules
 
-1. **Never create collection instances in mutation hooks.** Mutation hooks receive `collection` as a parameter. Creating a new collection internally causes "key not found" errors at runtime.
-2. **Unidirectional dependency flow.** `adapters → lib → db → hooks → components`. Adapters never import from hooks or components.
+1. **Use `queryOptions` for co-location.** Co-locate `queryKey` and `queryFn` in reusable option factories. Never scatter the same query key across multiple files.
+2. **Unidirectional dependency flow.** `adapters -> lib -> hooks -> components`. Adapters never import from hooks or components.
 3. **Scope query keys.** Any query depending on an authenticated scope (user, org, tenant) must include that scope ID in its key to prevent stale cross-scope data.
 4. **Typed errors in the API layer.** Never throw raw errors from adapters. Use a typed error class so consumers can distinguish error types without inspecting message strings.
 5. **AbortSignal propagation.** Pass `signal` from the `queryFn` context through to every API call for proper query cancellation.
-6. **Zod schemas in lib/.** Place all Zod schemas in `lib/<domain>-schemas.ts`. Collections reference them via the `schema` option for runtime validation.
+6. **Always invalidate after mutations.** Use `queryClient.invalidateQueries` in `onSettled` to ensure eventual consistency with the server.
+7. **Optimistic updates require rollback.** When using cache-based optimistic updates, snapshot previous data in `onMutate` and restore in `onError`.
+8. **Cancel outgoing queries before optimistic updates.** Call `queryClient.cancelQueries` in `onMutate` to prevent refetches from overwriting optimistic state.
+9. **Zod schemas in lib/.** Place all Zod schemas in `lib/<domain>-schemas.ts` for runtime validation at API boundaries.
 
 ## Error Handling
 
 - **API layer throws typed error**: TanStack Query catches and exposes it via `query.error`.
-- **Collection handler throws**: TanStack DB automatically rolls back the optimistic update.
-- **"key not found" in collection**: A new collection instance was created inside a mutation hook instead of receiving the shared one — fix the hook signature.
+- **Mutation fails with optimistic update**: `onError` callback rolls back the cache to the snapshot from `onMutate`, then `onSettled` invalidates to refetch fresh data.
 - **Stale cross-scope data**: Add the scope ID to the query key and verify that `enabled` guards check `Boolean(scopeId)`.
+- **Query cancellation on unmount**: TanStack Query automatically cancels in-flight queries via the `signal` when a component unmounts — ensure `signal` is propagated to the API layer.
 
 ## Detailed References
 
 - `references/directory-layout.md` — Full directory structure, file naming, and barrel conventions
-- `references/patterns.md` — Annotated code patterns for the API layer, collections, hooks, contexts, and stores
+- `references/patterns.md` — Annotated code patterns for the API layer, query options, hooks, mutations, optimistic updates, contexts, and stores

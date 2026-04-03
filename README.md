@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **134 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **137 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -98,6 +98,11 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[ratatui-tui](./skills/ratatui-tui)** — Terminal UIs with ratatui v0.30.0+ -- Elm Architecture, StatefulWidget, async events
 - **[opentui](./skills/opentui)** — OpenTUI platform for building TUIs -- core API, React reconciler, Solid reconciler, components, layout, and testing
 - **[tui-design](./skills/tui-design)** — Universal TUI design patterns -- layouts, color schemes, keyboard navigation, dashboards, and accessibility
+
+### Go
+
+- **[golang-pro](./skills/golang-pro)** — Concurrent Go patterns, microservices with gRPC/REST, pprof optimization, generics, and idiomatic error handling
+- **[bubbletea](./skills/bubbletea)** — Build terminal UIs with Go and Bubbletea -- Elm architecture, Lipgloss styling, dual-pane layouts, and reusable components
 
 ### Desktop Applications
 
@@ -215,6 +220,10 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 - **[promo-video](./skills/promo-video)** — Create promotional videos using Remotion with AI voiceover and background music
 - **[remotion-best-practices](./skills/remotion-best-practices)** — Best practices for Remotion video creation in React
+
+### Twitter & Social Media
+
+- **[tweetsmash-api](./skills/tweetsmash-api)** — TweetSmash REST API for fetching bookmarks, managing labels, filtering, and pagination
 
 ### Marketing & Advertising
 
