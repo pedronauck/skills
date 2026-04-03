@@ -17,9 +17,10 @@ Random fixes waste time and create new bugs. Quick patches mask underlying issue
 
 ```
 NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
+NO FIX WITHOUT A FAILING TEST THAT PROVES THE BUG EXISTS
 ```
 
-If you haven't completed Phase 1, you cannot propose fixes.
+If you haven't completed Phase 1, you cannot propose fixes. If you don't have a test or script that reproduces the bug, you haven't proven you understand it.
 
 ## When to Use
 
@@ -65,6 +66,7 @@ You MUST complete each phase before proceeding to the next.
    - What are the exact steps?
    - Does it happen every time?
    - If not reproducible → gather more data, don't guess
+   - **Write a minimal failing test or script that reproduces the bug** — this becomes your proof that the bug exists AND your verification that the fix works later. Even if existing tests already fail, write a MINIMAL isolated reproduction that pinpoints the exact failure mechanism (e.g., a script that runs two tests in sequence to prove pollution)
 
 3. **Check Recent Changes**
    - What changed that could cause this?
@@ -181,7 +183,7 @@ You MUST complete each phase before proceeding to the next.
    - Automated test if possible
    - One-off test script if no framework
    - MUST have before fixing
-   - Use the `superpowers:test-driven-development` skill for writing proper failing tests
+   - Write a proper failing test that reproduces the bug
 
 2. **Implement Single Fix**
    - Address the root cause identified
@@ -292,8 +294,7 @@ These techniques are part of systematic debugging and available in this director
 
 **Related skills:**
 
-- **superpowers:test-driven-development** - For creating failing test case (Phase 4, Step 1)
-- **superpowers:verification-before-completion** - Verify fix worked before claiming success
+- **verification-before-completion** - Verify fix worked before claiming success
 
 ## Real-World Impact
 

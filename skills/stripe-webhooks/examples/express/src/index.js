@@ -18,34 +18,30 @@ app.post("/webhooks/stripe", express.raw({ type: "application/json" }), async (r
   }
 
   // Handle the event based on type
+  const eventObject = event.data?.object;
   switch (event.type) {
     case "payment_intent.succeeded":
-      const paymentIntent = event.data.object;
-      console.log("Payment succeeded:", paymentIntent.id);
+      console.log("Payment succeeded:", eventObject?.id);
       // TODO: Fulfill the order, send confirmation email, etc.
       break;
 
     case "payment_intent.payment_failed":
-      const failedPayment = event.data.object;
-      console.log("Payment failed:", failedPayment.id);
+      console.log("Payment failed:", eventObject?.id);
       // TODO: Notify customer, update order status, etc.
       break;
 
     case "customer.subscription.created":
-      const subscription = event.data.object;
-      console.log("Subscription created:", subscription.id);
+      console.log("Subscription created:", eventObject?.id);
       // TODO: Provision access, send welcome email, etc.
       break;
 
     case "customer.subscription.deleted":
-      const canceledSub = event.data.object;
-      console.log("Subscription canceled:", canceledSub.id);
+      console.log("Subscription canceled:", eventObject?.id);
       // TODO: Revoke access, send retention email, etc.
       break;
 
     case "invoice.paid":
-      const invoice = event.data.object;
-      console.log("Invoice paid:", invoice.id);
+      console.log("Invoice paid:", eventObject?.id);
       // TODO: Record payment, update billing history, etc.
       break;
 
