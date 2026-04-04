@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **137 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **142 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -189,6 +189,14 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[perplexity](./skills/perplexity)** — Web search and research using Perplexity AI
 - **[context7](./skills/context7)** — Retrieve up-to-date technical documentation, API references, and code examples for any library via Context7 CLI
 - **[agent-browser](./skills/agent-browser)** — Automate browser interactions for testing, form filling, and data extraction
+
+### Knowledge Management & Notes
+
+- **[karpathy-kb](./skills/karpathy-kb)** — Karpathy-style self-compiling Obsidian knowledge bases with ingest → compile → query → lint pipeline
+- **[obsidian-cli](./skills/obsidian-cli)** — Interact with Obsidian vaults via CLI -- read, create, search, manage notes, and develop plugins
+- **[obsidian-markdown](./skills/obsidian-markdown)** — Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and tags
+- **[obsidian-bases](./skills/obsidian-bases)** — Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries
+- **[qmd](./skills/qmd)** — Search markdown knowledge bases, notes, and documentation using QMD
 
 ### Content & Writing
 
