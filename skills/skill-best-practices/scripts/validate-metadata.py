@@ -43,4 +43,11 @@ def validate_metadata(name, description):
         sys.exit(0)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Validate agent skill metadata (name and description) against the agentskills.io spec."
+    )
+    parser.add_argument("--name", required=True, help="Skill name (1-64 chars, lowercase, numbers, single hyphens).")
+    parser.add_argument("--description", required=True, help="Skill description (max 1024 chars, third-person).")
+    args = parser.parse_args()
+    validate_metadata(args.name, args.description)
 
