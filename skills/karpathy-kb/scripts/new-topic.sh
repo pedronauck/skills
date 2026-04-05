@@ -52,6 +52,7 @@ mkdir -p "$SLUG/raw/articles" \
          "$SLUG/outputs/briefings" \
          "$SLUG/outputs/queries" \
          "$SLUG/outputs/diagrams" \
+         "$SLUG/outputs/reports" \
          "$SLUG/bases"
 
 # Substitute placeholders in a template file
@@ -69,6 +70,7 @@ render_template "$ASSETS/dashboard-template.md" "$SLUG/wiki/index/Dashboard.md"
 render_template "$ASSETS/concept-index-template.md" "$SLUG/wiki/index/Concept Index.md"
 render_template "$ASSETS/source-index-template.md" "$SLUG/wiki/index/Source Index.md"
 render_template "$ASSETS/topic-claude-template.md" "$SLUG/CLAUDE.md"
+render_template "$ASSETS/log-template.md" "$SLUG/log.md"
 
 # AGENTS.md → symlink to CLAUDE.md for Codex parity
 ln -s CLAUDE.md "$SLUG/AGENTS.md"
@@ -81,6 +83,7 @@ touch "$SLUG/raw/articles/.gitkeep" \
       "$SLUG/outputs/briefings/.gitkeep" \
       "$SLUG/outputs/queries/.gitkeep" \
       "$SLUG/outputs/diagrams/.gitkeep" \
+      "$SLUG/outputs/reports/.gitkeep" \
       "$SLUG/bases/.gitkeep"
 
 cat <<EOF
@@ -89,9 +92,10 @@ Topic '$SLUG' scaffolded.
 
 Next steps:
   1. Add a row for '$SLUG' to README.md (topic table)
-  2. Create qmd collection:
+  2. (Optional — recommended at ~20+ sources) Create qmd collection:
        qmd collection add $SLUG/ --name $SLUG && qmd embed
   3. Start ingesting sources (Procedure 2 in karpathy-kb skill)
+  4. Append every operation to $SLUG/log.md (Procedure 7)
 
 Layout:
 $(find "$SLUG" -type d | sort | sed 's/^/  /')

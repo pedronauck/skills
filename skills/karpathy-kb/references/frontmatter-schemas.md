@@ -117,7 +117,25 @@ informed_by:
 ---
 ```
 
-`stage` values for outputs: `briefing`, `query`, `diagram`.
+`stage` values for outputs: `briefing`, `query`, `diagram`, `lint-report`.
+
+## Lint report — `<topic>/outputs/reports/<YYYY-MM-DD>-lint.md`
+
+```yaml
+---
+title: Lint Report YYYY-MM-DD
+type: output
+stage: lint-report
+domain: <topic-domain>
+tags:
+  - <topic-domain>
+  - output
+  - lint-report
+created: YYYY-MM-DD
+issues_found: N
+issues_fixed: M
+---
+```
 
 ## Topic index — Dashboard / Concept Index / Source Index
 
@@ -143,4 +161,5 @@ updated: YYYY-MM-DD
 | Briefing | `outputs/briefings/` | `output` | `briefing` |
 | Query result | `outputs/queries/` | `output` | `query` |
 | Diagram | `outputs/diagrams/` | `output` | `diagram` |
+| Lint report | `outputs/reports/` | `output` | `lint-report` |
 | Index | `wiki/index/` | `index` | — |

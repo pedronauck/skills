@@ -2,7 +2,7 @@
 
 The Karpathy Knowledge Base Pattern treats the LLM as a **compiler** that reads raw source documents and produces a structured, cross-linked markdown wiki. No vector database, no embedding pipeline, no retrieval ranking — the wiki itself is the knowledge base, and at personal scale (~100 articles, ~400K words) it fits entirely in a modern context window.
 
-Coined by Andrej Karpathy in April 2026 (see @karpathy on X, "LLM Knowledge Bases"), popularized via dair.ai and observed in practice across the Obsidian community.
+Described by Andrej Karpathy in April 2026 in [LLM Wiki: Knowledge Base Pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f), with conceptual roots in Vannevar Bush's Memex (1945) — a personal, curated knowledge store with associative trails between documents. Bush's unsolved problem was *who does the maintenance*. LLMs solve that: they don't get bored, don't forget cross-references, and can touch 15 files in one pass.
 
 ## Core thesis
 
@@ -16,21 +16,31 @@ Three converging capabilities enable the pattern:
 
 The human contributes judgment, taste, and direction. The LLM contributes exhaustive cross-referencing, consistent formatting, tireless compilation, and gap identification.
 
-## The four-phase cycle
+## Three-op core vs four-phase extension
+
+Karpathy's original gist frames the pattern as three operations: **Ingest**, **Query**, **Lint**. In his flow, ingest is active — the LLM reads the source, discusses it, writes a summary page, and updates 10-15 related wiki pages in one pass. "Compile" is folded into ingest.
+
+This skill **splits ingest into two distinct phases** — `ingest` (scrape + stage into `raw/` immutably) and `compile` (LLM reads `raw/`, writes `wiki/concepts/`) — for three reasons:
+
+1. **Multi-topic vaults.** A source may arrive weeks before it has enough companions to compile a rigorous 3000-4000-word article. Staging decouples acquisition from synthesis.
+2. **Batch scraping.** Tools like firecrawl and tweetsmash-api produce clusters of raw material. Staging them first lets the LLM pick the compile order.
+3. **Reproducibility.** `raw/` is immutable — a compiled article can always be re-derived from its sourced files.
+
+The four-phase loop:
 
 ```
     ┌──────────────┐
-    │ 1. INGEST    │  Scrape / curate → raw/
+    │ 1. INGEST    │  Scrape / curate → raw/ (immutable)
     └──────┬───────┘
            │
            v
     ┌──────────────┐
-    │ 2. COMPILE   │  LLM reads raw/, writes wiki/
+    │ 2. COMPILE   │  LLM reads raw/, writes wiki/concepts/
     └──────┬───────┘
            │
            v
     ┌──────────────┐
-    │ 3. QUERY     │  Q&A against wiki, file back → outputs/
+    │ 3. QUERY     │  Q&A against wiki → outputs/queries/, promote strong answers to wiki/
     └──────┬───────┘
            │
            v
@@ -41,7 +51,7 @@ The human contributes judgment, taste, and direction. The LLM contributes exhaus
            └──────→ back to Phase 1
 ```
 
-Each phase enhances the next. The cycle runs continuously — the knowledge base is always growing, always improving.
+Every phase ends with an append to `<topic>/log.md`. Each phase enhances the next. The cycle runs continuously — the knowledge base is always growing, always improving.
 
 ### Phase 1: Ingest
 
@@ -74,7 +84,7 @@ With 1M+ context, load the full wiki (or a relevant subset) and answer complex c
 - "What are the gaps in our coverage of Y?"
 - "Synthesize arguments for and against Z."
 
-**Every answer gets filed back** to `outputs/queries/<YYYY-MM-DD> <slug>.md`. On the next compile pass, insights from filed-back queries get absorbed into the wiki articles themselves. This is the compounding mechanism.
+**Every answer gets filed back** to `outputs/queries/<YYYY-MM-DD> <slug>.md`. On the next compile pass, insights from filed-back queries get absorbed into the wiki articles themselves. When an answer is strong enough to stand as a first-class reference (a comparison table, a concept synthesized from multiple articles, a novel trade-off analysis), **promote it to `wiki/concepts/`** following Procedure 3 standards. Karpathy's pattern treats strong query answers as equal citizens of the wiki, not secondary artifacts. This is the compounding mechanism — explorations become reusable knowledge.
 
 ### Phase 4: Lint and heal
 
@@ -124,6 +134,27 @@ The pattern's trajectory: wiki → synthetic QA pairs → QLoRA fine-tune → do
 
 ## Multi-topic vaults
 
-Each top-level folder at the vault root is a **topic** — a self-contained subject with its own `raw/`, `wiki/`, `outputs/`, `bases/` subtrees. All topics share one Obsidian vault at the root, so cross-topic wikilinks work naturally (e.g., an `ai-harness` article on embeddings can link to a `rust-systems` article on implementation details). Topics stay self-contained in terms of content but contribute to a unified knowledge graph.
+Each top-level folder at the vault root is a **topic** — a self-contained subject with its own `raw/`, `wiki/`, `outputs/`, `bases/` subtrees plus `CLAUDE.md` and `log.md` at the topic root. All topics share one Obsidian vault at the root, so cross-topic wikilinks work naturally (e.g., an `ai-harness` article on embeddings can link to a `rust-systems` article on implementation details). Topics stay self-contained in terms of content but contribute to a unified knowledge graph.
 
-Each topic has its own `CLAUDE.md` capturing topic-specific scope, current articles, and research gaps. The vault-root `CLAUDE.md` captures the shared Karpathy pattern itself.
+Each topic has its own `CLAUDE.md` (symlinked to `AGENTS.md` for Codex parity) capturing topic-specific scope, current articles, and research gaps — **this IS the schema document** in Karpathy's terminology. The vault-root `CLAUDE.md` captures the shared Karpathy pattern itself.
+
+## The log.md audit trail
+
+Every topic carries a `log.md` at its root — an append-only, chronological record of every knowledge-base operation. Each entry is a single H2 heading with a consistent grep-able prefix:
+
+```
+## [YYYY-MM-DD] <op> | <short description>
+```
+
+Ops: `ingest`, `compile`, `query`, `promote`, `split`, `lint`. The consistent prefix means unix tools can query the log without special parsing:
+
+```bash
+grep "^## \[" log.md | tail -10        # recent activity
+grep "compile" log.md | wc -l          # total compiles
+```
+
+The log is distinct from git history. Git records *what changed in the files*; `log.md` records *what the knowledge base did as a system* — decisions made, insights synthesized, gaps identified. Both coexist. The log is the operational memory; git is the version control.
+
+## The wiki is a git repo
+
+The wiki is just a directory of markdown files under git. No database, no server, no API — you get version history, branching, diffs, blame, and collaboration for free. Every compile and lint pass is a reviewable commit. If Obsidian disappears, the files are still markdown. If the LLM changes, the files are still text. This is the no-lock-in guarantee.

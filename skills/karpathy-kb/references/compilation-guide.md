@@ -63,10 +63,54 @@ Do not wikilink every occurrence of common words. Do not wikilink authors or org
 1. Load the current article fully.
 2. Load any new raw sources that have been added since the last compile.
 3. Identify what changed in the sources (new techniques, corrections, new terminology).
-4. Update the article in place, preserving structure where possible.
-5. Bump `updated:` in frontmatter.
-6. Add any new `sources:` entries.
-7. Check that existing wikilinks still resolve; add new ones for newly-introduced concepts.
+4. **Propose each change with a structured diff before writing.** Present to the user:
+
+   > **Current:** `<quote the existing text>`
+   >
+   > **Proposed:** `<replacement text>`
+   >
+   > **Reason:** `<why this change is warranted>`
+   >
+   > **Source:** `<raw/ file path or URL backing the new claim>`
+
+   Always include **Source**. An edit without a source citation creates untraceability — future compile passes won't know why the change was made. Ask for confirmation per page. Do not batch-apply changes.
+
+5. **Run a contradiction sweep.** If the new information contradicts something in the wiki, the contradicted claim may appear in more than one article. Before rewriting, grep every article for the contradicted claim:
+
+   ```bash
+   grep -rln "<contradicted claim or key term>" <topic>/wiki/concepts/
+   ```
+
+   Update all occurrences, not just the most obvious one. Silent contradictions across articles are the worst failure mode of a multi-article wiki.
+
+6. **Check downstream effects.** After identifying the primary article to update, grep for `[[<Article Title>]]` across the topic. For each article that links to the one being updated, ask: *does the update change anything that page asserts?* If yes, flag it explicitly and offer to update it with the same Current/Proposed/Reason/Source flow.
+
+   ```bash
+   grep -rln "\[\[<Article Title>" <topic>/wiki/concepts/
+   ```
+
+7. Update the article in place, preserving structure where possible.
+8. Bump `updated:` in frontmatter.
+9. Add any new `sources:` entries.
+10. Check that existing wikilinks still resolve; add new ones for newly-introduced concepts.
+
+## Backlink audit (compounding bidirectional links)
+
+After writing or renaming any article, run a backlink audit. A compounding wiki depends on bidirectional links — every new article needs incoming links from articles that mention its concepts.
+
+**Process:**
+
+1. Grep the topic's `wiki/concepts/` for mentions of the new article's title, aliases, or core entities:
+
+   ```bash
+   grep -rln "<new article title or key term>" <topic>/wiki/concepts/
+   ```
+
+2. For each match, open the file and decide whether the mention warrants a wikilink. Add `[[New Article]]` at the first occurrence, and optionally at a second occurrence in a later section.
+3. Skip matches that are inside code blocks or already wikilinked.
+4. Skip matches that are incidental (the term appears in a different sense).
+
+This is the step most commonly skipped when authoring articles. A wiki with one-way links is a blog; a wiki with bidirectional links is a knowledge graph.
 
 ## When to split an article
 
