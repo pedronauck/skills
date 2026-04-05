@@ -1,5 +1,5 @@
 ---
-name: organization-best-practices
+name: better-auth-organization-best-practices
 description: Configure multi-tenant organizations, manage members and invitations, define custom roles and permissions, set up teams, and implement RBAC using Better Auth's organization plugin. Use when users need org setup, team management, member roles, access control, or the Better Auth organization plugin.
 ---
 
@@ -57,10 +57,10 @@ Restrict who can create organizations based on user attributes:
 
 ```ts
 organization({
-  allowUserToCreateOrganization: async user => {
+  allowUserToCreateOrganization: async (user) => {
     return user.emailVerified === true;
   },
-  organizationLimit: async user => {
+  organizationLimit: async (user) => {
     // Premium users get more organizations
     return user.plan === "premium" ? 20 : 3;
   },
@@ -160,7 +160,7 @@ import { sendEmail } from "./email";
 export const auth = betterAuth({
   plugins: [
     organization({
-      sendInvitationEmail: async data => {
+      sendInvitationEmail: async (data) => {
         const { email, organization, inviter, invitation } = data;
 
         await sendEmail({
@@ -456,7 +456,7 @@ export const auth = betterAuth({
       // Invitations
       invitationExpiresIn: 60 * 60 * 24 * 7, // 7 days
       invitationLimit: 50,
-      sendInvitationEmail: async data => {
+      sendInvitationEmail: async (data) => {
         await sendEmail({
           to: data.email,
           subject: `Join ${data.organization.name}`,

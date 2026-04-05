@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **142 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **138 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -62,7 +62,6 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[frontend-design](./skills/frontend-design)** — Distinctive, production-grade frontend interfaces with high design quality
 - **[interface-design](./skills/interface-design)** — Interface design for dashboards, admin panels, apps, and tools
 - **[landing-page-design](./skills/landing-page-design)** — High-converting landing pages with AI-generated visuals and conversion optimization
-- **[bencium-innovative-ux-designer](./skills/bencium-innovative-ux-designer)** — Innovative UX design with design system templates, motion specs, and accessibility
 - **[ui-ux-pro-max](./skills/ui-ux-pro-max)** — 50 design styles, 21 palettes, 50 font pairings, and 9 tech stacks for web/mobile
 - **[web-design-guidelines](./skills/web-design-guidelines)** — Review UI code for Web Interface Guidelines compliance
 - **[design-spec-extraction](./skills/design-spec-extraction)** — Extract production-ready JSON design specs from visual inputs using a 7-pass architecture
@@ -73,8 +72,9 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[elysia](./skills/elysia)** — Type-safe APIs with Elysia including routing, validation, plugins, and error handling
 - **[drizzle-orm](./skills/drizzle-orm)** — Drizzle ORM best practices -- schemas, queries, mutations, transactions, migrations
 - **[drizzle-safe-migrations](./skills/drizzle-safe-migrations)** — Production-safe Drizzle migration workflows for schema changes
-- **[postgres-drizzle](./skills/postgres-drizzle)** — PostgreSQL and Drizzle ORM best practices for type-safe database apps
+- **[drizzle-postgres](./skills/drizzle-postgres)** — PostgreSQL and Drizzle ORM best practices for type-safe database apps
 - **[better-auth-best-practices](./skills/better-auth-best-practices)** — Better Auth TypeScript authentication framework integration
+- **[better-auth-organization-best-practices](./skills/better-auth-organization-best-practices)** — Multi-tenant organizations, RBAC, teams, members, and invitations with Better Auth's organization plugin
 - **[inngest](./skills/inngest)** — Serverless background jobs, event-driven workflows, and durable execution
 - **[workflow](./skills/workflow)** — Durable, resumable workflows using Vercel's Workflow DevKit
 
@@ -136,10 +136,8 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 ### AI & Agent Development
 
 - **[ai-sdk](./skills/ai-sdk)** — Vercel AI SDK for building AI-powered features
-- **[agent-identifier](./skills/agent-identifier)** — Agent structure, system prompts, triggering conditions, and development best practices
 - **[mastra](./skills/mastra)** — Mastra framework for building AI agents and workflows
-- **[develop-ai-functions-example](./skills/develop-ai-functions-example)** — Develop examples for AI SDK functions to validate provider support
-- **[skills-best-practices](./skills/skills-best-practices)** — Author professional-grade agent skills following the agentskills.io spec
+- **[skill-best-practices](./skills/skill-best-practices)** — Author professional-grade agent skills following the agentskills.io spec
 - **[autoresearch](./skills/autoresearch)** — Autonomously optimize any skill by running evals, mutating prompts, and keeping improvements
 - **[skill-writter](./skills/skill-writter)** — Guide users through creating Agent Skills for Claude Code
 - **[agent-md-refactor](./skills/agent-md-refactor)** — Refactor bloated AGENTS.md/CLAUDE.md files into organized, linked documentation
@@ -148,7 +146,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[find-skills](./skills/find-skills)** — Discover and install agent skills from the open agent skills ecosystem
 - **[pal](./skills/pal)** — Pal MCP toolkit for code analysis, debugging, planning, refactoring, and tracing
 - **[sourcebot](./skills/sourcebot)** — Search external libraries and frameworks using Sourcebot MCP
-- **[llm-council](./skills/llm-concil)** — Run decisions through 5 independent advisors, anonymous peer review, and a chairman synthesis (Karpathy-style LLM Council)
+- **[council](./skills/council)** — Run decisions through 5 independent advisors, anonymous peer review, and a chairman synthesis (Karpathy-style LLM Council)
 
 ### Testing & Quality
 
@@ -174,9 +172,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 - **[brainstorming](./skills/brainstorming)** — Explore intent, requirements, and design through collaborative dialogue
 - **[creating-spec](./skills/creating-spec)** — Comprehensive technical specs for SDK gaps, features, or system centralization
-- **[deep-research](./skills/deep-research)** — Comprehensive research and analysis using multiple discovery tools
 - **[executing-plans](./skills/executing-plans)** — Execute implementation plans in batches with review checkpoints
-- **[dispatching-parallel-agents](./skills/dispatching-parallel-agents)** — Dispatch independent tasks to parallel agents to avoid bottlenecks
 - **[crafting-effective-readmes](./skills/crafting-effective-readmes)** — Templates and guidance for writing README files matched to audience and project
 - **[requirements-clarity](./skills/requirements-clarity)** — Clarify ambiguous requirements through focused dialogue before implementation
 - **[lesson-learned](./skills/lesson-learned)** — Extract software engineering lessons from git history and recent code changes
@@ -223,6 +219,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[pptx-creator](./skills/pptx-creator)** — Create professional PowerPoint presentations from outlines or data
 - **[ai-pdf-builder](./skills/ai-pdf-builder)** — AI-powered PDF generator for legal docs, pitch decks, and reports
 - **[mermaid-diagrams](./skills/mermaid-diagrams)** — Software diagrams using Mermaid syntax -- class, sequence, flowcharts, ERD, C4
+- **[viz](./skills/viz)** — Four visualization modes in one skill -- Excalidraw diagrams, Swiss Pulse PNG infographics via Gemini, inline Visualizer widgets, and published HeyGenverse apps (select via `mode` argument or trigger keywords)
 
 ### Video & Media
 
@@ -241,7 +238,6 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 ### Architecture & Patterns
 
 - **[app-renderer-systems](./skills/app-renderer-systems)** — Domain feature systems organized under a `systems/` directory
-- **[organization-best-practices](./skills/organization-best-practices)** — Multi-tenant organizations, RBAC, teams, and permissions with Better Auth
 
 ### Utilities
 

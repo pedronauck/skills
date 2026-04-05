@@ -1,5 +1,5 @@
 ---
-name: postgres-drizzle
+name: drizzle-postgres
 description: |
   PostgreSQL and Drizzle ORM best practices. Triggers on: PostgreSQL, Postgres, Drizzle, database,
   schema, tables, columns, indexes, queries, migrations, ORM, relations, joins, transactions, SQL,
@@ -95,9 +95,9 @@ export const posts = pgTable(
       .references(() => users.id),
     title: varchar("title", { length: 255 }).notNull(),
   },
-  table => [
+  (table) => [
     index("posts_user_id_idx").on(table.userId), // ALWAYS index FKs
-  ]
+  ],
 );
 ```
 
@@ -127,13 +127,16 @@ const usersWithPosts = await db.query.users.findMany({
 ### Filtered Query
 
 ```typescript
-const activeUsers = await db.select().from(users).where(eq(users.status, "active"));
+const activeUsers = await db
+  .select()
+  .from(users)
+  .where(eq(users.status, "active"));
 ```
 
 ### Transaction
 
 ```typescript
-await db.transaction(async tx => {
+await db.transaction(async (tx) => {
   const [user] = await tx.insert(users).values({ email }).returning();
   await tx.insert(profiles).values({ userId: user.id });
 });
