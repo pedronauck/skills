@@ -140,7 +140,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[mastra](./skills/mastra)** — Mastra framework for building AI agents and workflows
 - **[develop-ai-functions-example](./skills/develop-ai-functions-example)** — Develop examples for AI SDK functions to validate provider support
 - **[skills-best-practices](./skills/skills-best-practices)** — Author professional-grade agent skills following the agentskills.io spec
-- **[autoresearch](./skills/autoresearch-skill-main)** — Autonomously optimize any skill by running evals, mutating prompts, and keeping improvements
+- **[autoresearch](./skills/autoresearch)** — Autonomously optimize any skill by running evals, mutating prompts, and keeping improvements
 - **[skill-writter](./skills/skill-writter)** — Guide users through creating Agent Skills for Claude Code
 - **[agent-md-refactor](./skills/agent-md-refactor)** — Refactor bloated AGENTS.md/CLAUDE.md files into organized, linked documentation
 - **[nano-banana-pro](./skills/nano-banana-pro)** — Generate or edit images via Gemini 3 Pro Image (Nano Banana Pro)

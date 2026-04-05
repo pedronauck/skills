@@ -65,6 +65,7 @@ Fail condition: [What triggers a "no"]
 ```
 
 **Rules for good evals:**
+
 - Binary only. Yes or no. No "rate 1-7" scales. Scales compound variability and give unreliable results.
 - Specific enough to be consistent. "Is the text readable?" is too vague. "Are all words spelled correctly with no truncated sentences?" is testable.
 - Not so narrow that the skill games the eval. "Contains fewer than 200 words" will make the skill optimize for brevity at the expense of everything else.
@@ -73,6 +74,7 @@ Fail condition: [What triggers a "no"]
 See [references/eval-guide.md](references/eval-guide.md) for detailed examples of good vs bad evals.
 
 **Max score calculation:**
+
 ```
 max_score = [number of evals] × [runs per experiment]
 ```
@@ -86,6 +88,7 @@ Example: 4 evals × 5 runs = max score of 20.
 Before running any experiments, create a live HTML dashboard at `autoresearch-[skill-name]/dashboard.html` and open it in the browser.
 
 The dashboard must:
+
 - Auto-refresh every 10 seconds (reads from results.tsv)
 - Show a score progression line chart (experiment number on X axis, pass rate % on Y axis)
 - Show a colored bar for each experiment: green = keep, red = discard, blue = baseline
@@ -118,8 +121,8 @@ Generate the dashboard as a single self-contained HTML file with inline CSS and 
     }
   ],
   "eval_breakdown": [
-    {"name": "Text legibility", "pass_count": 8, "total": 10},
-    {"name": "Pastel colors", "pass_count": 9, "total": 10}
+    { "name": "Text legibility", "pass_count": 8, "total": 10 },
+    { "name": "Pastel colors", "pass_count": 9, "total": 10 }
   ]
 }
 ```
@@ -191,6 +194,7 @@ This is the core autoresearch loop. Once started, run autonomously until stopped
 8. **Repeat.** Go back to step 1 of the loop.
 
 **NEVER STOP.** Once the loop starts, do not pause to ask the user if you should continue. They may be away from the computer. Run autonomously until:
+
 - The user manually stops you
 - You hit the budget cap (if one was set)
 - You hit 95%+ pass rate for 3 consecutive experiments (diminishing returns)
@@ -263,6 +267,7 @@ experiment	score	max_score	pass_rate	status	description
 ## example: optimizing a diagram-generator skill
 
 **Context gathered:**
+
 - Target skill: `~/.claude/skills/diagram-generator/SKILL.md`
 - Test inputs: "OAuth flow diagram", "CI/CD pipeline", "microservices architecture", "user onboarding funnel", "database schema relationships"
 - Evals: (1) All text legible and spelled correctly? (2) Uses only pastel/soft colors? (3) Linear layout — left-to-right or top-to-bottom? (4) Free of numbers, ordinals, and ordering?
@@ -294,6 +299,7 @@ Change: Added a worked example showing a correct diagram with properly formatted
 Result: Hit 39/40. One remaining failure: a complex diagram with overlapping labels. Diminishing returns — stopped.
 
 **Final delivery:**
+
 - Baseline: 32/40 (80%) → Final: 39/40 (97.5%)
 - 5 experiments, 3 kept, 2 discarded
 - Top changes: specific hex codes for colors, explicit anti-numbering rule, worked example
@@ -304,10 +310,12 @@ Result: Hit 39/40. One remaining failure: a complex diagram with overlapping lab
 ## how this connects to other skills
 
 **What feeds into autoresearch:**
+
 - Any existing skill that needs optimization
 - User-defined eval criteria (or help them define evals using the eval guide)
 
 **What autoresearch feeds into:**
+
 - The improved skill replaces the original
 - The changelog can be passed to future models for continued optimization
 - The eval suite can be reused whenever the skill is updated
