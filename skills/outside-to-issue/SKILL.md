@@ -99,5 +99,5 @@ Transformation complete! Created issues starting from 26
 ## Related Commands
 
 - `read_pr_issues.sh` - Read and display PR review issues
-- `resolve_pr_issues.sh` - Mark issues as resolved and update GitHub threads
+- `resolve_pr_issues.py` - Mark issues as resolved and update GitHub threads
 - `pr-fix` command - Fix issues for a given PR
