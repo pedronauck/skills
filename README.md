@@ -189,7 +189,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 ### Knowledge Management & Notes
 
-- **[karpathy-kb](./skills/karpathy-kb)** — Karpathy-style self-compiling Obsidian knowledge bases with ingest → compile → query → lint pipeline
+- **karpathy-kb** — *Migrated to [kodebase-go/skills/kb](https://github.com/pedronauck/kodebase-go/tree/main/skills/kb). Unified with the `kb` CLI skill for the full KB lifecycle: topic scaffolding, ingestion, compilation, querying, linting, codebase inspection, indexing, and search.*
 - **[obsidian-cli](./skills/obsidian-cli)** — Interact with Obsidian vaults via CLI -- read, create, search, manage notes, and develop plugins
 - **[obsidian-markdown](./skills/obsidian-markdown)** — Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and tags
 - **[obsidian-bases](./skills/obsidian-bases)** — Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries
