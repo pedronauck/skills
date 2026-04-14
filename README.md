@@ -154,6 +154,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[a11y-testing](./skills/a11y-testing)** — Automated accessibility testing with axe-core, Playwright, and jest-axe
 - **[test-antipatterns](./skills/test-antipatterns)** — Prevent common testing anti-patterns like testing mock behavior
 - **[qa-test-planner](./skills/qa-test-planner)** — Generate test plans, manual test cases, regression suites, and bug reports
+- **[systematic-qa](./skills/systematic-qa)** — Discover the repo verification contract, run build/lint/test/start gates, exercise user-like end-to-end workflows, fix regressions at the root cause, and re-verify the full gate
 - **[verification-before-completion](./skills/verification-before-completion)** — Run verification commands and confirm output before claiming success
 - **[adversarial-review](./skills/adversarial-review)** — Spawn opposing AI model reviewers to adversarially challenge work
 
