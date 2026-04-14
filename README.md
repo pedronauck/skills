@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **139 agent skills** for Claude Code and compatible AI coding assistants — **75 original** (⭐️) plus **64 community** skills from the ecosystem. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **140 agent skills** for Claude Code and compatible AI coding assistants — **75 original** (⭐️) plus **65 community** skills from the ecosystem. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -222,6 +222,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[pitch-gen](./skills/pitch-gen)** ⭐️ — Generate startup pitch deck content with AI
 - **[pptx-creator](./skills/pptx-creator)** ⭐️ — Create professional PowerPoint presentations from outlines or data
 - **[ai-pdf-builder](./skills/ai-pdf-builder)** ⭐️ — AI-powered PDF generator for legal docs, pitch decks, and reports
+- **[architecture-diagram](./skills/architecture-diagram)** — Professional dark-themed system architecture diagrams as standalone HTML/SVG files
 - **[mermaid-diagrams](./skills/mermaid-diagrams)** ⭐️ — Software diagrams using Mermaid syntax -- class, sequence, flowcharts, ERD, C4
 - **[viz](./skills/viz)** ⭐️ — Four visualization modes in one skill -- Excalidraw diagrams, Swiss Pulse PNG infographics via Gemini, inline Visualizer widgets, and published HeyGenverse apps (select via `mode` argument or trigger keywords)
 
