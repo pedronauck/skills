@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Bug Report Generator
-# Create structured, reproducible bug reports
+# Create structured, reproducible bug reports using the unified issue template
+# Usage: ./create_bug_report.sh [qa-output-path/issues]
 
 set -e
 
@@ -19,15 +20,19 @@ echo -e "${RED}║           Bug Report Generator                   ║${NC}"
 echo -e "${RED}╚══════════════════════════════════════════════════╝${NC}"
 echo ""
 
+# Resolve output directory
+OUTPUT_DIR="${1:-.}"
+mkdir -p "$OUTPUT_DIR"
+
 prompt_input() {
     local prompt_text="$1"
     local var_name="$2"
     local required="$3"
-    
+
     while true; do
         echo -e "${CYAN}${prompt_text}${NC}"
         read -r input
-        
+
         if [ -n "$input" ]; then
             eval "$var_name=\"$input\""
             break
@@ -46,11 +51,11 @@ echo -e "${YELLOW}Auto-generated Bug ID: $BUG_ID${NC}"
 echo ""
 
 # Basic Info
-prompt_input "Bug title (clear, specific):" BUG_TITLE true
+prompt_input "Bug title (clear, specific — e.g., '[Login] Password reset email not sent'):" BUG_TITLE true
 
 echo ""
 echo "Severity:"
-echo "1) Critical - System crash, data loss, security issue"
+echo "1) Critical - System crash, data loss, security breach"
 echo "2) High - Major feature broken, no workaround"
 echo "3) Medium - Feature partially broken, workaround exists"
 echo "4) Low - Cosmetic, minor inconvenience"
@@ -84,15 +89,36 @@ case $PRIORITY_NUM in
     *) PRIORITY="P2" ;;
 esac
 
+echo ""
+echo "Bug type:"
+echo "1) Functional"
+echo "2) UI"
+echo "3) Performance"
+echo "4) Security"
+echo "5) Data"
+echo "6) Crash"
+echo ""
+
+prompt_input "Select type (1-6):" TYPE_NUM true
+
+case $TYPE_NUM in
+    1) BUG_TYPE="Functional" ;;
+    2) BUG_TYPE="UI" ;;
+    3) BUG_TYPE="Performance" ;;
+    4) BUG_TYPE="Security" ;;
+    5) BUG_TYPE="Data" ;;
+    6) BUG_TYPE="Crash" ;;
+    *) BUG_TYPE="Functional" ;;
+esac
+
 # Environment
 echo ""
 echo -e "${MAGENTA}━━━ Environment Details ━━━${NC}"
 echo ""
 
-prompt_input "Operating System (e.g., Windows 11, macOS 14):" OS true
-prompt_input "Browser & Version (e.g., Chrome 120, Firefox 121):" BROWSER true
-prompt_input "Device (e.g., Desktop, iPhone 15):" DEVICE false
-prompt_input "Build/Version number:" BUILD true
+prompt_input "Build/Version (e.g., v2.5.0 or commit hash):" BUILD true
+prompt_input "Operating System (e.g., macOS 14, Ubuntu 22.04):" OS false
+prompt_input "Browser & Version (e.g., Chrome 120) — skip if not Web UI:" BROWSER false
 prompt_input "URL or page where bug occurs:" URL false
 
 # Bug Description
@@ -124,26 +150,24 @@ echo ""
 prompt_input "Expected behavior:" EXPECTED true
 prompt_input "Actual behavior:" ACTUAL true
 
-# Additional Info
+# Impact
 echo ""
-echo -e "${MAGENTA}━━━ Additional Information ━━━${NC}"
+echo -e "${MAGENTA}━━━ Impact ━━━${NC}"
 echo ""
 
-prompt_input "Console errors (paste if any):" CONSOLE_ERRORS false
-prompt_input "Frequency (Always/Sometimes/Rare):" FREQUENCY false
-prompt_input "How many users affected (estimate):" USER_IMPACT false
+prompt_input "Frequency (Always/Sometimes/Rarely):" FREQUENCY false
+prompt_input "Users affected (all/subset/specific role):" USER_IMPACT false
 prompt_input "Workaround available? (describe if yes):" WORKAROUND false
-prompt_input "Related test case ID:" TEST_CASE false
+
+# Related
+echo ""
+echo -e "${MAGENTA}━━━ Related Items ━━━${NC}"
+echo ""
+
+prompt_input "Related test case ID (e.g., TC-FUNC-001):" TEST_CASE false
 prompt_input "Figma design link (if UI bug):" FIGMA_LINK false
-prompt_input "First noticed (date/build):" FIRST_NOTICED false
 
 FILENAME="${BUG_ID}.md"
-
-OUTPUT_DIR="."
-if [ ! -z "$1" ]; then
-    OUTPUT_DIR="$1"
-fi
-
 OUTPUT_FILE="$OUTPUT_DIR/$FILENAME"
 
 echo ""
@@ -155,122 +179,59 @@ cat > "$OUTPUT_FILE" << EOF
 
 **Severity:** ${SEVERITY}
 **Priority:** ${PRIORITY}
-**Type:** ${TEST_TYPE:-Functional}
+**Type:** ${BUG_TYPE}
 **Status:** Open
-**Reported:** $(date +%Y-%m-%d)
-**Reporter:** [Your Name]
-
----
 
 ## Environment
 
-- **OS:** ${OS}
-- **Browser:** ${BROWSER}
-- **Device:** ${DEVICE:-Desktop}
 - **Build:** ${BUILD}
+- **OS:** ${OS:-N/A}
+- **Browser:** ${BROWSER:-N/A}
 - **URL:** ${URL:-N/A}
 
----
-
-## Description
+## Summary
 
 ${DESCRIPTION}
 
----
+## Reproduction
 
-## Steps to Reproduce
-
+\`\`\`bash
 ${REPRO_STEPS}
+\`\`\`
 
----
+Observed:
 
-## Expected Behavior
+- ${ACTUAL}
+
+## Expected
 
 ${EXPECTED}
 
----
+## Root cause
 
-## Actual Behavior
-
-${ACTUAL}
-
----
-
-## Visual Evidence
-
-- [ ] Screenshot attached
-- [ ] Screen recording attached
-- [ ] Console logs attached
-
-**Console Errors:**
-\`\`\`
-${CONSOLE_ERRORS:-None}
-\`\`\`
-
----
-
-## Impact
-
-- **Frequency:** ${FREQUENCY:-Unknown}
-- **User Impact:** ${USER_IMPACT:-Unknown}
-- **Workaround:** ${WORKAROUND:-None available}
-
----
-
-## Additional Context
-
-${FIGMA_LINK:+**Figma Design:** ${FIGMA_LINK}}
-
-${TEST_CASE:+**Related Test Case:** ${TEST_CASE}}
-
-${FIRST_NOTICED:+**First Noticed:** ${FIRST_NOTICED}}
-
-**Is this a regression?** [Yes/No - if yes, since when]
-
----
-
-## Root Cause
-
-[To be filled by developer]
-
----
+[To be filled after investigation]
 
 ## Fix
 
-[To be filled by developer]
-
----
+[To be filled after fix is applied]
 
 ## Verification
 
-- [ ] Bug fix verified in dev environment
-- [ ] Regression testing completed
-- [ ] Related test cases passing
-- [ ] Ready for release
+- [ ] Narrow reproduction rerun
+- [ ] Broader regression or full gate rerun
 
-**Verified By:** ___________
-**Date:** ___________
+## Impact
 
----
+- **Users Affected:** ${USER_IMPACT:-Unknown}
+- **Frequency:** ${FREQUENCY:-Unknown}
+- **Workaround:** ${WORKAROUND:-None}
 
-## Comments
+## Related
 
-[Discussion and updates]
-
+${TEST_CASE:+- Test Case: ${TEST_CASE}}
+${FIGMA_LINK:+- Figma Design: ${FIGMA_LINK}}
+${TEST_CASE:+}${FIGMA_LINK:+}
 EOF
 
-echo -e "${GREEN}✅ Bug report generated successfully!${NC}"
-echo ""
-echo -e "File location: ${BLUE}$OUTPUT_FILE${NC}"
-echo ""
-echo -e "${RED}⚠️  IMPORTANT NEXT STEPS:${NC}"
-echo "1. Attach screenshots/screen recordings"
-echo "2. Add console errors if available"
-echo "3. Verify reproduction steps work"
-echo "4. Submit to bug tracking system"
-if [ -n "$FIGMA_LINK" ]; then
-    echo "5. Verify against Figma design"
-fi
-echo ""
-echo -e "${CYAN}Tip: Clear, reproducible steps = faster fixes${NC}"
-echo ""
+echo -e "${GREEN}Bug report generated: ${BLUE}$OUTPUT_FILE${NC}" >&2
+echo "$OUTPUT_FILE"

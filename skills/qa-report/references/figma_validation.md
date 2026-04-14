@@ -1,6 +1,6 @@
 # Figma Design Validation with MCP
 
-Guide for validating UI implementation against Figma designs using Figma MCP.
+Guide for validating UI implementation against Figma designs using Figma MCP. When executing validations in a live browser, use the `agent-browser` CLI from the `qa-execution` companion skill.
 
 ---
 
@@ -10,6 +10,10 @@ Guide for validating UI implementation against Figma designs using Figma MCP.
 - Figma MCP server configured
 - Access to Figma design files
 - Figma URLs for components/pages
+
+**For browser-based validation (optional):**
+- `agent-browser` CLI installed (from `qa-execution` companion skill)
+- Dev server running
 
 **Setup:**
 ```bash
@@ -167,12 +171,16 @@ Bugs: BUG-234, BUG-235
 
 ## Test Case Template
 
+Use the standard viewports shared with `qa-execution`: 375px (mobile), 768px (tablet), 1280px (desktop).
+
 ```markdown
 ## TC-UI-XXX: [Component] Visual Validation
 
+**Priority:** P0 | P1 | P2 | P3
 **Figma Design:** [URL to specific component]
+**Status:** Not Run
 
-### Desktop (1920x1080)
+### Desktop (1280px)
 
 **Layout:**
 - [ ] Width: XXXpx
@@ -205,7 +213,7 @@ Bugs: BUG-234, BUG-235
 
 ### Status
 - [ ] PASS - All match
-- [ ] FAIL - Discrepancies found
+- [ ] FAIL - Discrepancies found (file BUG-* in issues/)
 - [ ] BLOCKED - Design incomplete
 ```
 
@@ -244,35 +252,54 @@ Bugs: BUG-234, BUG-235
 
 ## Bug Report for UI Discrepancies
 
+Use the unified bug report format from `assets/issue-template.md` (shared with `qa-execution`). Store bug files in `<qa-output-path>/issues/`.
+
 ```markdown
-# BUG-XXX: [Component] doesn't match Figma design
+# BUG-001: [Component] doesn't match Figma design
 
-**Severity:** Medium (UI)
-**Type:** Visual
+**Severity:** Medium
+**Priority:** P2
+**Type:** UI
+**Status:** Open
 
-## Design vs Implementation
+## Environment
+- **Build:** v2.5.0
+- **Browser:** Chrome 120
+- **URL:** /components/button
 
-**Figma Design:** [URL]
+## Summary
+Primary button background color and font weight do not match Figma design.
 
-**Expected (from Figma):**
-- Button background: #0066FF
-- Font weight: 600 (Semi-bold)
-- Padding: 12px 24px
+## Reproduction
+1. Navigate to /components/button
+2. Inspect primary button with DevTools
+3. Compare computed styles against Figma specs
 
-**Actual (in implementation):**
-- Button background: #0052CC ❌
-- Font weight: 400 (Regular) ❌
-- Padding: 12px 24px ✓
+Observed:
+- Background: #0052CC (expected #0066FF)
+- Font weight: 400 (expected 600)
 
-## Screenshots
+## Expected
+Button matches Figma design specs exactly.
 
-- Figma design: [attach]
-- Current implementation: [attach]
-- Side-by-side comparison: [attach]
+## Root cause
+[To be filled after investigation]
+
+## Fix
+[To be filled after fix is applied]
+
+## Verification
+- [ ] Visual comparison with Figma after fix
+- [ ] Check at viewports: 375px, 768px, 1280px
 
 ## Impact
+- **Users Affected:** All
+- **Frequency:** Always
+- **Workaround:** None
 
-Users see inconsistent branding. Button appears less prominent than designed.
+## Related
+- Test Case: TC-UI-001
+- Figma Design: [URL to specific component]
 ```
 
 ---

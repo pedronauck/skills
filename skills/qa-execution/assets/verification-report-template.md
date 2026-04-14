@@ -21,3 +21,24 @@ Flow details:
 Viewports tested: <list of viewports or "default only">
 Authentication: <method used or "not required">
 Blocked flows: <none or list with reason>
+
+TEST CASE COVERAGE (when qa-report artifacts exist)
+----------------------------------------------------------
+Test cases found: <number of TC-*.md files in qa-output-path/test-cases/>
+Executed: <number exercised during this QA run>
+Results:
+  - <TC-ID>: PASS or FAIL | Bug: <BUG-ID or "none">
+  - <TC-ID>: PASS or FAIL | Bug: <BUG-ID or "none">
+  - <TC-ID>: BLOCKED | Reason: <why>
+Not executed: <list of TC-IDs skipped with reason, or "none">
+
+ISSUES FILED
+-------------
+Total: <number of BUG-*.md files created in qa-output-path/issues/>
+By severity:
+  - Critical: <count>
+  - High: <count>
+  - Medium: <count>
+  - Low: <count>
+Details:
+  - <BUG-ID>: <short-title> | Severity: <level> | Priority: <P0-P3> | Status: <Open or Fixed>

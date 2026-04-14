@@ -1,6 +1,6 @@
 ---
-name: systematic-qa
-description: Executes full-project QA like a real user by discovering the repository verification contract, running build, lint, test, and startup commands, exercising core workflows end-to-end through CLI, HTTP, and browser interfaces, creating realistic fixtures when needed, fixing root-cause regressions, and rerunning the full gate. Uses the agent-browser companion skill for Web UI validation when a web surface exists. Use when validating a branch, release candidate, migration, refactor, or risky commit. Do not use for static code review only, one-off unit test edits, or architecture brainstorming without execution.
+name: qa-execution
+description: Executes full-project QA like a real user by discovering the repository verification contract, running build, lint, test, and startup commands, exercising core workflows end-to-end through CLI, HTTP, and browser interfaces, creating realistic fixtures when needed, fixing root-cause regressions, and rerunning the full gate. Uses the agent-browser companion skill for Web UI validation when a web surface exists. Use when validating a branch, release candidate, migration, refactor, or risky commit. Do not use for static code review only, one-off unit test edits, planning test cases, or architecture brainstorming without execution — use qa-report for planning and documentation.
 argument-hint: "[qa-output-path]"
 ---
 
@@ -24,12 +24,13 @@ argument-hint: "[qa-output-path]"
 
 **Step 2: Define the QA Scope**
 
-1. Build a short execution matrix covering baseline verification, changed workflows, and unchanged business-critical workflows.
-2. Read `references/checklist.md` and ensure every required category has a planned validation.
-3. Prefer public entry points such as CLI commands, HTTP endpoints, browser flows, worker jobs, and documented setup commands over internal test helpers.
-4. When a Web UI surface exists, read `references/web-ui-qa.md` and select 3-5 critical user flows to exercise through the browser. Prioritize flows that cover the changed surface and the most business-critical paths.
-5. Create the smallest realistic fixture or fake project needed to exercise the workflow when the repository does not already include one.
-6. Treat mocks as a local unit-test boundary only. Do not use mocks or stubs as final proof that a user flow works.
+1. Check whether `<qa-output-path>/test-cases/` and `<qa-output-path>/test-plans/` contain artifacts from a prior `qa-report` run. If they exist, read the test plans and test case IDs to seed the execution matrix and prioritize P0/P1 test cases.
+2. Build a short execution matrix covering baseline verification, changed workflows, and unchanged business-critical workflows.
+3. Read `references/checklist.md` and ensure every required category has a planned validation.
+4. Prefer public entry points such as CLI commands, HTTP endpoints, browser flows, worker jobs, and documented setup commands over internal test helpers.
+5. When a Web UI surface exists, read `references/web-ui-qa.md` and select 3-5 critical user flows to exercise through the browser. Prioritize flows that cover the changed surface and the most business-critical paths.
+6. Create the smallest realistic fixture or fake project needed to exercise the workflow when the repository does not already include one.
+7. Treat mocks as a local unit-test boundary only. Do not use mocks or stubs as final proof that a user flow works.
 
 **Step 3: Establish the Baseline**
 
@@ -74,7 +75,7 @@ Skip this step if the project has no Web UI surface.
 4. Fix production code or real configuration at the source of the failure. Do not weaken tests to match broken behavior.
 5. Re-run the narrow reproduction, the impacted scenario, and the baseline gate after each fix.
 6. For Web UI regressions, reproduce the visual failure with `agent-browser`, capture before/after screenshots under `<qa-output-path>/screenshots/`, and verify the fix through the same browser flow.
-7. Use `assets/issue-template.md` to write issue files under `<qa-output-path>/issues/`. Create the subdirectory if it does not exist.
+7. Use `assets/issue-template.md` to write issue files under `<qa-output-path>/issues/`. Create the subdirectory if it does not exist. Name each file using the `BUG-<num>.md` convention (e.g., `BUG-001.md`). Assign Severity (Critical/High/Medium/Low) and Priority (P0-P3) to every issue. When an issue was discovered while executing a test case from `qa-report`, include the TC-ID in the Related section.
 
 **Step 7: Verify the Final State**
 

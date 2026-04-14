@@ -2,6 +2,7 @@
 
 # Manual Test Case Generator
 # Interactive workflow for creating comprehensive test cases
+# Usage: ./generate_test_cases.sh [qa-output-path/test-cases]
 
 set -e
 
@@ -19,16 +20,20 @@ echo -e "${BLUE}║       Manual Test Case Generator                 ║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════════════╝${NC}"
 echo ""
 
+# Resolve output directory
+OUTPUT_DIR="${1:-.}"
+mkdir -p "$OUTPUT_DIR"
+
 # Helper functions
 prompt_input() {
     local prompt_text="$1"
     local var_name="$2"
     local required="$3"
-    
+
     while true; do
         echo -e "${CYAN}${prompt_text}${NC}"
         read -r input
-        
+
         if [ -n "$input" ]; then
             eval "$var_name=\"$input\""
             break
@@ -45,7 +50,7 @@ prompt_input() {
 echo -e "${MAGENTA}━━━ Step 1: Test Case Basics ━━━${NC}"
 echo ""
 
-prompt_input "Test Case ID (e.g., TC-LOGIN-001):" TC_ID true
+prompt_input "Test Case ID (e.g., TC-FUNC-001, TC-UI-045):" TC_ID true
 prompt_input "Test Case Title:" TC_TITLE true
 
 echo ""
@@ -128,13 +133,13 @@ STEP_NUM=1
 while true; do
     echo -e "${YELLOW}Step $STEP_NUM:${NC}"
     prompt_input "Action:" ACTION false
-    
+
     if [ "$ACTION" = "done" ] || [ -z "$ACTION" ]; then
         break
     fi
-    
+
     prompt_input "Expected result:" EXPECTED true
-    
+
     TEST_STEPS="${TEST_STEPS}${STEP_NUM}. ${ACTION}\n   **Expected:** ${EXPECTED}\n\n"
     ((STEP_NUM++))
 done
@@ -151,7 +156,7 @@ echo ""
 if [ "$TEST_TYPE" = "UI/Visual" ]; then
     echo -e "${MAGENTA}━━━ Step 6: Figma Design Validation ━━━${NC}"
     echo ""
-    
+
     prompt_input "Figma design URL (if applicable):" FIGMA_URL false
     prompt_input "Visual elements to validate:" VISUAL_CHECKS false
 fi
@@ -167,12 +172,7 @@ prompt_input "Notes or comments:" NOTES false
 
 # Generate filename
 FILENAME="${TC_ID}.md"
-FILENAME="${FILENAME//[^a-zA-Z0-9_-]/}"
-
-OUTPUT_DIR="."
-if [ ! -z "$1" ]; then
-    OUTPUT_DIR="$1"
-fi
+FILENAME="${FILENAME//[^a-zA-Z0-9._-]/}"
 
 OUTPUT_FILE="$OUTPUT_DIR/$FILENAME"
 
@@ -230,7 +230,7 @@ if [ "$TEST_TYPE" = "UI/Visual" ] && [ -n "$FIGMA_URL" ]; then
 **Elements to validate:**
 ${VISUAL_CHECKS}
 
-**Verification checklist:**
+**Verification checklist (viewports: 375px, 768px, 1280px):**
 - [ ] Layout matches Figma design
 - [ ] Spacing (padding/margins) accurate
 - [ ] Typography (font, size, weight, color) correct
@@ -265,9 +265,9 @@ ${RELATED_TCS:-None}
 
 ## Execution History
 
-| Date | Tester | Build | Result | Notes |
-|------|--------|-------|--------|-------|
-| | | | Not Run | |
+| Date | Tester | Build | Result | Bug ID | Notes |
+|------|--------|-------|--------|--------|-------|
+| | | | Not Run | | |
 
 ---
 
@@ -275,28 +275,7 @@ ${RELATED_TCS:-None}
 
 ${NOTES}
 
----
-
-## Attachments
-
-- [ ] Screenshots
-- [ ] Screen recordings
-- [ ] Console logs
-- [ ] Network traces
-
 EOF
 
-echo -e "${GREEN}✅ Test case generated successfully!${NC}"
-echo ""
-echo -e "File location: ${BLUE}$OUTPUT_FILE${NC}"
-echo ""
-echo -e "${YELLOW}Next steps:${NC}"
-echo "1. Review test case for completeness"
-echo "2. Add to test suite"
-echo "3. Execute test and update results"
-if [ "$TEST_TYPE" = "UI/Visual" ] && [ -n "$FIGMA_URL" ]; then
-    echo "4. Validate against Figma design using MCP"
-fi
-echo ""
-echo -e "${CYAN}Tip: Create multiple test cases for comprehensive coverage${NC}"
-echo ""
+echo -e "${GREEN}Test case generated: ${BLUE}$OUTPUT_FILE${NC}" >&2
+echo "$OUTPUT_FILE"

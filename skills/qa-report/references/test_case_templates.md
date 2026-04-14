@@ -203,7 +203,9 @@ Verify [component] matches Figma design specifications
 
 ### Responsive Checks
 
-**Desktop (1920px):**
+Standard viewports shared with `qa-execution`:
+
+**Desktop (1280px):**
 - [ ] Layout correct
 - [ ] All elements visible
 
