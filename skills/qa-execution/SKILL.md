@@ -20,11 +20,11 @@ argument-hint: "[qa-output-path]"
 4. Read `references/project-signals.md` when command ownership is ambiguous or when multiple ecosystems are present.
 5. Identify the changed surface and the regression-critical surface before choosing scenarios.
 6. Determine whether the project has a Web UI surface. Indicators include: a `start` or `dev` command that launches a web server, framework config files (`next.config.*`, `vite.config.*`, `nuxt.config.*`, `angular.json`, `svelte.config.*`), or HTML/template entry points. Record the dev server URL (default `http://localhost:3000` unless the project specifies otherwise).
-7. Resolve the QA artifact directory. If the user provided a `qa-output-path` argument, use that path. Otherwise, use repository conventions. If neither exists, fall back to `/tmp/codex-qa-<slug>`. Create the directory if it does not exist. Store all issues, screenshots, and verification reports under this path.
+7. Resolve the QA artifact directory. If the user provided a `qa-output-path` argument, use that path. Otherwise, use repository conventions. If neither exists, fall back to `/tmp/codex-qa-<slug>`. Create the `qa/` subdirectory under the resolved path if it does not exist. Store all issues, screenshots, and verification reports under `<qa-output-path>/qa/`.
 
 **Step 2: Define the QA Scope**
 
-1. Check whether `<qa-output-path>/test-cases/` and `<qa-output-path>/test-plans/` contain artifacts from a prior `qa-report` run. If they exist, read the test plans and test case IDs to seed the execution matrix and prioritize P0/P1 test cases.
+1. Check whether `<qa-output-path>/qa/test-cases/` and `<qa-output-path>/qa/test-plans/` contain artifacts from a prior `qa-report` run. If they exist, read the test plans and test case IDs to seed the execution matrix and prioritize P0/P1 test cases.
 2. Build a short execution matrix covering baseline verification, changed workflows, and unchanged business-critical workflows.
 3. Read `references/checklist.md` and ensure every required category has a planned validation.
 4. Prefer public entry points such as CLI commands, HTTP endpoints, browser flows, worker jobs, and documented setup commands over internal test helpers.
@@ -60,7 +60,7 @@ Skip this step if the project has no Web UI surface.
    c. Execute the planned interactions using refs: `agent-browser click @e1`, `agent-browser fill @e2 "text"`, etc.
    d. Re-snapshot after every navigation or significant DOM change. Refs become stale after page transitions.
    e. Verify the expected outcome by checking element text, page URL, or visible state via snapshot output.
-   f. Capture screenshot evidence: `agent-browser screenshot <qa-output-path>/screenshots/<flow-name>.png`.
+   f. Capture screenshot evidence: `agent-browser screenshot <qa-output-path>/qa/screenshots/<flow-name>.png`.
 4. Test critical form flows: fill valid data and verify success, fill invalid data and verify error messages appear.
 5. When the changed surface includes responsive behavior, test at multiple viewports. Read the viewport testing section of `references/web-ui-qa.md` for session setup.
 6. Verify navigation flows: page transitions, back/forward, deep links, and 404 handling.
@@ -74,15 +74,15 @@ Skip this step if the project has no Web UI surface.
 3. Add or update the narrowest regression test that proves the bug when the repository supports automated coverage for that surface.
 4. Fix production code or real configuration at the source of the failure. Do not weaken tests to match broken behavior.
 5. Re-run the narrow reproduction, the impacted scenario, and the baseline gate after each fix.
-6. For Web UI regressions, reproduce the visual failure with `agent-browser`, capture before/after screenshots under `<qa-output-path>/screenshots/`, and verify the fix through the same browser flow.
-7. Use `assets/issue-template.md` to write issue files under `<qa-output-path>/issues/`. Create the subdirectory if it does not exist. Name each file using the `BUG-<num>.md` convention (e.g., `BUG-001.md`). Assign Severity (Critical/High/Medium/Low) and Priority (P0-P3) to every issue. When an issue was discovered while executing a test case from `qa-report`, include the TC-ID in the Related section.
+6. For Web UI regressions, reproduce the visual failure with `agent-browser`, capture before/after screenshots under `<qa-output-path>/qa/screenshots/`, and verify the fix through the same browser flow.
+7. Use `assets/issue-template.md` to write issue files under `<qa-output-path>/qa/issues/`. Create the subdirectory if it does not exist. Name each file using the `BUG-<num>.md` convention (e.g., `BUG-001.md`). Assign Severity (Critical/High/Medium/Low) and Priority (P0-P3) to every issue. When an issue was discovered while executing a test case from `qa-report`, include the TC-ID in the Related section.
 
 **Step 7: Verify the Final State**
 
 1. Re-run the full repository verification gate from scratch after the last code change.
 2. Re-run the most important CLI and API scenarios after the full gate passes.
 3. When Web UI flows were tested, re-run the critical browser flows and capture final screenshot evidence.
-4. Summarize the evidence using `assets/verification-report-template.md` and write the report to `<qa-output-path>/verification-report.md`. The report must include these mandatory fields: Claim, Command, Executed timestamp, Exit code, Output summary, Warnings, Errors, Verdict (PASS or FAIL). When Web UI flows were tested, append a Browser Evidence section with: Dev server URL, Flows tested count, per-flow entry (name, entry URL, final URL, verdict, screenshot path), Viewports tested, Authentication method, and Blocked flows.
+4. Summarize the evidence using `assets/verification-report-template.md` and write the report to `<qa-output-path>/qa/verification-report.md`. The report must include these mandatory fields: Claim, Command, Executed timestamp, Exit code, Output summary, Warnings, Errors, Verdict (PASS or FAIL). When Web UI flows were tested, append a Browser Evidence section with: Dev server URL, Flows tested count, per-flow entry (name, entry URL, final URL, verdict, screenshot path), Viewports tested, Authentication method, and Blocked flows.
 5. Report blocked scenarios, missing credentials, or environment gaps with the exact command or prerequisite that stopped execution.
 6. Do not claim completion without fresh verification evidence from the current state of the repository.
 

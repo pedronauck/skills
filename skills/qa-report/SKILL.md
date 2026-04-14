@@ -18,7 +18,7 @@ Plan and document QA deliverables — test plans, test cases, regression suites,
 All artifacts follow this directory layout, shared with `qa-execution`:
 
 ```
-<qa-output-path>/
+<qa-output-path>/qa/
 ├── test-plans/          # Test plan documents
 ├── test-cases/          # Individual test case files (TC-*.md)
 ├── issues/              # Bug reports (BUG-*.md)
@@ -32,7 +32,7 @@ All artifacts follow this directory layout, shared with `qa-execution`:
 
 1. If the user provided a `qa-output-path` argument, use that path.
 2. Otherwise, default to the current working directory.
-3. Create subdirectories `test-plans/`, `test-cases/`, `issues/`, and `screenshots/` if they do not exist.
+3. Create the `qa/` subdirectory under the resolved path, then create `qa/test-plans/`, `qa/test-cases/`, `qa/issues/`, and `qa/screenshots/` if they do not exist.
 
 **Step 2: Identify the Deliverable Type**
 
@@ -58,7 +58,7 @@ Parse the user request to determine which deliverable to generate:
    - Exit criteria (what must be true before testing ends, including pass-rate thresholds).
    - Risk assessment table (Risk, Probability, Impact, Mitigation).
    - Timeline and deliverables.
-3. Write the plan to `<qa-output-path>/test-plans/<feature-slug>-test-plan.md`.
+3. Write the plan to `<qa-output-path>/qa/test-plans/<feature-slug>-test-plan.md`.
 
 **Step 4: Generate Manual Test Cases**
 
@@ -81,7 +81,7 @@ Parse the user request to determine which deliverable to generate:
    - **Preconditions:** Setup requirements and test data.
    - **Test Steps:** Numbered actions with an `**Expected:**` result for each.
    - **Edge Cases:** Boundary values, null inputs, special characters.
-4. Write each test case to `<qa-output-path>/test-cases/<TC-ID>.md`.
+4. Write each test case to `<qa-output-path>/qa/test-cases/<TC-ID>.md`.
 5. When generating test cases interactively, execute `scripts/generate_test_cases.sh <qa-output-path>/test-cases`.
 
 **Step 5: Build Regression Suites**
@@ -105,7 +105,7 @@ Parse the user request to determine which deliverable to generate:
    - **PASS:** All P0 pass, 90%+ P1 pass, no critical bugs open.
    - **FAIL:** Any P0 fails, critical bug discovered, security vulnerability, data loss.
    - **CONDITIONAL:** P1 failures with documented workarounds, fix plan in place.
-6. Write the suite document to `<qa-output-path>/test-plans/<suite-name>-regression.md`.
+6. Write the suite document to `<qa-output-path>/qa/test-plans/<suite-name>-regression.md`.
 
 **Step 6: Validate Against Figma Designs**
 
@@ -139,7 +139,7 @@ Skip this step if Figma MCP is not configured.
    - **Expected vs Actual:** Clear descriptions.
    - **Impact:** Users affected, frequency, workaround.
    - **Related:** TC-ID if discovered during test case execution, Figma URL if UI bug.
-4. Write each bug report to `<qa-output-path>/issues/<BUG-ID>.md`.
+4. Write each bug report to `<qa-output-path>/qa/issues/<BUG-ID>.md`.
 5. When creating bug reports interactively, execute `scripts/create_bug_report.sh <qa-output-path>/issues`.
 
 **Step 8: Validate Completeness**
@@ -175,7 +175,7 @@ The `qa-report` and `qa-execution` skills share a common output directory and ar
 2. **Execute** with `qa-execution`: run verification gates, exercise flows end-to-end, discover bugs.
 3. **Document** with `qa-report`: create structured bug reports for issues found during execution.
 
-When `qa-execution` runs after `qa-report`, it reads test cases from `<qa-output-path>/test-cases/` to inform its execution matrix and writes bugs to `<qa-output-path>/issues/` using the same unified template.
+When `qa-execution` runs after `qa-report`, it reads test cases from `<qa-output-path>/qa/test-cases/` to inform its execution matrix and writes bugs to `<qa-output-path>/qa/issues/` using the same unified template.
 
 ## Error Handling
 
