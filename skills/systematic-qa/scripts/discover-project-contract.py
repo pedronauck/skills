@@ -29,6 +29,45 @@ PACKAGE_JSON_TARGETS = {
     "start": ["start", "dev", "serve", "preview"],
 }
 
+WEB_UI_FRAMEWORK_CONFIGS = [
+    "next.config.js",
+    "next.config.mjs",
+    "next.config.ts",
+    "vite.config.js",
+    "vite.config.ts",
+    "vite.config.mjs",
+    "nuxt.config.js",
+    "nuxt.config.ts",
+    "angular.json",
+    "svelte.config.js",
+    "svelte.config.ts",
+    "astro.config.mjs",
+    "astro.config.ts",
+    "remix.config.js",
+    "remix.config.ts",
+    "gatsby-config.js",
+    "gatsby-config.ts",
+    "vue.config.js",
+    "webpack.config.js",
+    "webpack.config.ts",
+]
+
+WEB_UI_ENTRY_PATTERNS = [
+    "index.html",
+    "public/index.html",
+    "src/index.html",
+    "app/layout.tsx",
+    "app/layout.jsx",
+    "app/page.tsx",
+    "app/page.jsx",
+    "src/App.tsx",
+    "src/App.jsx",
+    "src/App.vue",
+    "src/App.svelte",
+    "src/main.tsx",
+    "src/main.ts",
+]
+
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -147,6 +186,63 @@ def collect_ci_signal(root: Path, result: dict) -> None:
         add_signal(result, ".github/workflows")
 
 
+def detect_web_ui(root: Path, result: dict) -> None:
+    """Detect whether the project has a Web UI surface."""
+    web_ui = result["web_ui"]
+
+    # Check for framework config files
+    for config in WEB_UI_FRAMEWORK_CONFIGS:
+        if (root / config).exists():
+            web_ui["detected"] = True
+            web_ui["framework_config"] = config
+            break
+
+    # Check for web entry points
+    for entry in WEB_UI_ENTRY_PATTERNS:
+        if (root / entry).exists():
+            web_ui["detected"] = True
+            if "entry_points" not in web_ui:
+                web_ui["entry_points"] = []
+            web_ui["entry_points"].append(entry)
+
+    # Infer default dev server port from framework
+    if web_ui.get("framework_config", ""):
+        config = web_ui["framework_config"]
+        if config.startswith("next.config"):
+            web_ui["default_port"] = 3000
+            web_ui["framework"] = "next"
+        elif config.startswith("vite.config"):
+            web_ui["default_port"] = 5173
+            web_ui["framework"] = "vite"
+        elif config.startswith("nuxt.config"):
+            web_ui["default_port"] = 3000
+            web_ui["framework"] = "nuxt"
+        elif config == "angular.json":
+            web_ui["default_port"] = 4200
+            web_ui["framework"] = "angular"
+        elif config.startswith("svelte.config"):
+            web_ui["default_port"] = 5173
+            web_ui["framework"] = "svelte"
+        elif config.startswith("astro.config"):
+            web_ui["default_port"] = 4321
+            web_ui["framework"] = "astro"
+        elif config.startswith("remix.config"):
+            web_ui["default_port"] = 3000
+            web_ui["framework"] = "remix"
+        elif config.startswith("gatsby-config"):
+            web_ui["default_port"] = 8000
+            web_ui["framework"] = "gatsby"
+        elif config.startswith("vue.config"):
+            web_ui["default_port"] = 8080
+            web_ui["framework"] = "vue-cli"
+
+    # Check if start commands exist as additional signal
+    if result["commands"]["start"]:
+        web_ui["has_start_command"] = True
+        if not web_ui.get("detected"):
+            web_ui["detected"] = True
+
+
 def build_result(root: Path) -> dict:
     result = {
         "root": str(root.resolve()),
@@ -158,6 +254,9 @@ def build_result(root: Path) -> dict:
             "test": [],
             "build": [],
             "start": [],
+        },
+        "web_ui": {
+            "detected": False,
         },
         "notes": [
             "Prefer repository-defined umbrella commands over ecosystem defaults.",
@@ -179,6 +278,7 @@ def build_result(root: Path) -> dict:
         parse_pyproject(root / "pyproject.toml", result)
 
     collect_ci_signal(root, result)
+    detect_web_ui(root, result)
     return result
 
 
