@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **139 agent skills** for Claude Code and compatible AI coding assistants. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **139 agent skills** for Claude Code and compatible AI coding assistants — **75 original** (⭐️) plus **64 community** skills from the ecosystem. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -34,22 +34,24 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 ## Skill Catalog
 
+> ⭐️ = original skill authored in this repository
+
 ### Frontend & UI
 
-- **[react](./skills/react)** — Component architecture, hooks, state management, TypeScript integration, and testing
-- **[tailwindcss](./skills/tailwindcss)** — Tailwind CSS v4 patterns, design tokens, and tailwind-variants
+- **[react](./skills/react)** ⭐️ — Component architecture, hooks, state management, TypeScript integration, and testing
+- **[tailwindcss](./skills/tailwindcss)** ⭐️ — Tailwind CSS v4 patterns, design tokens, and tailwind-variants
 - **[shadcn](./skills/shadcn)** — Building UI components with shadcn/ui, Radix UI primitives, and design tokens
 - **[shadcn-ui](./skills/shadcn-ui)** — Complete shadcn/ui component library patterns, forms with Zod/React Hook Form, and theming
 - **[motion](./skills/motion)** — React animations with Motion (formerly Framer Motion) -- gestures, scroll effects, spring physics
 - **[motion-react](./skills/motion-react)** — Full Motion for React guide including SVG, exit animations, and layout transitions
 - **[fixing-motion-performance](./skills/fixing-motion-performance)** — Diagnose and fix animation performance issues in UI code
-- **[zustand](./skills/zustand)** — Zustand state management patterns, store organization, and best practices
-- **[xstate](./skills/xstate)** — XState v5 state machines, actors, @xstate/store, and TanStack Query integration
+- **[zustand](./skills/zustand)** ⭐️ — Zustand state management patterns, store organization, and best practices
+- **[xstate](./skills/xstate)** ⭐️ — XState v5 state machines, actors, @xstate/store, and TanStack Query integration
 - **[storybook](./skills/storybook)** — Storybook story authoring and CSF 3.0 best practices
-- **[storybook-stories](./skills/storybook-stories)** — Create, update, or refactor Storybook stories following project patterns
-- **[building-components](./skills/building-components)** — Accessible, composable UI components with design tokens and documentation
-- **[tech-logos](./skills/tech-logos)** — Install official tech brand logos from the Elements registry via shadcn
-- **[tanstack](./skills/tanstack)** — Comprehensive TanStack ecosystem guide -- Query/DB, Form, and Router
+- **[storybook-stories](./skills/storybook-stories)** ⭐️ — Create, update, or refactor Storybook stories following project patterns
+- **[building-components](./skills/building-components)** ⭐️ — Accessible, composable UI components with design tokens and documentation
+- **[tech-logos](./skills/tech-logos)** ⭐️ — Install official tech brand logos from the Elements registry via shadcn
+- **[tanstack](./skills/tanstack)** ⭐️ — Comprehensive TanStack ecosystem guide -- Query/DB, Form, and Router
 - **[tanstack-query-best-practices](./skills/tanstack-query-best-practices)** — Data fetching, caching, mutations, and server state management
 - **[tanstack-router-best-practices](./skills/tanstack-router-best-practices)** — Type-safe routing, data loading, search params, and navigation
 - **[tanstack-start-best-practices](./skills/tanstack-start-best-practices)** — Full-stack React with server functions, middleware, SSR, and deployment
@@ -68,15 +70,16 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 ### Backend & APIs
 
-- **[hono](./skills/hono)** — Hono framework development with documentation search and API reference
-- **[elysia](./skills/elysia)** — Type-safe APIs with Elysia including routing, validation, plugins, and error handling
+- **[hono](./skills/hono)** ⭐️ — Hono framework development with documentation search and API reference
+- **[elysia](./skills/elysia)** ⭐️ — Type-safe APIs with Elysia including routing, validation, plugins, and error handling
 - **[drizzle-orm](./skills/drizzle-orm)** — Drizzle ORM best practices -- schemas, queries, mutations, transactions, migrations
-- **[drizzle-safe-migrations](./skills/drizzle-safe-migrations)** — Production-safe Drizzle migration workflows for schema changes
+- **[drizzle-safe-migrations](./skills/drizzle-safe-migrations)** ⭐️ — Production-safe Drizzle migration workflows for schema changes
 - **[drizzle-postgres](./skills/drizzle-postgres)** — PostgreSQL and Drizzle ORM best practices for type-safe database apps
 - **[better-auth-best-practices](./skills/better-auth-best-practices)** — Better Auth TypeScript authentication framework integration
 - **[better-auth-organization-best-practices](./skills/better-auth-organization-best-practices)** — Multi-tenant organizations, RBAC, teams, members, and invitations with Better Auth's organization plugin
 - **[inngest](./skills/inngest)** — Serverless background jobs, event-driven workflows, and durable execution
 - **[workflow](./skills/workflow)** — Durable, resumable workflows using Vercel's Workflow DevKit
+- **[mastra](./skills/mastra)** — Mastra framework for building AI agents and workflows
 
 ### Stripe & Payments
 
@@ -87,29 +90,29 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 ### TypeScript & JavaScript
 
-- **[typescript-advanced](./skills/typescript-advanced)** — Advanced type system -- generics, conditional types, mapped types, template literals
-- **[zod](./skills/zod)** — Zod schema validation for type safety, parsing, and error handling
-- **[es-toolkit](./skills/es-toolkit)** — Modern utility library as a lodash replacement -- array, object, string operations
-- **[effect-ts](./skills/effect-ts)** — Effect-TS code including setup, data modeling, error handling, and Context.Tag
+- **[typescript-advanced](./skills/typescript-advanced)** ⭐️ — Advanced type system -- generics, conditional types, mapped types, template literals
+- **[zod](./skills/zod)** ⭐️ — Zod schema validation for type safety, parsing, and error handling
+- **[es-toolkit](./skills/es-toolkit)** ⭐️ — Modern utility library as a lodash replacement -- array, object, string operations
+- **[effect-ts](./skills/effect-ts)** ⭐️ — Effect-TS code including setup, data modeling, error handling, and Context.Tag
 
 ### Rust
 
-- **[rust-best-practices](./skills/rust-best-practices)** — Unified Rust guidelines covering ownership, error handling, async/Tokio, traits, testing, performance, clippy, and documentation
-- **[ratatui-tui](./skills/ratatui-tui)** — Terminal UIs with ratatui v0.30.0+ -- Elm Architecture, StatefulWidget, async events
+- **[rust-best-practices](./skills/rust-best-practices)** ⭐️ — Unified Rust guidelines covering ownership, error handling, async/Tokio, traits, testing, performance, clippy, and documentation
+- **[ratatui-tui](./skills/ratatui-tui)** ⭐️ — Terminal UIs with ratatui v0.30.0+ -- Elm Architecture, StatefulWidget, async events
 - **[opentui](./skills/opentui)** — OpenTUI platform for building TUIs -- core API, React reconciler, Solid reconciler, components, layout, and testing
 - **[tui-design](./skills/tui-design)** — Universal TUI design patterns -- layouts, color schemes, keyboard navigation, dashboards, and accessibility
 
 ### Go
 
 - **[golang-pro](./skills/golang-pro)** — Concurrent Go patterns, microservices with gRPC/REST, pprof optimization, generics, and idiomatic error handling
-- **[bubbletea](./skills/bubbletea)** — Build terminal UIs with Go and Bubbletea -- Elm architecture, Lipgloss styling, dual-pane layouts, and reusable components
+- **[bubbletea](./skills/bubbletea)** ⭐️ — Build terminal UIs with Go and Bubbletea -- Elm architecture, Lipgloss styling, dual-pane layouts, and reusable components
 
 ### Desktop Applications
 
-- **[electron-dev](./skills/electron-dev)** — Electron development with Electron Vite and Builder -- main/renderer processes, IPC
-- **[electron-builder](./skills/electron-builder)** — Electron packaging, code signing, auto-updates, and release workflows
-- **[electron-release](./skills/electron-release)** — Electron production builds, notarization, auto-updates, and releases
-- **[tauri-v2](./skills/tauri-v2)** — Tauri v2 cross-platform apps with Rust backend, IPC, permissions, and builds
+- **[electron-dev](./skills/electron-dev)** ⭐️ — Electron development with Electron Vite and Builder -- main/renderer processes, IPC
+- **[electron-builder](./skills/electron-builder)** ⭐️ — Electron packaging, code signing, auto-updates, and release workflows
+- **[electron-release](./skills/electron-release)** ⭐️ — Electron production builds, notarization, auto-updates, and releases
+- **[tauri-v2](./skills/tauri-v2)** ⭐️ — Tauri v2 cross-platform apps with Rust backend, IPC, permissions, and builds
 
 ### DevOps & Infrastructure
 
@@ -119,34 +122,33 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[helm-chart-scaffolding](./skills/helm-chart-scaffolding)** — Design, organize, and manage Helm charts for Kubernetes applications
 - **[k8s-security-policies](./skills/k8s-security-policies)** — Kubernetes security policies -- NetworkPolicy, PodSecurityPolicy, and RBAC
 - **[terraform-style-guide](./skills/terraform-style-guide)** — Terraform HCL following HashiCorp's official style conventions
-- **[cloudflare](./skills/cloudflare)** — Cloudflare platform -- Workers, Pages, storage, AI, networking, and security
-- **[wrangler](./skills/wrangler)** — Cloudflare Workers CLI for deploying and managing Workers, KV, R2, D1, and more
-- **[hetzner-server](./skills/hetzner-server)** — Create and manage Hetzner Cloud servers via the hcloud CLI
-- **[sentry-cli](./skills/sentry-cli)** — Sentry CLI for interacting with Sentry from the command line
+- **[cloudflare](./skills/cloudflare)** ⭐️ — Cloudflare platform -- Workers, Pages, storage, AI, networking, and security
+- **[wrangler](./skills/wrangler)** ⭐️ — Cloudflare Workers CLI for deploying and managing Workers, KV, R2, D1, and more
+- **[hetzner-server](./skills/hetzner-server)** ⭐️ — Create and manage Hetzner Cloud servers via the hcloud CLI
+- **[sentry-cli](./skills/sentry-cli)** ⭐️ — Sentry CLI for interacting with Sentry from the command line
 
 ### Real-Time & Messaging
 
-- **[centrifugo](./skills/centrifugo)** — Centrifugo real-time messaging -- WebSocket PUB/SUB, channels, JWT auth, scaling
-- **[evolution-api](./skills/evolution-api)** — Evolution API for WhatsApp messaging, instance management, and chatbot orchestration
+- **[centrifugo](./skills/centrifugo)** ⭐️ — Centrifugo real-time messaging -- WebSocket PUB/SUB, channels, JWT auth, scaling
+- **[evolution-api](./skills/evolution-api)** ⭐️ — Evolution API for WhatsApp messaging, instance management, and chatbot orchestration
 - **[rivetkit](./skills/rivetkit)** — RivetKit backend and Rivet Actor runtime for long-lived, in-memory processes
 - **[rivetkit-client-javascript](./skills/rivetkit-client-javascript)** — RivetKit JavaScript client for browser, Node.js, or Bun
 - **[rivetkit-client-react](./skills/rivetkit-client-react)** — RivetKit React client with `@rivetkit/react`
-- **[sync-provider](./skills/sync-provider)** — Sync upstream changes from cloned repos while preserving local customizations
+- **[sync-provider](./skills/sync-provider)** ⭐️ — Sync upstream changes from cloned repos while preserving local customizations
 
 ### AI & Agent Development
 
 - **[ai-sdk](./skills/ai-sdk)** — Vercel AI SDK for building AI-powered features
-- **[mastra](./skills/mastra)** — Mastra framework for building AI agents and workflows
-- **[skill-best-practices](./skills/skill-best-practices)** — Author professional-grade agent skills following the agentskills.io spec
+- **[skill-best-practices](./skills/skill-best-practices)** ⭐️ — Author professional-grade agent skills following the agentskills.io spec
 - **[autoresearch](./skills/autoresearch)** — Autonomously optimize any skill by running evals, mutating prompts, and keeping improvements
 - **[skill-writter](./skills/skill-writter)** — Guide users through creating Agent Skills for Claude Code
 - **[agent-md-refactor](./skills/agent-md-refactor)** — Refactor bloated AGENTS.md/CLAUDE.md files into organized, linked documentation
 - **[nano-banana-pro](./skills/nano-banana-pro)** — Generate or edit images via Gemini 3 Pro Image (Nano Banana Pro)
 - **[nano-banana-prompting](./skills/nano-banana-prompting)** — Craft effective prompts for Nano Banana Pro image generation
 - **[find-skills](./skills/find-skills)** — Discover and install agent skills from the open agent skills ecosystem
-- **[pal](./skills/pal)** — Pal MCP toolkit for code analysis, debugging, planning, refactoring, and tracing
-- **[sourcebot](./skills/sourcebot)** — Search external libraries and frameworks using Sourcebot MCP
-- **[council](./skills/council)** — Run decisions through 5 independent advisors, anonymous peer review, and a chairman synthesis (Karpathy-style LLM Council)
+- **[pal](./skills/pal)** ⭐️ — Pal MCP toolkit for code analysis, debugging, planning, refactoring, and tracing
+- **[sourcebot](./skills/sourcebot)** ⭐️ — Search external libraries and frameworks using Sourcebot MCP
+- **[council](./skills/council)** ⭐️ — Run decisions through 5 independent advisors, anonymous peer review, and a chairman synthesis (Karpathy-style LLM Council)
 
 ### Testing & Quality
 
@@ -154,7 +156,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[a11y-testing](./skills/a11y-testing)** — Automated accessibility testing with axe-core, Playwright, and jest-axe
 - **[test-antipatterns](./skills/test-antipatterns)** — Prevent common testing anti-patterns like testing mock behavior
 - **[qa-test-planner](./skills/qa-test-planner)** — Generate test plans, manual test cases, regression suites, and bug reports
-- **[systematic-qa](./skills/systematic-qa)** — Discover the repo verification contract, run build/lint/test/start gates, exercise user-like end-to-end workflows, fix regressions at the root cause, and re-verify the full gate
+- **[systematic-qa](./skills/systematic-qa)** ⭐️ — Discover the repo verification contract, run build/lint/test/start gates, exercise user-like end-to-end workflows, fix regressions at the root cause, and re-verify the full gate
 - **[verification-before-completion](./skills/verification-before-completion)** — Run verification commands and confirm output before claiming success
 - **[adversarial-review](./skills/adversarial-review)** — Spawn opposing AI model reviewers to adversarially challenge work
 
@@ -163,12 +165,12 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[architectural-analysis](./skills/architectural-analysis)** — Deep architectural audit for dead code, duplication, anti-patterns, and code smells
 - **[systematic-debugging](./skills/systematic-debugging)** — Root-cause investigation before proposing fixes for bugs or test failures
 - **[extreme-software-optimization](./skills/extreme-software-optimization)** — Profile-driven performance optimization with behavior proofs, opportunity scoring, and isomorphism guarantees
-- **[no-workarounds](./skills/no-workarounds)** — Enforce root-cause fixes over workarounds, hacks, and symptom patches
+- **[no-workarounds](./skills/no-workarounds)** ⭐️ — Enforce root-cause fixes over workarounds, hacks, and symptom patches
 - **[receiving-code-review](./skills/receiving-code-review)** — Handle code review feedback with technical rigor and verification
-- **[fix-coderabbit-review](./skills/fix-coderabbit-review)** — End-to-end remediation workflow for PR review feedback
-- **[git-rebase](./skills/git-rebase)** — Git rebase operations and merge conflict resolution with clean history
-- **[refactoring-analysis](./skills/refactoring-analysis)** — Identify refactoring opportunities using Martin Fowler's code smells catalog with prioritized reports
-- **[find-rules](./skills/find-rules)** — Discover project rules, coding standards, and architectural guidelines
+- **[fix-coderabbit-review](./skills/fix-coderabbit-review)** ⭐️ — End-to-end remediation workflow for PR review feedback
+- **[git-rebase](./skills/git-rebase)** ⭐️ — Git rebase operations and merge conflict resolution with clean history
+- **[refactoring-analysis](./skills/refactoring-analysis)** ⭐️ — Identify refactoring opportunities using Martin Fowler's code smells catalog with prioritized reports
+- **[find-rules](./skills/find-rules)** ⭐️ — Discover project rules, coding standards, and architectural guidelines
 
 ### Planning & Research
 
@@ -184,13 +186,13 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 - **[firecrawl](./skills/firecrawl)** — Web scraping, search, crawling, and browser automation via the Firecrawl CLI
 - **[exa-web-search-free](./skills/exa-web-search-free)** — Free AI-powered web, code, and company search via Exa MCP
-- **[perplexity](./skills/perplexity)** — Web search and research using Perplexity AI
+- **[perplexity](./skills/perplexity)** ⭐️ — Web search and research using Perplexity AI
 - **[context7](./skills/context7)** — Retrieve up-to-date technical documentation, API references, and code examples for any library via Context7 CLI
 - **[agent-browser](./skills/agent-browser)** — Automate browser interactions for testing, form filling, and data extraction
 
 ### Knowledge Management & Notes
 
-- **karpathy-kb** — *Migrated to [kodebase-go/skills/kb](https://github.com/pedronauck/kodebase-go/tree/main/skills/kb). Unified with the `kb` CLI skill for the full KB lifecycle: topic scaffolding, ingestion, compilation, querying, linting, codebase inspection, indexing, and search.*
+- **karpathy-kb** ⭐️ — _Migrated to [kodebase-go/skills/kb](https://github.com/pedronauck/kodebase-go/tree/main/skills/kb). Unified with the `kb` CLI skill for the full KB lifecycle: topic scaffolding, ingestion, compilation, querying, linting, codebase inspection, indexing, and search._
 - **[obsidian-cli](./skills/obsidian-cli)** — Interact with Obsidian vaults via CLI -- read, create, search, manage notes, and develop plugins
 - **[obsidian-markdown](./skills/obsidian-markdown)** — Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and tags
 - **[obsidian-bases](./skills/obsidian-bases)** — Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries
@@ -198,53 +200,53 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 ### Content & Writing
 
-- **[content-research-writer](./skills/content-research-writer)** — Writing partner for research, outlining, drafting, and refining content
-- **[copywriting](./skills/copywriting)** — Conversion copywriting for marketing pages, CTAs, and headlines
+- **[content-research-writer](./skills/content-research-writer)** ⭐️ — Writing partner for research, outlining, drafting, and refining content
+- **[copywriting](./skills/copywriting)** ⭐️ — Conversion copywriting for marketing pages, CTAs, and headlines
 - **[humanizer](./skills/humanizer)** — Remove signs of AI-generated writing from text
-- **[writing-clearly-and-concisely](./skills/writing-clearly-and-concisely)** — Strunk's timeless rules for clearer, stronger, more professional prose
-- **[professional-communication](./skills/professional-communication)** — Technical communication for emails, team messaging, and meeting agendas
+- **[writing-clearly-and-concisely](./skills/writing-clearly-and-concisely)** ⭐️ — Strunk's timeless rules for clearer, stronger, more professional prose
+- **[professional-communication](./skills/professional-communication)** ⭐️ — Technical communication for emails, team messaging, and meeting agendas
 
 ### Business & Strategy
 
-- **[alex-hormozi-pitch](./skills/alex-hormozi-pitch)** — Create irresistible offers using Hormozi's $100M Offers methodology
-- **[brand-storytelling](./skills/brand-storytelling)** — Craft compelling brand narratives and positioning
-- **[fundraising](./skills/fundraising)** — Plan and run early-stage fundraising with pitch narrative, investor pipeline, and outreach
-- **[game-changing-features](./skills/game-changing-features)** — Find 10x product opportunities and high-leverage improvements
-- **[startup-validator](./skills/startup-validator)** — Comprehensive startup idea validation and market analysis
-- **[sales-methodology-implementer](./skills/sales-methodology-implementer)** — Implement proven sales methodologies (MEDDIC, BANT, Sandler, Challenger, SPIN)
+- **[alex-hormozi-pitch](./skills/alex-hormozi-pitch)** ⭐️ — Create irresistible offers using Hormozi's $100M Offers methodology
+- **[brand-storytelling](./skills/brand-storytelling)** ⭐️ — Craft compelling brand narratives and positioning
+- **[fundraising](./skills/fundraising)** ⭐️ — Plan and run early-stage fundraising with pitch narrative, investor pipeline, and outreach
+- **[game-changing-features](./skills/game-changing-features)** ⭐️ — Find 10x product opportunities and high-leverage improvements
+- **[startup-validator](./skills/startup-validator)** ⭐️ — Comprehensive startup idea validation and market analysis
+- **[sales-methodology-implementer](./skills/sales-methodology-implementer)** ⭐️ — Implement proven sales methodologies (MEDDIC, BANT, Sandler, Challenger, SPIN)
 
 ### Presentations & Documents
 
-- **[pitch-deck](./skills/pitch-deck)** — Generate professional PowerPoint pitch decks for startups
-- **[pitch-deck-visuals](./skills/pitch-deck-visuals)** — Investor pitch deck visuals with slide-by-slide framework and design rules
-- **[pitch-gen](./skills/pitch-gen)** — Generate startup pitch deck content with AI
-- **[pptx-creator](./skills/pptx-creator)** — Create professional PowerPoint presentations from outlines or data
-- **[ai-pdf-builder](./skills/ai-pdf-builder)** — AI-powered PDF generator for legal docs, pitch decks, and reports
-- **[mermaid-diagrams](./skills/mermaid-diagrams)** — Software diagrams using Mermaid syntax -- class, sequence, flowcharts, ERD, C4
-- **[viz](./skills/viz)** — Four visualization modes in one skill -- Excalidraw diagrams, Swiss Pulse PNG infographics via Gemini, inline Visualizer widgets, and published HeyGenverse apps (select via `mode` argument or trigger keywords)
+- **[pitch-deck](./skills/pitch-deck)** ⭐️ — Generate professional PowerPoint pitch decks for startups
+- **[pitch-deck-visuals](./skills/pitch-deck-visuals)** ⭐️ — Investor pitch deck visuals with slide-by-slide framework and design rules
+- **[pitch-gen](./skills/pitch-gen)** ⭐️ — Generate startup pitch deck content with AI
+- **[pptx-creator](./skills/pptx-creator)** ⭐️ — Create professional PowerPoint presentations from outlines or data
+- **[ai-pdf-builder](./skills/ai-pdf-builder)** ⭐️ — AI-powered PDF generator for legal docs, pitch decks, and reports
+- **[mermaid-diagrams](./skills/mermaid-diagrams)** ⭐️ — Software diagrams using Mermaid syntax -- class, sequence, flowcharts, ERD, C4
+- **[viz](./skills/viz)** ⭐️ — Four visualization modes in one skill -- Excalidraw diagrams, Swiss Pulse PNG infographics via Gemini, inline Visualizer widgets, and published HeyGenverse apps (select via `mode` argument or trigger keywords)
 
 ### Video & Media
 
-- **[promo-video](./skills/promo-video)** — Create promotional videos using Remotion with AI voiceover and background music
+- **[promo-video](./skills/promo-video)** ⭐️ — Create promotional videos using Remotion with AI voiceover and background music
 - **[remotion-best-practices](./skills/remotion-best-practices)** — Best practices for Remotion video creation in React
 
 ### Twitter & Social Media
 
-- **[tweetsmash-api](./skills/tweetsmash-api)** — TweetSmash REST API for fetching bookmarks, managing labels, filtering, and pagination
+- **[tweetsmash-api](./skills/tweetsmash-api)** ⭐️ — TweetSmash REST API for fetching bookmarks, managing labels, filtering, and pagination
 
 ### Marketing & Advertising
 
-- **[google-ads](./skills/google-ads)** — Query, audit, and optimize Google Ads campaigns
-- **[hormozi-ad-factory](./skills/hormozi-ad-factory)** — Generate 150-750+ ad variations using Hormozi's combinatorial Hook x Meat x CTA framework
+- **[google-ads](./skills/google-ads)** ⭐️ — Query, audit, and optimize Google Ads campaigns
+- **[hormozi-ad-factory](./skills/hormozi-ad-factory)** ⭐️ — Generate 150-750+ ad variations using Hormozi's combinatorial Hook x Meat x CTA framework
 
 ### Architecture & Patterns
 
-- **[app-renderer-systems](./skills/app-renderer-systems)** — Domain feature systems organized under a `systems/` directory
+- **[app-renderer-systems](./skills/app-renderer-systems)** ⭐️ — Domain feature systems organized under a `systems/` directory
 
 ### Utilities
 
-- **[to-prompt](./skills/to-prompt)** — Transform code, issues, or context into a detailed prompt for another LLM
-- **[outside-to-issue](./skills/outside-to-issue)** — Transform outside-of-diff review files into formatted issue files for a PR
+- **[to-prompt](./skills/to-prompt)** ⭐️ — Transform code, issues, or context into a detailed prompt for another LLM
+- **[outside-to-issue](./skills/outside-to-issue)** ⭐️ — Transform outside-of-diff review files into formatted issue files for a PR
 
 ## Structure
 
