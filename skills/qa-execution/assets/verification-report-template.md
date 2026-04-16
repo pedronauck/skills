@@ -9,6 +9,24 @@ Warnings: <none or list>
 Errors: <none or list>
 Verdict: PASS or FAIL
 
+AUTOMATED COVERAGE
+------------------
+Support detected: <yes or no>
+Harness: <playwright, cypress, webdriverio, generic, or none>
+Canonical command: `<full E2E command>` or `none`
+Required flows:
+  - <flow name>: <existing-e2e | needs-e2e | manual-only | blocked>
+  - <flow name>: <existing-e2e | needs-e2e | manual-only | blocked>
+Specs added or updated:
+  - <spec path>: <why this spec changed>
+  - <spec path>: <why this spec changed>
+Commands executed:
+  - `<command>` | Exit code: <0 or non-zero> | Summary: <key result>
+  - `<command>` | Exit code: <0 or non-zero> | Summary: <key result>
+Manual-only or blocked:
+  - <flow name>: <reason>
+  - <flow name>: <reason>
+
 BROWSER EVIDENCE (when Web UI flows were tested)
 -------------------------------------------------
 Dev server: <start command and confirmed URL>

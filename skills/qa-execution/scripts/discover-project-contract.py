@@ -68,6 +68,30 @@ WEB_UI_ENTRY_PATTERNS = [
     "src/main.ts",
 ]
 
+E2E_CONFIG_FRAMEWORKS = {
+    "playwright.config.js": "playwright",
+    "playwright.config.ts": "playwright",
+    "playwright.config.mjs": "playwright",
+    "playwright.config.cjs": "playwright",
+    "cypress.config.js": "cypress",
+    "cypress.config.ts": "cypress",
+    "cypress.config.mjs": "cypress",
+    "cypress.config.cjs": "cypress",
+    "wdio.conf.js": "webdriverio",
+    "wdio.conf.ts": "webdriverio",
+}
+
+E2E_DIRECTORY_SIGNALS = {
+    "e2e": "generic",
+    "test/e2e": "generic",
+    "tests/e2e": "generic",
+    "cypress/e2e": "cypress",
+    "playwright": "playwright",
+    "__e2e__": "generic",
+}
+
+E2E_TARGET_PATTERN = re.compile(r"(^|[:_.-])(e2e|acceptance|playwright|cypress|wdio)($|[:_.-])")
+
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -82,6 +106,37 @@ def add_command(result: dict, category: str, command: str) -> None:
 def add_signal(result: dict, signal: str) -> None:
     if signal not in result["signals"]:
         result["signals"].append(signal)
+
+
+def add_e2e_command(result: dict, command: str) -> None:
+    commands = result["e2e"]["commands"]
+    if command not in commands:
+        commands.append(command)
+        result["e2e"]["detected"] = True
+
+
+def add_e2e_signal(result: dict, signal: str, reason: str, framework: str | None = None) -> None:
+    e2e = result["e2e"]
+    if signal not in e2e["signals"]:
+        e2e["signals"].append(signal)
+    if reason not in e2e["reason"]:
+        e2e["reason"].append(reason)
+    if framework and framework not in e2e["frameworks"]:
+        e2e["frameworks"].append(framework)
+    e2e["detected"] = True
+
+
+def infer_e2e_framework(*values: str) -> str | None:
+    joined = " ".join(values).lower()
+    if "playwright" in joined:
+        return "playwright"
+    if "cypress" in joined:
+        return "cypress"
+    if "wdio" in joined or "webdriverio" in joined:
+        return "webdriverio"
+    if "e2e" in joined or "acceptance" in joined:
+        return "generic"
+    return None
 
 
 def parse_makefile(path: Path, runner: str, result: dict) -> None:
@@ -100,6 +155,27 @@ def parse_makefile(path: Path, runner: str, result: dict) -> None:
         for target in preferred:
             if target in targets:
                 add_command(result, category, f"{runner} {target}")
+                if target == "e2e":
+                    add_e2e_command(result, f"{runner} {target}")
+                    add_e2e_signal(
+                        result,
+                        f"{path.name}:{target}",
+                        f"Explicit {path.name} target `{target}` discovered.",
+                        "generic",
+                    )
+
+    for target in targets:
+        if not E2E_TARGET_PATTERN.search(target):
+            continue
+        command = f"{runner} {target}"
+        add_command(result, "test", command)
+        add_e2e_command(result, command)
+        add_e2e_signal(
+            result,
+            f"{path.name}:{target}",
+            f"E2E-style target `{target}` discovered in {path.name}.",
+            infer_e2e_framework(target),
+        )
 
 
 def parse_package_json(path: Path, result: dict) -> None:
@@ -128,6 +204,21 @@ def parse_package_json(path: Path, result: dict) -> None:
                 add_command(result, category, "npm start")
             else:
                 add_command(result, category, f"npm run {target}")
+
+    for target, command_body in scripts.items():
+        if not isinstance(command_body, str):
+            continue
+        if not E2E_TARGET_PATTERN.search(target) and infer_e2e_framework(command_body) is None:
+            continue
+        command = f"npm run {target}"
+        add_command(result, "test", command)
+        add_e2e_command(result, command)
+        add_e2e_signal(
+            result,
+            f"package.json:{target}",
+            f"E2E-style package script `{target}` discovered.",
+            infer_e2e_framework(target, command_body),
+        )
 
 
 def parse_go_mod(path: Path, result: dict) -> None:
@@ -184,6 +275,15 @@ def collect_ci_signal(root: Path, result: dict) -> None:
     files = sorted(p.name for p in workflows.iterdir() if p.is_file())
     if files:
         add_signal(result, ".github/workflows")
+    for name in files:
+        if not E2E_TARGET_PATTERN.search(name):
+            continue
+        add_e2e_signal(
+            result,
+            f".github/workflows/{name}",
+            f"E2E-style CI workflow `{name}` discovered.",
+            infer_e2e_framework(name),
+        )
 
 
 def detect_web_ui(root: Path, result: dict) -> None:
@@ -243,6 +343,36 @@ def detect_web_ui(root: Path, result: dict) -> None:
             web_ui["detected"] = True
 
 
+def detect_e2e_support(root: Path, result: dict) -> None:
+    for config, framework in E2E_CONFIG_FRAMEWORKS.items():
+        if not (root / config).exists():
+            continue
+        add_e2e_signal(
+            result,
+            config,
+            f"Framework config `{config}` discovered.",
+            framework,
+        )
+
+    for directory, framework in E2E_DIRECTORY_SIGNALS.items():
+        if not (root / directory).exists():
+            continue
+        add_e2e_signal(
+            result,
+            directory,
+            f"E2E spec directory `{directory}` discovered.",
+            framework,
+        )
+
+    if result["e2e"]["commands"] and not result["e2e"]["reason"]:
+        add_e2e_signal(
+            result,
+            "explicit-command",
+            "Runnable E2E command discovered.",
+            infer_e2e_framework(*result["e2e"]["commands"]),
+        )
+
+
 def build_result(root: Path) -> dict:
     result = {
         "root": str(root.resolve()),
@@ -257,6 +387,13 @@ def build_result(root: Path) -> dict:
         },
         "web_ui": {
             "detected": False,
+        },
+        "e2e": {
+            "commands": [],
+            "detected": False,
+            "frameworks": [],
+            "reason": [],
+            "signals": [],
         },
         "notes": [
             "Prefer repository-defined umbrella commands over ecosystem defaults.",
@@ -279,6 +416,7 @@ def build_result(root: Path) -> dict:
 
     collect_ci_signal(root, result)
     detect_web_ui(root, result)
+    detect_e2e_support(root, result)
     return result
 
 

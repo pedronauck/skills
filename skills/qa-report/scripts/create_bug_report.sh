@@ -141,7 +141,7 @@ while true; do
     if [ -z "$line" ]; then
         break
     fi
-    REPRO_STEPS="${REPRO_STEPS}${STEP_NUM}. ${line}\n"
+    REPRO_STEPS="${REPRO_STEPS}${STEP_NUM}. ${line}"$'\n'
     ((STEP_NUM++))
 done
 
@@ -166,6 +166,51 @@ echo ""
 
 prompt_input "Related test case ID (e.g., TC-FUNC-001):" TEST_CASE false
 prompt_input "Figma design link (if UI bug):" FIGMA_LINK false
+
+# Automation follow-up
+echo ""
+echo -e "${MAGENTA}━━━ Automation Follow-up ━━━${NC}"
+echo ""
+
+echo "Automation Status:"
+echo "1) Added - automation was added or updated"
+echo "2) Pending - automation should be added later"
+echo "3) Blocked - automation is expected but prerequisites are missing"
+echo "4) N/A - no automation follow-up applies"
+echo ""
+
+prompt_input "Select automation status (1-4):" AUTOMATION_STATUS_NUM true
+
+case $AUTOMATION_STATUS_NUM in
+    1) AUTOMATION_STATUS="Added"; AUTOMATION_REQUIRED="Yes" ;;
+    2) AUTOMATION_STATUS="Pending"; AUTOMATION_REQUIRED="Yes" ;;
+    3) AUTOMATION_STATUS="Blocked"; AUTOMATION_REQUIRED="Yes" ;;
+    4) AUTOMATION_STATUS="N/A"; AUTOMATION_REQUIRED="No" ;;
+    *) AUTOMATION_STATUS="N/A"; AUTOMATION_REQUIRED="No" ;;
+esac
+
+if [ "$AUTOMATION_STATUS" = "N/A" ]; then
+    AUTOMATION_SPEC="N/A"
+else
+    prompt_input "Automation spec path or command:" AUTOMATION_SPEC false
+fi
+
+prompt_input "Automation notes or blocker:" AUTOMATION_NOTES false
+
+if [ -z "$AUTOMATION_SPEC" ]; then
+    AUTOMATION_SPEC="N/A"
+fi
+
+RELATED_ITEMS="- None"
+if [ -n "$TEST_CASE" ] || [ -n "$FIGMA_LINK" ]; then
+    RELATED_ITEMS=""
+    if [ -n "$TEST_CASE" ]; then
+        RELATED_ITEMS="${RELATED_ITEMS}- Test Case: ${TEST_CASE}"$'\n'
+    fi
+    if [ -n "$FIGMA_LINK" ]; then
+        RELATED_ITEMS="${RELATED_ITEMS}- Figma Design: ${FIGMA_LINK}"$'\n'
+    fi
+fi
 
 FILENAME="${BUG_ID}.md"
 OUTPUT_FILE="$OUTPUT_DIR/$FILENAME"
@@ -199,7 +244,7 @@ ${DESCRIPTION}
 ${REPRO_STEPS}
 \`\`\`
 
-Observed:
+Observed before the fix:
 
 - ${ACTUAL}
 
@@ -226,11 +271,16 @@ ${EXPECTED}
 - **Frequency:** ${FREQUENCY:-Unknown}
 - **Workaround:** ${WORKAROUND:-None}
 
+## Automation Follow-up
+
+- **Required:** ${AUTOMATION_REQUIRED}
+- **Status:** ${AUTOMATION_STATUS}
+- **Spec / Command:** ${AUTOMATION_SPEC}
+- **Notes:** ${AUTOMATION_NOTES:-None}
+
 ## Related
 
-${TEST_CASE:+- Test Case: ${TEST_CASE}}
-${FIGMA_LINK:+- Figma Design: ${FIGMA_LINK}}
-${TEST_CASE:+}${FIGMA_LINK:+}
+${RELATED_ITEMS}
 EOF
 
 echo -e "${GREEN}Bug report generated: ${BLUE}$OUTPUT_FILE${NC}" >&2

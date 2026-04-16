@@ -15,6 +15,10 @@ Standard templates for creating consistent, comprehensive test cases.
 **Estimated Time:** X minutes
 **Created:** YYYY-MM-DD
 **Last Updated:** YYYY-MM-DD
+**Automation Target:** E2E | Integration | Manual-only
+**Automation Status:** Existing | Missing | Blocked | N/A
+**Automation Command/Spec:** [spec path, suite name, or command]
+**Automation Notes:** [why this should be automated, remain manual, or is blocked]
 
 ---
 
@@ -103,6 +107,24 @@ Standard templates for creating consistent, comprehensive test cases.
 
 ---
 
+## Automation Metadata
+
+Apply these fields to every test case variant:
+
+- **Automation Target**
+  - `E2E`: public flow through browser, HTTP, CLI, or worker entrypoints
+  - `Integration`: cross-system or boundary coverage below full end-to-end
+  - `Manual-only`: exploratory, usability, or visual judgment work that should stay manual
+- **Automation Status**
+  - `Existing`: matching automated coverage already exists
+  - `Missing`: repository supports automation for this flow but coverage is absent
+  - `Blocked`: harness exists but credentials, data, or environment block automation
+  - `N/A`: automation is intentionally not applicable
+- **Automation Command/Spec:** record the existing spec path or canonical command when known
+- **Automation Notes:** record the rationale, blocker, or handoff expectation for `qa-execution`
+
+---
+
 ## Functional Test Case Template
 
 For testing business logic and feature functionality.
@@ -114,6 +136,10 @@ For testing business logic and feature functionality.
 **Type:** Functional
 **Module:** [Feature/Module name]
 **Requirement:** REQ-XXX
+**Automation Target:** E2E | Integration | Manual-only
+**Automation Status:** Existing | Missing | Blocked | N/A
+**Automation Command/Spec:** [spec path or command]
+**Automation Notes:** [why this case should or should not be automated]
 
 ### Objective
 Verify that [feature] behaves correctly when [scenario]
@@ -159,6 +185,10 @@ For validating visual appearance and design compliance.
 **Type:** UI/Visual
 **Figma Design:** [URL]
 **Breakpoints:** Desktop | Tablet | Mobile
+**Automation Target:** E2E | Manual-only
+**Automation Status:** Existing | Missing | Blocked | N/A
+**Automation Command/Spec:** [spec path or command]
+**Automation Notes:** [why the flow should be automated or why visual judgment stays manual]
 
 ### Objective
 Verify [component] matches Figma design specifications
@@ -232,6 +262,10 @@ For testing component interactions and data flow.
 **Type:** Integration
 **Systems:** [List integrated systems]
 **API Endpoint:** [endpoint if applicable]
+**Automation Target:** E2E | Integration | Manual-only
+**Automation Status:** Existing | Missing | Blocked | N/A
+**Automation Command/Spec:** [spec path or command]
+**Automation Notes:** [why this integration needs or avoids automation]
 
 ### Objective
 Verify data flows correctly from [source] to [destination]
@@ -283,6 +317,10 @@ For ensuring existing functionality remains intact.
 **Type:** Regression
 **Original Feature:** [Feature name]
 **Last Modified:** [Date]
+**Automation Target:** E2E | Integration | Manual-only
+**Automation Status:** Existing | Missing | Blocked | N/A
+**Automation Command/Spec:** [spec path or command]
+**Automation Notes:** [why this regression should gain automation]
 
 ### Objective
 Verify [feature] still works correctly after recent changes
@@ -322,6 +360,10 @@ For validating security controls and vulnerabilities.
 **Type:** Security
 **OWASP Category:** [A01-A10]
 **Risk Level:** Critical | High | Medium | Low
+**Automation Target:** E2E | Integration | Manual-only
+**Automation Status:** Existing | Missing | Blocked | N/A
+**Automation Command/Spec:** [spec path or command]
+**Automation Notes:** [why this control should or should not be automated]
 
 ### Objective
 Verify [security control] prevents [vulnerability/attack]
@@ -368,6 +410,10 @@ For validating speed, scalability, and resource usage.
 **Priority:** P[0-3]
 **Type:** Performance
 **Baseline:** [Previous metrics]
+**Automation Target:** E2E | Integration | Manual-only
+**Automation Status:** Existing | Missing | Blocked | N/A
+**Automation Command/Spec:** [spec path or command]
+**Automation Notes:** [why this performance case should or should not be automated]
 
 ### Objective
 Verify [feature] meets performance requirements
@@ -419,6 +465,17 @@ Verify [feature] meets performance requirements
 | Performance | TC-PERF- | TC-PERF-023 |
 | API | TC-API- | TC-API-067 |
 | Smoke | SMOKE- | SMOKE-001 |
+
+---
+
+## Automation Status Reference
+
+| Status | Meaning | Action |
+|--------|---------|--------|
+| Existing | Coverage already exists | Reuse and verify it still maps to the flow |
+| Missing | Harness exists but coverage does not | `qa-execution` should add or update it |
+| Blocked | Harness exists but prerequisites are missing | Report the blocker explicitly |
+| N/A | Automation is intentionally not applicable | Keep strong manual evidence |
 
 ---
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Manual Test Case Generator
-# Interactive workflow for creating comprehensive test cases
+# QA Test Case Generator
+# Interactive workflow for creating comprehensive test cases with automation annotations
 # Usage: ./generate_test_cases.sh [qa-output-path/test-cases]
 
 set -e
@@ -16,7 +16,7 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 echo -e "${BLUE}╔══════════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║       Manual Test Case Generator                 ║${NC}"
+echo -e "${BLUE}║         QA Test Case Generator                   ║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -95,17 +95,66 @@ esac
 
 prompt_input "Estimated test time (minutes):" EST_TIME false
 
-# Step 2: Objective and Description
+# Step 2: Automation Strategy
 echo ""
-echo -e "${MAGENTA}━━━ Step 2: Test Objective ━━━${NC}"
+echo -e "${MAGENTA}━━━ Step 2: Automation Strategy ━━━${NC}"
+echo ""
+
+echo "Automation Target:"
+echo "1) E2E"
+echo "2) Integration"
+echo "3) Manual-only"
+echo "4) N/A"
+echo ""
+
+prompt_input "Select automation target (1-4):" AUTOMATION_TARGET_NUM true
+
+case $AUTOMATION_TARGET_NUM in
+    1) AUTOMATION_TARGET="E2E" ;;
+    2) AUTOMATION_TARGET="Integration" ;;
+    3) AUTOMATION_TARGET="Manual-only" ;;
+    4) AUTOMATION_TARGET="N/A" ;;
+    *) AUTOMATION_TARGET="N/A" ;;
+esac
+
+if [ "$AUTOMATION_TARGET" = "Manual-only" ] || [ "$AUTOMATION_TARGET" = "N/A" ]; then
+    AUTOMATION_STATUS="N/A"
+    AUTOMATION_COMMAND="N/A"
+else
+    echo ""
+    echo "Automation Status:"
+    echo "1) Existing - matching coverage already exists"
+    echo "2) Missing - repository supports it but coverage is absent"
+    echo "3) Blocked - harness exists but prerequisites are missing"
+    echo "4) N/A"
+    echo ""
+
+    prompt_input "Select automation status (1-4):" AUTOMATION_STATUS_NUM true
+
+    case $AUTOMATION_STATUS_NUM in
+        1) AUTOMATION_STATUS="Existing" ;;
+        2) AUTOMATION_STATUS="Missing" ;;
+        3) AUTOMATION_STATUS="Blocked" ;;
+        4) AUTOMATION_STATUS="N/A" ;;
+        *) AUTOMATION_STATUS="Missing" ;;
+    esac
+
+    prompt_input "Existing spec path or command (if known):" AUTOMATION_COMMAND false
+fi
+
+prompt_input "Automation notes or blocker:" AUTOMATION_NOTES false
+
+# Step 3: Objective and Description
+echo ""
+echo -e "${MAGENTA}━━━ Step 3: Test Objective ━━━${NC}"
 echo ""
 
 prompt_input "What are you testing? (objective):" OBJECTIVE true
 prompt_input "Why is this test important?" WHY_IMPORTANT false
 
-# Step 3: Preconditions
+# Step 4: Preconditions
 echo ""
-echo -e "${MAGENTA}━━━ Step 3: Preconditions ━━━${NC}"
+echo -e "${MAGENTA}━━━ Step 4: Preconditions ━━━${NC}"
 echo ""
 
 echo "Enter preconditions (one per line, press Enter twice when done):"
@@ -115,12 +164,12 @@ while true; do
     if [ -z "$line" ]; then
         break
     fi
-    PRECONDITIONS="${PRECONDITIONS}- ${line}\n"
+    PRECONDITIONS="${PRECONDITIONS}- ${line}"$'\n'
 done
 
-# Step 4: Test Steps
+# Step 5: Test Steps
 echo ""
-echo -e "${MAGENTA}━━━ Step 4: Test Steps ━━━${NC}"
+echo -e "${MAGENTA}━━━ Step 5: Test Steps ━━━${NC}"
 echo ""
 
 echo "Enter test steps (format: action | expected result)"
@@ -140,35 +189,48 @@ while true; do
 
     prompt_input "Expected result:" EXPECTED true
 
-    TEST_STEPS="${TEST_STEPS}${STEP_NUM}. ${ACTION}\n   **Expected:** ${EXPECTED}\n\n"
+    TEST_STEPS="${TEST_STEPS}${STEP_NUM}. ${ACTION}"$'\n'"   **Expected:** ${EXPECTED}"$'\n'$'\n'
     ((STEP_NUM++))
 done
 
-# Step 5: Test Data
+# Step 6: Test Data
 echo ""
-echo -e "${MAGENTA}━━━ Step 5: Test Data ━━━${NC}"
+echo -e "${MAGENTA}━━━ Step 6: Test Data ━━━${NC}"
 echo ""
 
 prompt_input "Test data required (e.g., user credentials, sample data):" TEST_DATA false
 
-# Step 6: Figma Design (if UI test)
+# Step 7: Figma Design (if UI test)
 echo ""
 if [ "$TEST_TYPE" = "UI/Visual" ]; then
-    echo -e "${MAGENTA}━━━ Step 6: Figma Design Validation ━━━${NC}"
+    echo -e "${MAGENTA}━━━ Step 7: Figma Design Validation ━━━${NC}"
     echo ""
 
     prompt_input "Figma design URL (if applicable):" FIGMA_URL false
     prompt_input "Visual elements to validate:" VISUAL_CHECKS false
 fi
 
-# Step 7: Edge Cases
+# Step 8: Edge Cases
 echo ""
-echo -e "${MAGENTA}━━━ Step 7: Additional Info ━━━${NC}"
+echo -e "${MAGENTA}━━━ Step 8: Additional Info ━━━${NC}"
 echo ""
 
 prompt_input "Edge cases or variations to consider:" EDGE_CASES false
 prompt_input "Related test cases (IDs):" RELATED_TCS false
 prompt_input "Notes or comments:" NOTES false
+
+if [ -z "$PRECONDITIONS" ]; then
+    PRECONDITIONS="- [No special preconditions documented]"
+fi
+
+if [ -z "$TEST_STEPS" ]; then
+    echo -e "${RED}At least one test step is required.${NC}" >&2
+    exit 1
+fi
+
+if [ -z "$AUTOMATION_COMMAND" ]; then
+    AUTOMATION_COMMAND="N/A"
+fi
 
 # Generate filename
 FILENAME="${TC_ID}.md"
@@ -189,6 +251,11 @@ cat > "$OUTPUT_FILE" << EOF
 **Status:** Not Run
 **Estimated Time:** ${EST_TIME:-TBD} minutes
 **Created:** $(date +%Y-%m-%d)
+**Last Updated:** $(date +%Y-%m-%d)
+**Automation Target:** ${AUTOMATION_TARGET}
+**Automation Status:** ${AUTOMATION_STATUS}
+**Automation Command/Spec:** ${AUTOMATION_COMMAND}
+**Automation Notes:** ${AUTOMATION_NOTES:-None}
 
 ---
 
@@ -259,7 +326,7 @@ ${EDGE_CASES:-Consider boundary values, null inputs, special characters, concurr
 
 ## Related Test Cases
 
-${RELATED_TCS:-None}
+${RELATED_TCS:-None documented}
 
 ---
 
@@ -273,7 +340,7 @@ ${RELATED_TCS:-None}
 
 ## Notes
 
-${NOTES}
+${NOTES:-None}
 
 EOF
 

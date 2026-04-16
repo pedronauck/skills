@@ -8,6 +8,7 @@ Mark every item as complete before claiming the QA pass is done.
 - [ ] The canonical verify gate was identified or an explicit fallback was chosen
 - [ ] The changed surface and regression-critical surface were identified
 - [ ] Web UI surface presence was determined (yes/no with evidence)
+- [ ] E2E support was determined (supported, manual-only, or blocked with evidence)
 
 ## Baseline
 
@@ -42,14 +43,18 @@ Skip this section if the project has no Web UI surface.
 
 - [ ] Every failure was reproduced before fixing
 - [ ] Root cause was identified before implementation
-- [ ] Regression coverage was added or updated when the repository supported it
-- [ ] The narrow repro and impacted flows were rerun after each fix
+- [ ] Each changed or regression-critical public flow was classified as existing-e2e, needs-e2e, manual-only, or blocked
+- [ ] Required E2E coverage was added or updated when the repository supported it
+- [ ] Blocked automation gaps were disclosed with exact missing prerequisites
+- [ ] The narrow repro, updated automated coverage, and impacted flows were rerun after each fix
 - [ ] Web UI regressions include before/after screenshot evidence (when applicable)
 
 ## Final Verification
 
 - [ ] The full verification gate was rerun after the last code change
 - [ ] The most important CLI and API flows were rerun after the final gate
+- [ ] Narrow E2E specs were rerun after the final code change when they were added or updated
+- [ ] The canonical E2E command or covering subset was rerun when the repository supported E2E
 - [ ] The most important Web UI flows were rerun after the final gate (when applicable)
-- [ ] A verification report was produced from fresh evidence
+- [ ] A verification report was produced from fresh evidence, including automated coverage
 - [ ] Blocked scenarios or missing prerequisites were disclosed explicitly

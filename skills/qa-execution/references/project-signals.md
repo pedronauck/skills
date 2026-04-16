@@ -26,6 +26,17 @@ Prefer explicit scripts in this order:
 4. `build`
 5. `start`, `dev`, `serve`, `preview`
 
+### E2E support
+
+High-confidence E2E signals include:
+
+1. Runnable commands such as `e2e`, `test:e2e`, `playwright`, `cypress`, or `acceptance`
+2. Framework configs such as `playwright.config.*`, `cypress.config.*`, or `wdio.conf.*`
+3. Existing spec locations such as `e2e/`, `tests/e2e/`, `test/e2e/`, or `cypress/e2e/`
+4. CI workflows that clearly run the same E2E command
+
+Treat the repository as E2E-capable only when a runnable command exists and at least one other signal confirms the harness.
+
 ### Go modules
 
 If no umbrella command exists, treat `go test ./...`, `go build ./...`, and repository formatting/lint commands as the minimum baseline. Prefer repository wrappers over direct Go commands when both exist.
@@ -51,6 +62,17 @@ Always cover:
 3. At least one adjacent regression-critical workflow
 4. Startup or readiness if the change can affect bootstrapping
 5. A realistic fixture path if the feature consumes external projects, repos, files, or APIs
+6. An automation classification for each changed or regression-critical public flow when E2E support exists
+
+## E2E policy
+
+When the repository already supports E2E, require new or updated automated coverage for:
+
+1. Changed P0 or P1 flows
+2. Release-critical smoke paths
+3. Bug fixes that restore public regressions
+
+Keep flows manual-only only when automation is the wrong tool, and mark flows blocked when the harness exists but credentials, data, or runtime prerequisites are missing.
 
 ## Evidence Rules
 

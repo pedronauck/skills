@@ -49,6 +49,13 @@ Observed before the fix:
 - **Frequency:** <always / sometimes / rarely>
 - **Workaround:** <describe or "none">
 
+## Automation Follow-up
+
+- **Required:** Yes | No
+- **Status:** Added | Pending | Blocked | N/A
+- **Spec / Command:** <path, suite, or command>
+- **Notes:** <rationale or blocker>
+
 ## Related
 
 - Test Case: <TC-ID if applicable>

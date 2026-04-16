@@ -1,6 +1,6 @@
 ---
 name: qa-report
-description: Generate comprehensive test plans, manual test cases, regression test suites, and bug reports for QA engineers. Includes Figma MCP integration for design validation. Use when planning QA before execution, documenting test strategies, or creating structured bug reports. Do not use for executing tests against a live repository or running verification gates — use qa-execution for that.
+description: Generate comprehensive test plans, test cases, regression test suites, automation annotations, and bug reports for QA engineers. Includes Figma MCP integration for design validation. Use when planning QA before execution, documenting test strategies, marking which flows require E2E follow-up, or creating structured bug reports. Do not use for executing tests against a live repository or running verification gates — use qa-execution for that.
 trigger: explicit
 argument-hint: "[qa-output-path]"
 ---
@@ -53,14 +53,15 @@ Parse the user request to determine which deliverable to generate:
    - Executive summary with objectives and key risks.
    - Scope definition (in-scope and out-of-scope).
    - Test strategy and approach.
+   - Automation strategy covering which flows should become E2E, which remain manual-only, and which are blocked by environment gaps.
    - Environment requirements (OS, browsers, devices).
    - Entry criteria (what must be true before testing begins).
-   - Exit criteria (what must be true before testing ends, including pass-rate thresholds).
+   - Exit criteria (what must be true before testing ends, including pass-rate thresholds and automation follow-up expectations for critical flows).
    - Risk assessment table (Risk, Probability, Impact, Mitigation).
    - Timeline and deliverables.
 3. Write the plan to `<qa-output-path>/qa/test-plans/<feature-slug>-test-plan.md`.
 
-**Step 4: Generate Manual Test Cases**
+**Step 4: Generate Test Cases**
 
 1. Read `references/test_case_templates.md` to select the appropriate template variant (Functional, UI, Integration, Regression, Security, Performance).
 2. Assign each test case an ID following the naming scheme:
@@ -81,6 +82,10 @@ Parse the user request to determine which deliverable to generate:
    - **Preconditions:** Setup requirements and test data.
    - **Test Steps:** Numbered actions with an `**Expected:**` result for each.
    - **Edge Cases:** Boundary values, null inputs, special characters.
+   - **Automation Target:** `E2E`, `Integration`, or `Manual-only`.
+   - **Automation Status:** `Existing`, `Missing`, `Blocked`, or `N/A`.
+   - **Automation Command/Spec:** Existing spec path or command when known.
+   - **Automation Notes:** Why the case should be automated, remain manual, or is blocked.
 4. Write each test case to `<qa-output-path>/qa/test-cases/<TC-ID>.md`.
 5. When generating test cases interactively, execute `scripts/generate_test_cases.sh <qa-output-path>/test-cases`.
 
@@ -100,12 +105,16 @@ Parse the user request to determine which deliverable to generate:
    - **P0:** Business-critical, security, revenue-impacting — must run always.
    - **P1:** Major features, common flows — run weekly or more.
    - **P2:** Minor features, edge cases — run at releases.
-4. Define execution order: Smoke first (if fails, stop) → P0 → P1 → P2 → Exploratory.
-5. Define pass/fail criteria:
+4. Mark automation candidates explicitly:
+   - Tag changed or regression-critical P0 and P1 public flows as `Automation Target: E2E` when the repository already has an E2E harness.
+   - Tag bug-driven public regressions as `Automation Status: Missing` until `qa-execution` confirms the spec was added or updated.
+   - Tag exploratory, visual-judgment, or unsupported flows as `Manual-only` or `Blocked` with a reason.
+5. Define execution order: Smoke first (if fails, stop) → P0 → P1 → P2 → Exploratory.
+6. Define pass/fail criteria:
    - **PASS:** All P0 pass, 90%+ P1 pass, no critical bugs open.
    - **FAIL:** Any P0 fails, critical bug discovered, security vulnerability, data loss.
    - **CONDITIONAL:** P1 failures with documented workarounds, fix plan in place.
-6. Write the suite document to `<qa-output-path>/qa/test-plans/<suite-name>-regression.md`.
+7. Write the suite document to `<qa-output-path>/qa/test-plans/<suite-name>-regression.md`.
 
 **Step 6: Validate Against Figma Designs**
 
@@ -147,7 +156,8 @@ Skip this step if Figma MCP is not configured.
 1. Verify all generated test cases have an expected result for each step.
 2. Verify all bug reports have reproducible steps.
 3. Verify traceability: test cases reference requirements, bugs reference test cases.
-4. Cross-reference against `references/checklist.md` in the `qa-execution` skill for coverage gaps when planning for later execution.
+4. Verify every planned critical flow has an explicit automation annotation and that `Missing` or `Blocked` states include a reason.
+5. Cross-reference against `../qa-execution/references/checklist.md` for coverage gaps when planning for later execution.
 
 ## Severity Definitions
 
@@ -172,14 +182,15 @@ Skip this step if Figma MCP is not configured.
 The `qa-report` and `qa-execution` skills share a common output directory and artifact format. The intended workflow:
 
 1. **Plan first** with `qa-report`: generate test plans, test cases, and regression suites.
-2. **Execute** with `qa-execution`: run verification gates, exercise flows end-to-end, discover bugs.
+2. **Execute** with `qa-execution`: run verification gates, exercise flows end-to-end, discover bugs, and add or update E2E coverage when the repository already supports it.
 3. **Document** with `qa-report`: create structured bug reports for issues found during execution.
 
-When `qa-execution` runs after `qa-report`, it reads test cases from `<qa-output-path>/qa/test-cases/` to inform its execution matrix and writes bugs to `<qa-output-path>/qa/issues/` using the same unified template.
+When `qa-execution` runs after `qa-report`, it reads test cases from `<qa-output-path>/qa/test-cases/` to inform its execution matrix, automation priorities, and reporting fields, then writes bugs to `<qa-output-path>/qa/issues/` using the same unified template.
 
 ## Error Handling
 
 - If the `qa-output-path` directory cannot be created, report the error and fall back to the current working directory.
 - If Figma MCP is not configured, skip Figma validation steps and note the gap in the test plan.
 - If `agent-browser` is not available for UI validation, generate test cases as documentation for manual execution and note the limitation.
+- If the repository does not have a known E2E harness, mark affected cases as `Manual-only` or `Blocked` instead of inventing automation commands.
 - If the user provides a feature description that is too vague to generate test cases, ask for specific requirements, user flows, or acceptance criteria before proceeding.
