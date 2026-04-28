@@ -1,6 +1,6 @@
 ---
 name: tailwindcss
-description: Guide for Tailwind CSS v4 patterns and best practices. Use when styling components with Tailwind CSS, creating responsive layouts, working with Tailwind 4 features, or using tailwind-variants for component styling.
+description: Guide for Tailwind CSS v4 patterns and best practices. Use when styling components with Tailwind CSS, creating responsive layouts, or working with Tailwind 4 features.
 allowed-tools: Read, Grep, Glob
 ---
 
@@ -17,7 +17,6 @@ For detailed patterns, examples, and checklists, see:
 
 - **Utility-First**: Embrace utility-first approach and avoid custom CSS.
 - **Design Tokens**: Always use design system tokens (`bg-background`, `text-foreground`) instead of explicit colors (`bg-white`, `text-black`).
-- **Tailwind Variants**: Use `tailwind-variants` (tv) for component styling instead of CVA.
 - **Mobile-First**: Build responsive layouts with mobile-first approach.
 
 ## Critical: Design Token Usage
@@ -35,47 +34,17 @@ To ensure theme switching works correctly:
 
 ## Common Tasks
 
-### Component Styling with Tailwind Variants
-
-```typescript
-import { tv } from 'tailwind-variants'
-
-const button = tv({
-  base: [
-    'inline-flex items-center justify-center rounded-md',
-    'text-sm font-medium transition-colors',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-  ],
-  variants: {
-    variant: {
-      default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-      outline: 'border border-input hover:bg-accent hover:text-accent-foreground',
-    },
-    size: {
-      default: 'h-10 py-2 px-4',
-      sm: 'h-9 px-3 rounded-md',
-      icon: 'size-10',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-    size: 'default',
-  },
-})
-```
-
 ### Long Class Strings
 
 Break class strings longer than 100 characters into arrays:
 
 ```typescript
-// Good: Break into logical arrays
-const card = tv({
-  base: [
-    'relative flex flex-col rounded-xl border border-border',
-    'bg-card text-card-foreground shadow-xs transition-colors duration-150',
-  ],
-})
+const cardBaseClasses = [
+  'relative flex flex-col rounded-xl border border-border',
+  'bg-card text-card-foreground shadow-xs transition-colors duration-150',
+]
+
+// Usage: className={cardBaseClasses.join(' ')} or spread into cn()/clsx
 ```
 
 ### Responsive Design
@@ -113,7 +82,6 @@ Before finishing a task involving Tailwind CSS:
 
 - [ ] Using design tokens instead of explicit colors
 - [ ] Long class strings broken into arrays (>100 chars)
-- [ ] Using `tailwind-variants` for component styling
 - [ ] Mobile-first responsive approach
 - [ ] Run lint checks (`pnpm run lint`)
 

@@ -6,7 +6,6 @@ This document contains comprehensive patterns and best practices for using Tailw
 
 - **Utility-First**: Embrace utility-first approach and avoid custom CSS
 - **Design Tokens**: Always use design system tokens instead of explicit colors
-- **Tailwind Variants**: Use `tailwind-variants` (tv) for component styling instead of CVA
 - **Mobile-First**: Build responsive layouts with mobile-first approach
 - **No @apply**: Avoid `@apply` except for base styles
 
@@ -56,84 +55,20 @@ To ensure theme switching works correctly, always use design system tokens:
 <button className="bg-primary hover:bg-primary/90">
 ```
 
-## Component Styling with Tailwind Variants
-
-Use `tailwind-variants` for component styling:
-
-```typescript
-import { tv } from 'tailwind-variants'
-
-const button = tv({
-  base: [
-    'inline-flex items-center justify-center rounded-md',
-    'text-sm font-medium transition-colors',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-  ],
-  variants: {
-    variant: {
-      default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-      destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-      outline: 'border border-input hover:bg-accent hover:text-accent-foreground',
-      secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-      ghost: 'hover:bg-accent hover:text-accent-foreground',
-      link: 'underline-offset-4 hover:underline text-primary',
-    },
-    size: {
-      default: 'h-10 py-2 px-4',
-      sm: 'h-9 px-3 rounded-md',
-      lg: 'h-11 px-8 rounded-md',
-      icon: 'size-10',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-    size: 'default',
-  },
-})
-
-// Usage
-<button className={button({ variant: 'outline', size: 'sm' })}>
-```
-
-### Compound Variants
-
-```typescript
-const card = tv({
-  base: 'rounded-lg border bg-card text-card-foreground shadow-sm',
-  variants: {
-    interactive: {
-      true: 'cursor-pointer',
-    },
-    elevated: {
-      true: 'shadow-md',
-    },
-  },
-  compoundVariants: [
-    {
-      interactive: true,
-      className: 'hover:bg-accent transition-colors',
-    },
-  ],
-})
-```
-
 ## Long Class Strings
 
 Break class strings longer than 100 characters into arrays:
 
 ```typescript
 // BAD - Single long string
-const card = tv({
-  base: 'relative flex flex-col rounded-xl border border-border bg-card text-card-foreground shadow-xs transition-colors duration-150',
-})
+const cardBase =
+  'relative flex flex-col rounded-xl border border-border bg-card text-card-foreground shadow-xs transition-colors duration-150'
 
 // GOOD - Broken into logical arrays
-const card = tv({
-  base: [
-    'relative flex flex-col rounded-xl border border-border',
-    'bg-card text-card-foreground shadow-xs transition-colors duration-150',
-  ],
-})
+const cardBaseClasses = [
+  'relative flex flex-col rounded-xl border border-border',
+  'bg-card text-card-foreground shadow-xs transition-colors duration-150',
+]
 ```
 
 ## Responsive Design
@@ -417,7 +352,6 @@ Before finishing a task involving Tailwind CSS:
 
 - [ ] Using design tokens instead of explicit colors (`bg-background`, not `bg-white`)
 - [ ] Long class strings broken into arrays (>100 chars)
-- [ ] Using `tailwind-variants` for component styling with variants
 - [ ] Mobile-first responsive approach (`sm:` `md:` `lg:` prefixes for larger screens)
 - [ ] Focus states use `focus-visible:` for keyboard accessibility
 - [ ] No `@apply` except for base styles
@@ -430,5 +364,4 @@ Before finishing a task involving Tailwind CSS:
 ## Documentation
 
 - **Official Docs**: https://tailwindcss.com/docs
-- **Tailwind Variants**: https://www.tailwind-variants.org/
 - **Tailwind Merge**: https://github.com/dcastil/tailwind-merge

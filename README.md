@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **140 agent skills** for Claude Code and compatible AI coding assistants — **75 original** (⭐️) plus **65 community** skills from the ecosystem. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **140 agent skills** for Claude Code and compatible AI coding assistants — **65 original** (⭐️) plus **75 community** skills from the ecosystem. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -41,7 +41,6 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[react](./skills/react)** ⭐️ — Component architecture, hooks, state management, TypeScript integration, and testing
 - **[tailwindcss](./skills/tailwindcss)** ⭐️ — Tailwind CSS v4 patterns, design tokens, and tailwind-variants
 - **[shadcn](./skills/shadcn)** — Building UI components with shadcn/ui, Radix UI primitives, and design tokens
-- **[shadcn-ui](./skills/shadcn-ui)** — Complete shadcn/ui component library patterns, forms with Zod/React Hook Form, and theming
 - **[motion](./skills/motion)** — React animations with Motion (formerly Framer Motion) -- gestures, scroll effects, spring physics
 - **[motion-react](./skills/motion-react)** — Full Motion for React guide including SVG, exit animations, and layout transitions
 - **[fixing-motion-performance](./skills/fixing-motion-performance)** — Diagnose and fix animation performance issues in UI code
