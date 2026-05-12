@@ -8,8 +8,11 @@ description: >-
   components, pages, dashboards, forms, dialogs, loading/empty/error states, or
   AI interfaces. Do not use for backend-only work, infrastructure, CLI/TUI
   design, or pure documentation editing.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # UI Craft
 
 ## The Fundamental Law

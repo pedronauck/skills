@@ -2,8 +2,11 @@
 name: app-renderer-systems
 description: Guides creation and modification of domain feature systems organized under a systems/ directory. Covers directory layout, API service layer patterns, TanStack Query hooks (queries, mutations, optimistic updates), React context and XState store conventions, hook organization, and public API barrel exports. Use when adding a new domain system, extending an existing one, or fixing bugs in a system-layer codebase. Don't use for generic React component work, backend API implementation, or codebases not organized around a systems/ domain pattern.
 allowed-tools: Read, Grep, Glob
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Feature Systems Guide
 
 A "system" is a self-contained, domain-driven module that owns everything related to one domain: its API calls, query layer, hooks, components, and public API. Systems live under a `systems/<domain>/` directory.

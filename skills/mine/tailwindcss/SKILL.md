@@ -1,9 +1,12 @@
 ---
 name: tailwindcss
-description: Guide for Tailwind CSS v4 patterns and best practices. Use when styling components with Tailwind CSS, creating responsive layouts, or working with Tailwind 4 features.
+description: Guide for Tailwind CSS v4 patterns and best practices. Use when styling components with Tailwind CSS, creating responsive layouts, or working with Tailwind 4 features. Don't use for plain-CSS authoring, CSS-in-JS libraries (styled-components, emotion), or non-Tailwind utility frameworks.
 allowed-tools: Read, Grep, Glob
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Tailwind CSS Developer Guide
 
 This skill provides guidelines, patterns, and best practices for working with Tailwind CSS v4 in this project.

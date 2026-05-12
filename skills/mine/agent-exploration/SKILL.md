@@ -9,14 +9,17 @@ description: >-
   <path>/analysis/NN_analysis_<slug>.md following a seven-section schema, then
   synthesizes <path>/analysis/summary.md. The skill self-contains the explorer
   subagent definition and prompts the operator to install it at
-  .claude/agents/explorer.md when absent. Use for parallel multi-area research
-  that must produce written artifacts. Do not use for competitor-only research
+  .claude/agents/explorer.md when absent. Use when running parallel multi-area
+  research that must produce written artifacts. Do not use for competitor-only research
   already covered by cy-research-competitors, single-file lookups answerable
   by Explore, or edits to existing code.
 trigger: explicit
 argument-hint: "[--path <dir>] [--agents <num>] [--prompt <text>]"
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Agent Exploration
 
 Generic parallel-research workflow. Use when a question requires deep reads across multiple distinct areas and the operator needs written artifacts (not chat output). The skill dispatches `explorer` subagents in parallel; each writes one analysis file. The parent then synthesizes a final summary.

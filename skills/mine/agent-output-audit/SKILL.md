@@ -11,8 +11,11 @@ description: >-
   exploratory charters, or product usability sessions; use qa-execution for
   those.
 argument-hint: "[audit-output-path]"
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Agent Output Audit
 
 Independent verification of AI-implemented work. The skill that asks: *"Did the implementing agent actually do what `task_NN.md` says it did?"* — not *"Would a real user succeed at this product?"* (that's `qa-execution`).

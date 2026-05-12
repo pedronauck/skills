@@ -1,9 +1,12 @@
 ---
 name: react
-description: Comprehensive React development guide covering component architecture, hooks, state management, TypeScript integration, useEffect patterns, and testing with Vitest. Use when creating React components, custom hooks, managing state, or any frontend React code. Essential for React 19+ development.
+description: Comprehensive React development guide covering component architecture, hooks, state management, TypeScript integration, useEffect patterns, and testing with Vitest. Use when creating React components, custom hooks, managing state, or any frontend React code. Essential for React 19+ development. Don't use for React Native, non-React frameworks (Vue, Svelte, Solid), or backend-only Node.js code.
 allowed-tools: Read, Grep, Glob
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # React Development Guide
 
 This skill provides comprehensive guidelines, patterns, and best practices for React development in this project.

@@ -1,8 +1,11 @@
 ---
 name: skill-best-practices
 description: Authors and structures professional-grade agent skills following the agentskills.io spec. Use when creating new skill directories, drafting procedural instructions, or optimizing metadata for discoverability. Don't use for general documentation, non-agentic library code, or README files.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Skill Authoring Procedure
 
 Follow these steps to generate a skill that adheres to the agentskills.io specification and progressive disclosure principles.

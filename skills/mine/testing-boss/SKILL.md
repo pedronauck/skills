@@ -1,8 +1,11 @@
 ---
 name: testing-boss
-description: Comprehensive testing doctrine for software and AI systems — covers positive patterns, anti-patterns, gates for coding agents writing tests, CI discipline, and an LLM/agent evaluation primer. Triggers when authoring or reviewing tests, adding mocks, deciding test placement, generating tests via agents, debugging flaky CI, designing eval suites for LLM features, or rebuilding a brittle test suite. Contains 12 positive patterns (selector hierarchy, table-driven, builders, real-system gates), 25 anti-patterns across Brittleness, Flakiness, Mock-misuse, Process, and AI-specific families, 7 mandatory gates for agents writing tests, flaky-test taxonomy with quarantine workflow, contract / property / mutation testing patterns, and an oracle-ladder primer for LLM-as-judge and agent eval. Language-agnostic — pseudo-code only. Do not invoke for general code review, library-specific debugging unrelated to tests, non-testing CI pipeline design, or production observability.
+description: Comprehensive testing doctrine for software and AI systems — covers positive patterns, anti-patterns, gates for coding agents writing tests, CI discipline, and an LLM/agent evaluation primer. Use when authoring or reviewing tests, adding mocks, deciding test placement, generating tests via agents, debugging flaky CI, designing eval suites for LLM features, or rebuilding a brittle test suite. Contains 12 positive patterns (selector hierarchy, table-driven, builders, real-system gates), 25 anti-patterns across Brittleness, Flakiness, Mock-misuse, Process, and AI-specific families, 7 mandatory gates for agents writing tests, flaky-test taxonomy with quarantine workflow, contract / property / mutation testing patterns, and an oracle-ladder primer for LLM-as-judge and agent eval. Language-agnostic — pseudo-code only. Don't use for general code review, library-specific debugging unrelated to tests, non-testing CI pipeline design, or production observability.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Testing Boss
 
 A consolidated doctrine for writing tests that *reveal bugs*, not just pass — for human-authored code, AI-generated code, LLM-powered features, and the CI that gates them all.

@@ -8,8 +8,11 @@ description: >
   Use when auditing code quality, preparing for a refactoring sprint, or reviewing
   architectural health. Don't use for style/formatting issues, performance optimization,
   or security audits.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Refactoring Analysis
 
 Perform a systematic analysis of a codebase to identify refactoring opportunities based on

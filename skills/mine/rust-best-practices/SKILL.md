@@ -13,9 +13,11 @@ metadata:
   version: "2.0.0"
   domain: language
   triggers: Rust, Cargo, ownership, borrowing, lifetimes, async Rust, tokio, zero-cost abstractions, memory safety, systems programming, traits, generics, error handling, thiserror, anyhow, clippy, rustfmt, testing, benchmarks
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 allowed-tools: Bash(cargo:*) Bash(rustc:*) Bash(rustfmt:*) Bash(clippy:*) Read Write Edit Glob Grep
 ---
-
 # Rust Best Practices
 
 Unified Rust guidelines covering coding style, ownership, error handling, async patterns, traits, testing, performance, linting, and documentation. Apply when writing or reviewing Rust code.

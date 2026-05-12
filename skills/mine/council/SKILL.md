@@ -1,8 +1,11 @@
 ---
 name: council
 description: Orchestrates multi-advisor council debates on high-impact architecture, technology, or product decisions. Dispatches 3-5 domain archetype subagents (pragmatic-engineer, architect-advisor, security-advocate, product-mind, devils-advocate, the-thinker) through opening statements, tensions, position evolution, and synthesis phases. Preserves dissent and delivers actionable recommendations with captured risks. Use when evaluating trade-offs, stress-testing a PRD or tech spec, resolving dilemmas with multiple viable options, or when a decision needs diverse expert perspectives. Don't use for simple yes/no questions, factual lookups, creative brainstorming without tradeoffs, or tasks where a single expert perspective suffices.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Council Facilitator
 
 ## Role

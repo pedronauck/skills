@@ -1,8 +1,11 @@
 ---
 name: no-workarounds
 description: Enforce root-cause fixes over workarounds, hacks, and symptom patches in all software engineering tasks. Use when debugging issues, fixing bugs, resolving test failures, planning solutions, making architectural decisions, or reviewing code changes. Activates gate functions that detect and reject common workaround patterns such as type assertions, lint suppressions, error swallowing, timing hacks, and monkey patches. Don't use for trivial formatting changes or documentation-only edits.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # No Workarounds
 
 ## The Fundamental Law

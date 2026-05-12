@@ -63,6 +63,7 @@ Original skills authored in this repository.
 - **[react](./skills/mine/react)** — Component architecture, hooks, state management, TypeScript integration, and testing
 - **[refactoring-analysis](./skills/mine/refactoring-analysis)** — Identify refactoring opportunities using Martin Fowler's code smells catalog with prioritized reports
 - **[rust-best-practices](./skills/mine/rust-best-practices)** — Unified Rust guidelines covering ownership, error handling, async/Tokio, traits, testing, performance, clippy, and documentation
+- **[ship-pr](./skills/mine/ship-pr)** — End-of-feature ritual: explore impact across docs/site/README, generate release notes (via `pr-release` when present, else inline from `git log`), assemble a complete PR description (with QA artifacts when detected), commit per the repo's commitlint, open the PR via `gh`, and optionally launch a CodeRabbit review-watch loop. Optional integrations (`pr-release`, `skeeper`, `compozy`, QA artifacts) auto-detect and skip cleanly when absent.
 - **[skill-best-practices](./skills/mine/skill-best-practices)** — Author professional-grade agent skills following the agentskills.io spec
 - **[skill-load-tips](./skills/mine/skill-load-tips)** — Refactor existing SKILL.md files so the agent actually loads bundled references — Required Reading Router, hard STOP directives, gist tripwires, and one-level reference depth
 - **[storybook-stories](./skills/mine/storybook-stories)** — Create, update, or refactor Storybook stories following project patterns

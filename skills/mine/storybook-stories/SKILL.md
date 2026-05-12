@@ -1,8 +1,11 @@
 ---
 name: storybook-stories
-description: Create, update, or refactor Storybook stories following the project's standard patterns. Use this skill when adding stories for new components, updating existing stories, or fixing Storybook-related issues.
+description: Create, update, or refactor Storybook stories following the project's standard patterns. Use when adding stories for new components, updating existing stories, or fixing Storybook-related issues. Don't use for component implementation itself, design-system token changes, end-to-end browser tests, or non-Storybook documentation.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Storybook Stories
 
 This skill enforces consistent Storybook story creation patterns across the application. It ensures that all components have proper documentation, interactive examples, and follow the established project structure.

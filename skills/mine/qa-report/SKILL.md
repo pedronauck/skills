@@ -12,8 +12,11 @@ description: >-
   agent-output-audit instead.
 trigger: explicit
 argument-hint: "[qa-output-path]"
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Real-User QA Planner
 
 Plan and document the deliverables that drive real-user QA execution — personas, journey maps, exploratory charters, persona/journey/tour test cases, regression suites, Figma fidelity validations, and user-impact bug reports.

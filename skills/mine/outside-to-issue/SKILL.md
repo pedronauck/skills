@@ -1,8 +1,11 @@
 ---
 name: outside-to-issue
-description: Transform outside-of-diff review files into properly formatted issue files for a given PR. Use when converting review files from ai-docs/reviews-pr-<PR>/outside/ into issue format in ai-docs/reviews-pr-<PR>/issues/. Automatically determines starting issue number and preserves all metadata (file path, date, status) from original review files.
+description: Transform outside-of-diff review files into properly formatted issue files for a given PR. Use when converting review files from ai-docs/reviews-pr-<PR>/outside/ into issue format in ai-docs/reviews-pr-<PR>/issues/. Automatically determines starting issue number and preserves all metadata (file path, date, status) from original review files. Don't use for inline-diff review files, non-PR review artifacts, or creating GitHub issues directly.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Outside to Issue
 
 Transform outside-of-diff review files into properly formatted issue files for PR review tracking.

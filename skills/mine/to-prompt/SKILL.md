@@ -1,8 +1,11 @@
 ---
 name: to-prompt
-description: Transform code, issues, or context into a detailed prompt/context for another LLM to fix or implement. Use when preparing comprehensive context for external LLM assistance, bug fixes, improvements, or feature implementations. Provides detailed context without implementation suggestions, letting the receiving LLM decide how to implement solutions. Focuses on "what" (problem, requirements, current state) not "how" (implementation approach).
+description: Transform code, issues, or context into a detailed prompt/context for another LLM to fix or implement. Use when preparing comprehensive context for external LLM assistance, bug fixes, improvements, or feature implementations. Provides detailed context without implementation suggestions, letting the receiving LLM decide how to implement solutions. Focuses on "what" (problem, requirements, current state) not "how" (implementation approach). Don't use for prompts that already prescribe an implementation, simple one-shot questions, or end-user-facing copy.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # To Prompt
 
 Transform code, issues, or context into detailed prompts for another LLM to fix or implement.

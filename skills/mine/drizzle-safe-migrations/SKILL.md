@@ -1,8 +1,11 @@
 ---
 name: drizzle-safe-migrations
-description: Production-safe Drizzle migration workflow for schema changes that require data backfills or constraint tightening. Use when changing enums/check constraints/defaults, removing status values, or sequencing custom and generated migrations in Drizzle. Trigger on requests about Drizzle migration safety, deployment-safe backfills, migration ordering, and rollback planning.
+description: Production-safe Drizzle migration workflow for schema changes that require data backfills or constraint tightening. Use when changing enums/check constraints/defaults, removing status values, or sequencing custom and generated migrations in Drizzle. Trigger on requests about Drizzle migration safety, deployment-safe backfills, migration ordering, and rollback planning. Don't use for ORMs other than Drizzle, app-layer query optimization, or greenfield schema design.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Drizzle Safe Migrations
 
 ## Overview

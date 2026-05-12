@@ -1,9 +1,12 @@
 ---
 name: tanstack
-description: Comprehensive guide for the TanStack ecosystem in React — Query (caching, mutations, prefetching, SSR), DB (collections, live queries, optimistic updates), Form (state, validation, fields), Router (file-based, type-safe navigation, search params, loaders), and Start (server functions, middleware, auth, SSR). Use when working with any TanStack library in a React/full-stack project.
+description: Comprehensive guide for the TanStack ecosystem in React — Query (caching, mutations, prefetching, SSR), DB (collections, live queries, optimistic updates), Form (state, validation, fields), Router (file-based, type-safe navigation, search params, loaders), and Start (server functions, middleware, auth, SSR). Use when working with any TanStack library in a React/full-stack project. Don't use for non-TanStack data libraries (SWR, Apollo, RTK Query), non-React TanStack ports (Solid, Svelte), or backend-only work.
 allowed-tools: Read, Grep, Glob
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # TanStack Developer Guide
 
 This SKILL.md is a **dispatcher**, not an encyclopedia. The load-bearing detail (code patterns, anti-patterns, edge cases, full checklists) lives in `references/*.md`. The tripwires below exist so you can detect violations during scanning — they are not the contract.

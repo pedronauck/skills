@@ -8,8 +8,11 @@ description: >-
   that feel shallow despite deep reference files. Do not use for authoring new
   skills from scratch, non-skill Markdown, or documentation without SKILL.md
   front matter.
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Skill Load Tips
 
 Refactor pattern for SKILL.md files where the body is the only thing the agent ever reads. The references/ folder might as well not exist.

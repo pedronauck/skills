@@ -11,8 +11,11 @@ description: >-
   runs, integration/security/performance templates, or flaky-test triage; use
   agent-output-audit for those.
 argument-hint: "[qa-output-path]"
+metadata:
+  author: Pedro Nauck
+  github: https://github.com/pedronauck
+  repository: https://github.com/pedronauck/skills
 ---
-
 # Real-User QA Execution
 
 QA the way a real person would experience the product: assigned a persona, walking a journey, exercising charters bound to specific tours, probing the edges users actually hit, and validating CFRs that no single feature owns.
