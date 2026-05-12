@@ -12,6 +12,24 @@ Install this repository into your agent skills directory with the [`skills`](htt
 npx skills add https://github.com/pedronauck/skills
 ```
 
+### Install a single bucket
+
+Use the `owner/repo/<subpath>` shorthand to install only one bucket:
+
+```bash
+# Only the original skills
+npx skills add pedronauck/skills/skills/mine
+
+# Only the curated skills
+npx skills add pedronauck/skills/skills/curated
+```
+
+You can also pin a specific skill with `--skill`:
+
+```bash
+npx skills add pedronauck/skills/skills/mine --skill react
+```
+
 ### Manual install
 
 Copy or symlink the skills you need into your Claude Code configuration:
