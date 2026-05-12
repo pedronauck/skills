@@ -21,8 +21,8 @@ Guide for validating UI implementation against Figma designs using Figma MCP. Wh
 - Figma URLs for components/pages
 
 **For browser-based validation (optional):**
-- `agent-browser` CLI installed (from `qa-execution` companion skill)
-- Dev server running
+- `agent-browser` CLI installed (the `agent-browser` curated companion skill that `qa-execution` also invokes)
+- Dev server running in a production-parity environment
 
 **Setup:**
 ```bash
@@ -266,14 +266,18 @@ Use the unified bug report format from `assets/issue-template.md` (shared with `
 ```markdown
 # BUG-001: [Component] doesn't match Figma design
 
-**Severity:** Medium
-**Priority:** P2
+**Impact (user-side):** Cosmetic
+**Severity:** Low
+**Priority:** P3
 **Type:** UI
-**Status:** Open
+**Status:** pending
+**Persona Affected:** Mobile User
+**Journey Step:** <J-NN journey name, Step N>
 
 ## Environment
 - **Build:** v2.5.0
 - **Browser:** Chrome 120
+- **Viewport:** 1280 × 800
 - **URL:** /components/button
 
 ## Summary
@@ -302,9 +306,10 @@ Button matches Figma design specs exactly.
 - [ ] Check at viewports: 375px, 768px, 1280px
 
 ## Impact
-- **Users Affected:** All
+- **Users Affected:** All who see this button
 - **Frequency:** Always
 - **Workaround:** None
+- **Trust cost:** Signals lack of attention to detail on a brand-visible surface.
 
 ## Related
 - Test Case: TC-UI-001

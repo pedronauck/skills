@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# QA Test Case Generator
-# Interactive workflow for creating comprehensive test cases with automation annotations
+# Real-User QA Test Case Generator
+# Interactive workflow for creating user-centric test cases with persona,
+# journey, and automation annotations.
 # Usage: ./generate_test_cases.sh [qa-output-path/test-cases]
 
 set -e
@@ -16,7 +17,7 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 echo -e "${BLUE}╔══════════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║         QA Test Case Generator                   ║${NC}"
+echo -e "${BLUE}║      Real-User QA Test Case Generator            ║${NC}"
 echo -e "${BLUE}╚══════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -50,15 +51,15 @@ prompt_input() {
 echo -e "${MAGENTA}━━━ Step 1: Test Case Basics ━━━${NC}"
 echo ""
 
-prompt_input "Test Case ID (e.g., TC-FUNC-001, TC-UI-045):" TC_ID true
-prompt_input "Test Case Title:" TC_TITLE true
+prompt_input "Test Case ID (e.g., TC-FUNC-001, TC-PERSONA-012, TC-JOURNEY-007):" TC_ID true
+prompt_input "Test Case Title (state the surface + persona observation):" TC_TITLE true
 
 echo ""
 echo "Priority:"
-echo "1) P0 - Critical (blocks release)"
-echo "2) P1 - High (important features)"
-echo "3) P2 - Medium (nice to have)"
-echo "4) P3 - Low (minor issues)"
+echo "1) P0 - Critical (Blocks-Completion or Data-Loss on P0 journey)"
+echo "2) P1 - High (Trust-Damage or repeated Friction)"
+echo "3) P2 - Medium (Friction on lower-traffic surfaces)"
+echo "4) P3 - Low (Cosmetic)"
 echo ""
 
 prompt_input "Select priority (1-4):" PRIORITY_NUM true
@@ -72,48 +73,91 @@ case $PRIORITY_NUM in
 esac
 
 echo ""
-echo "Test Type:"
-echo "1) Functional"
-echo "2) UI/Visual"
-echo "3) Integration"
-echo "4) Regression"
-echo "5) Performance"
-echo "6) Security"
+echo "Test Type (real-user QA only — TC-INT / TC-SEC / TC-PERF / TC-API are out of scope):"
+echo "1) Functional (TC-FUNC-*)"
+echo "2) UI/Visual (TC-UI-*)"
+echo "3) Regression — journey-driven (TC-REG-*)"
+echo "4) Smoke (SMOKE-*)"
+echo "5) Persona-driven (TC-PERSONA-*)"
+echo "6) Journey-driven (TC-JOURNEY-*)"
+echo "7) Charter (TC-CHARTER-*)"
+echo "8) Tour-driven (TC-TOUR-*)"
+echo "9) CFR — usability/a11y/perf-perception/compat/recoverability (TC-CFR-*)"
 echo ""
 
-prompt_input "Select test type (1-6):" TYPE_NUM true
+prompt_input "Select test type (1-9):" TYPE_NUM true
 
 case $TYPE_NUM in
     1) TEST_TYPE="Functional" ;;
     2) TEST_TYPE="UI/Visual" ;;
-    3) TEST_TYPE="Integration" ;;
-    4) TEST_TYPE="Regression" ;;
-    5) TEST_TYPE="Performance" ;;
-    6) TEST_TYPE="Security" ;;
+    3) TEST_TYPE="Regression" ;;
+    4) TEST_TYPE="Smoke" ;;
+    5) TEST_TYPE="Persona" ;;
+    6) TEST_TYPE="Journey" ;;
+    7) TEST_TYPE="Charter" ;;
+    8) TEST_TYPE="Tour" ;;
+    9) TEST_TYPE="CFR" ;;
     *) TEST_TYPE="Functional" ;;
 esac
 
 prompt_input "Estimated test time (minutes):" EST_TIME false
 
-# Step 2: Automation Strategy
+# Step 2: Persona
 echo ""
-echo -e "${MAGENTA}━━━ Step 2: Automation Strategy ━━━${NC}"
+echo -e "${MAGENTA}━━━ Step 2: Persona ━━━${NC}"
+echo ""
+
+echo "Persona (the user role acting during this test):"
+echo "1) New User (first-time visitor; zero familiarity; low patience)"
+echo "2) Power User (returning expert; daily user; keyboard-driven)"
+echo "3) Casual User (returning, infrequent; remembers goal, not steps)"
+echo "4) Mobile User (touch-first; small viewport; often in transit)"
+echo "5) Accessibility-Reliant (screen reader / keyboard-only / voice)"
+echo "6) Recovering User (returning after a problem; trust fragile)"
+echo ""
+
+prompt_input "Select persona (1-6):" PERSONA_NUM true
+
+case $PERSONA_NUM in
+    1) PERSONA="New User" ;;
+    2) PERSONA="Power User" ;;
+    3) PERSONA="Casual User" ;;
+    4) PERSONA="Mobile User" ;;
+    5) PERSONA="Accessibility-Reliant" ;;
+    6) PERSONA="Recovering User" ;;
+    *) PERSONA="Casual User" ;;
+esac
+
+prompt_input "Journey (J-NN journey name from journey-maps.md, or 'n/a'):" JOURNEY false
+
+# Step 3: Real-User Conditions
+echo ""
+echo -e "${MAGENTA}━━━ Step 3: Real-User Conditions ━━━${NC}"
+echo ""
+
+prompt_input "Device (desktop | laptop | tablet | phone-small | phone-large):" DEVICE false
+prompt_input "Network (wifi-fast | wifi-slow | 4g | 3g | flaky):" NETWORK false
+prompt_input "Browser (Chrome | Safari | Firefox | iOS Safari | Android Chrome):" BROWSER false
+prompt_input "Locale (en-US | pt-BR | de-DE | ar-EG | ...):" LOCALE false
+prompt_input "Modality (mouse-keyboard | touch | screen-reader | keyboard-only | voice):" MODALITY false
+
+# Step 4: Automation Strategy
+echo ""
+echo -e "${MAGENTA}━━━ Step 4: Automation Strategy ━━━${NC}"
 echo ""
 
 echo "Automation Target:"
-echo "1) E2E"
-echo "2) Integration"
-echo "3) Manual-only"
-echo "4) N/A"
+echo "1) E2E (public flow; user-observable behavior)"
+echo "2) Manual-only (exploratory / usability / visual / a11y-via-real-AT)"
+echo "3) N/A"
 echo ""
 
-prompt_input "Select automation target (1-4):" AUTOMATION_TARGET_NUM true
+prompt_input "Select automation target (1-3):" AUTOMATION_TARGET_NUM true
 
 case $AUTOMATION_TARGET_NUM in
     1) AUTOMATION_TARGET="E2E" ;;
-    2) AUTOMATION_TARGET="Integration" ;;
-    3) AUTOMATION_TARGET="Manual-only" ;;
-    4) AUTOMATION_TARGET="N/A" ;;
+    2) AUTOMATION_TARGET="Manual-only" ;;
+    3) AUTOMATION_TARGET="N/A" ;;
     *) AUTOMATION_TARGET="N/A" ;;
 esac
 
@@ -144,17 +188,17 @@ fi
 
 prompt_input "Automation notes or blocker:" AUTOMATION_NOTES false
 
-# Step 3: Objective and Description
+# Step 5: Objective
 echo ""
-echo -e "${MAGENTA}━━━ Step 3: Test Objective ━━━${NC}"
+echo -e "${MAGENTA}━━━ Step 5: Test Objective ━━━${NC}"
 echo ""
 
-prompt_input "What are you testing? (objective):" OBJECTIVE true
-prompt_input "Why is this test important?" WHY_IMPORTANT false
+prompt_input "Objective (state from the persona's perspective):" OBJECTIVE true
+prompt_input "Why this matters to the user (optional):" WHY_IMPORTANT false
 
-# Step 4: Preconditions
+# Step 6: Preconditions
 echo ""
-echo -e "${MAGENTA}━━━ Step 4: Preconditions ━━━${NC}"
+echo -e "${MAGENTA}━━━ Step 6: Preconditions ━━━${NC}"
 echo ""
 
 echo "Enter preconditions (one per line, press Enter twice when done):"
@@ -167,12 +211,12 @@ while true; do
     PRECONDITIONS="${PRECONDITIONS}- ${line}"$'\n'
 done
 
-# Step 5: Test Steps
+# Step 7: Test Steps
 echo ""
-echo -e "${MAGENTA}━━━ Step 5: Test Steps ━━━${NC}"
+echo -e "${MAGENTA}━━━ Step 7: Test Steps (user-language actions) ━━━${NC}"
 echo ""
 
-echo "Enter test steps (format: action | expected result)"
+echo "Enter test steps (action in user-language | expected user-side observable)"
 echo "Type 'done' when finished"
 echo ""
 
@@ -181,42 +225,36 @@ STEP_NUM=1
 
 while true; do
     echo -e "${YELLOW}Step $STEP_NUM:${NC}"
-    prompt_input "Action:" ACTION false
+    prompt_input "User-language action:" ACTION false
 
     if [ "$ACTION" = "done" ] || [ -z "$ACTION" ]; then
         break
     fi
 
-    prompt_input "Expected result:" EXPECTED true
+    prompt_input "Expected user-side observable:" EXPECTED true
 
     TEST_STEPS="${TEST_STEPS}${STEP_NUM}. ${ACTION}"$'\n'"   **Expected:** ${EXPECTED}"$'\n'$'\n'
     ((STEP_NUM++))
 done
 
-# Step 6: Test Data
-echo ""
-echo -e "${MAGENTA}━━━ Step 6: Test Data ━━━${NC}"
-echo ""
-
-prompt_input "Test data required (e.g., user credentials, sample data):" TEST_DATA false
-
-# Step 7: Figma Design (if UI test)
+# Step 8: Figma (only for UI/Visual)
 echo ""
 if [ "$TEST_TYPE" = "UI/Visual" ]; then
-    echo -e "${MAGENTA}━━━ Step 7: Figma Design Validation ━━━${NC}"
+    echo -e "${MAGENTA}━━━ Step 8: Figma Design Validation ━━━${NC}"
     echo ""
 
     prompt_input "Figma design URL (if applicable):" FIGMA_URL false
     prompt_input "Visual elements to validate:" VISUAL_CHECKS false
 fi
 
-# Step 8: Edge Cases
+# Step 9: Edge Cases + Related
 echo ""
-echo -e "${MAGENTA}━━━ Step 8: Additional Info ━━━${NC}"
+echo -e "${MAGENTA}━━━ Step 9: Additional Info ━━━${NC}"
 echo ""
 
-prompt_input "Edge cases or variations to consider:" EDGE_CASES false
+prompt_input "User edge cases or variations to try (from user-edge-cases.md, e.g. 'refresh mid-submit', 'back after success'):" EDGE_CASES false
 prompt_input "Related test cases (IDs):" RELATED_TCS false
+prompt_input "Charter (CH-NN if this was surfaced via a charter, else blank):" CHARTER_ID false
 prompt_input "Notes or comments:" NOTES false
 
 if [ -z "$PRECONDITIONS" ]; then
@@ -252,6 +290,9 @@ cat > "$OUTPUT_FILE" << EOF
 **Estimated Time:** ${EST_TIME:-TBD} minutes
 **Created:** $(date +%Y-%m-%d)
 **Last Updated:** $(date +%Y-%m-%d)
+**Persona:** ${PERSONA}
+**Journey:** ${JOURNEY:-n/a}
+**Charter:** ${CHARTER_ID:-n/a}
 **Automation Target:** ${AUTOMATION_TARGET}
 **Automation Status:** ${AUTOMATION_STATUS}
 **Automation Command/Spec:** ${AUTOMATION_COMMAND}
@@ -263,7 +304,7 @@ cat > "$OUTPUT_FILE" << EOF
 
 ${OBJECTIVE}
 
-${WHY_IMPORTANT:+**Why this matters:** ${WHY_IMPORTANT}}
+${WHY_IMPORTANT:+**Why this matters to the user:** ${WHY_IMPORTANT}}
 
 ---
 
@@ -273,15 +314,21 @@ ${PRECONDITIONS}
 
 ---
 
-## Test Steps
+## Real-User Conditions
 
-${TEST_STEPS}
+| Dimension | Value |
+|---|---|
+| Device | ${DEVICE:-(not specified)} |
+| Network | ${NETWORK:-(not specified)} |
+| Browser | ${BROWSER:-(not specified)} |
+| Locale | ${LOCALE:-en-US} |
+| Modality | ${MODALITY:-(not specified)} |
 
 ---
 
-## Test Data
+## Test Steps
 
-${TEST_DATA:-No specific test data required}
+${TEST_STEPS}
 
 ---
 
@@ -302,7 +349,7 @@ ${VISUAL_CHECKS}
 - [ ] Spacing (padding/margins) accurate
 - [ ] Typography (font, size, weight, color) correct
 - [ ] Colors match design system
-- [ ] Component states (hover, active, disabled) implemented
+- [ ] Component states (hover, active, focus, disabled) implemented
 - [ ] Responsive behavior as designed
 
 ---
@@ -313,14 +360,14 @@ fi
 cat >> "$OUTPUT_FILE" << EOF
 ## Post-conditions
 
-- [Describe system state after test execution]
+- [Describe user-side state after test execution]
 - [Any cleanup required]
 
 ---
 
 ## Edge Cases & Variations
 
-${EDGE_CASES:-Consider boundary values, null inputs, special characters, concurrent users}
+${EDGE_CASES:-Pick relevant entries from ../qa-execution/references/user-edge-cases.md (refresh-during-submit, double-click, autofill, back-after-error, multi-tab, session-expiry, slow-network, locale switch, etc.)}
 
 ---
 

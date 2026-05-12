@@ -1,102 +1,92 @@
-# Systematic Project QA Checklist
+# Real-User QA Checklist
 
-Mark every item as complete before claiming the QA pass is done.
+Mark every item as complete before claiming the QA pass is done. Categories mirror the procedures in SKILL.md. Skipping any category requires explicit reasoning in the verification report.
 
-## Contract Discovery
+## Persona Coverage
 
-- [ ] Root instructions and repository docs were read
-- [ ] The canonical verify gate was identified or an explicit fallback was chosen
-- [ ] The changed surface and regression-critical surface were identified
-- [ ] Web UI surface presence was determined (yes/no with evidence)
-- [ ] E2E support was determined (supported, manual-only, or blocked with evidence)
+- [ ] At least 3 personas were assigned across the planned sessions (see `references/user-personas.md`)
+- [ ] Each charter has exactly one persona assigned and the tester stayed in role
+- [ ] At least one Accessibility-Reliant persona session was attempted (or skip reasoning documented)
+- [ ] At least one Mobile User session was attempted when the product has a mobile surface
+- [ ] Persona attributes (familiarity, motivation, device, network, modality, locale) are recorded for every session
 
-## Baseline
+## Journey Coverage
 
-- [ ] Dependencies were installed with the repository-preferred command
-- [ ] The baseline verification gate was run before scenario testing
-- [ ] Verification order followed fastest-first: lint, build, unit tests, integration tests
-- [ ] Any pre-existing failures were isolated with evidence
-- [ ] Dev server was started and confirmed ready (when Web UI surface exists)
+- [ ] 3-7 high-value journeys were identified for this release-candidate (`references/journey-maps.md`)
+- [ ] Every journey names its **value** (not just its steps) and its **goal observable**
+- [ ] Every journey has at least one **abandonment path** documented
+- [ ] Cross-feature journeys are marked and prioritized
+- [ ] Every journey was executed end-to-end with screenshots at each step
 
-## Flaky Detection (Baseline)
+## Charter Coverage
 
-- [ ] Each baseline failure was run in isolation 3-5 times on the same SHA before classification
-- [ ] No PASS verdict was promoted from a single-retry rerun
-- [ ] All `flaky-suspect` events were recorded in `SUITE HEALTH SNAPSHOT` with timestamp, attempts, retry outcome, and suspected category
-- [ ] Flaky rate in the canonical suite is <2% (or documented as a known blocker)
+- [ ] Every charter has mission + persona + surface + tour + time-box recorded (`references/exploratory-charters.md`)
+- [ ] Time-boxes were honored — no charter ran past its box
+- [ ] Each charter ended with a debrief written within 5 minutes of the box ending
+- [ ] Each charter's findings are linked to filed bugs
+- [ ] Each charter's debrief named a suggested next charter
 
-## CLI and API Validation
+## Off-Script & Edge Case Coverage
 
-- [ ] Changed workflows were exercised through public interfaces
-- [ ] At least one unchanged regression-critical workflow was exercised
-- [ ] Runtime readiness was confirmed with observable signals
-- [ ] Fixtures or fake projects were realistic and minimal
+- [ ] At least one off-script tour was executed per major surface (`references/test-tours.md`)
+- [ ] User edge cases relevant to each surface were attempted (`references/user-edge-cases.md`)
+- [ ] Navigation edges (refresh-during-submit, back-after-success, deep-link-mid-flow) covered for multi-step flows
+- [ ] Form edges (double-click, autofill, paste-from-Word) covered for input-heavy surfaces
+- [ ] Session edges (expiry mid-form, multi-tab, logout-in-another-tab) covered for auth-bearing surfaces
+- [ ] Network edges (Slow 3G, offline mid-submit) covered for any I/O-bearing surface
+- [ ] Locale edges (non-en-US language, RTL, timezone) covered when the surface renders text or dates
 
-## Task Implementation Audit
+## CFR Coverage
 
-Skip this section only if no task, phase, PRD, tech spec, or implementation-plan artifacts exist.
+Run a 45-minute CFR pass covering at least 2 journeys (`references/cfr-checks.md`):
 
-- [ ] Task/phase/spec artifacts were discovered and listed
-- [ ] Every task marked completed or claimed complete was compared against actual implementation files
-- [ ] Every material requirement, subtask, deliverable, and success criterion was mapped to evidence
-- [ ] Checked boxes and status fields were treated as claims, not proof
-- [ ] Public behavior or automated tests were executed for each material completed task
-- [ ] Incomplete completed tasks were marked `REOPEN` or linked to a `BUG-*` issue
-- [ ] Large missing features were not silently passed as QA success
-- [ ] The verification report includes a Task Implementation Audit section with per-task verdicts
-- [ ] Task frontmatter `status:` was used as the declared status; `state.yaml` was read but not written
-- [ ] When running in `.compozy/tasks/<slug>/`, `memory/qa-execution.md` was written with canonical sections **before** any frontmatter status was flipped (memory-precedes-status invariant)
+- [ ] Usability (Nielsen short list) — pass / friction / fail recorded per heuristic
+- [ ] Accessibility (WCAG AA quick check) — keyboard, screen reader, visual
+- [ ] Perceived performance — feedback within targets (paint, interactive, spinner, button)
+- [ ] Compatibility — smoke across Chrome + Safari + Firefox + iOS Safari + Android Chrome
+- [ ] Error recoverability — every failure path tested has an actionable recovery UX
+- [ ] Production parity — no incognito-only tests; cookies enabled; realistic extension set
 
-## AI Implementation Audit (Compozy mode and any AI-implemented tasks)
+## Bugs Filed by User Impact
 
-- [ ] Test diff scanned for `.skip`/`.only`/`xit`/`t.Skip` since the task baseline
-- [ ] Assertions in modified test files verified to not weaken existing checks
-- [ ] Mocks in Integration/E2E classified tests audited against TC `External Dependencies`
-- [ ] Snapshot or gold-file changes justified by a documented requirement change
-- [ ] Requirement → Test mapping table produced (`covers` / `weak` / `missing`) for every REOPEN candidate
-- [ ] Implementing agent's `memory/<phase>.md` (Compozy mode) read before judging the task
-- [ ] Anomalies classified (`genuine-failure` / `grader-bug` / `ambiguous-task` / `bypass-exploit`) in `memory/qa-execution.md` → `Errors / Corrections`
+- [ ] Every bug is classified by user-impact tier (`references/bug-severity-by-user-impact.md`)
+- [ ] Every bug has `Persona Affected:` and `Journey Step:` fields filled in
+- [ ] `Blocks-Completion` and `Data-Loss` bugs on P0 journeys are flagged as release blockers
+- [ ] Multiple `Trust-Damage` findings on the same journey were called out in the verification report
 
-## Web UI Validation
+## Browser Evidence
 
-Skip this section if the project has no Web UI surface.
+When Web UI flows were tested (`references/web-ui-qa.md`):
 
-- [ ] Critical user flows were identified (3-5 flows covering changed and business-critical surfaces)
-- [ ] Each flow followed the open/snapshot/interact/re-snapshot/verify loop
-- [ ] Screenshots were captured at each verification checkpoint
-- [ ] Form flows were tested with both valid and invalid data
-- [ ] Navigation flows were verified (page transitions, deep links, 404 handling)
-- [ ] Error and loading states were triggered and verified
-- [ ] Responsive behavior was tested at relevant viewports (when in scope)
-- [ ] Authentication flow was exercised or state was loaded (when applicable)
-- [ ] Browser session was closed after all flows completed
+- [ ] Dev server was reachable in a production-parity build before any test ran
+- [ ] Each journey followed the open/snapshot/interact/re-snapshot/verify loop
+- [ ] Screenshots were captured at every verification checkpoint and stored in `<qa-output-path>/qa/screenshots/`
+- [ ] Each journey's screenshot set includes start, mid-flow decision point(s), and goal-achieved frame
+- [ ] Responsive behavior was tested at 1280 / 768 / 375 viewports for surfaces with layout changes
+- [ ] Authentication flow was exercised or state was loaded; same auth path real users will take
+- [ ] Browser sessions were closed after all flows completed
 
-## Regression Handling
+## Final Verification Report
 
-- [ ] Every failure was reproduced before fixing
-- [ ] Root cause was identified before implementation
-- [ ] Each changed or regression-critical public flow was classified as existing-e2e, needs-e2e, manual-only, or blocked
-- [ ] Required E2E coverage was added or updated when the repository supported it
-- [ ] Blocked automation gaps were disclosed with exact missing prerequisites
-- [ ] The narrow repro, updated automated coverage, and impacted flows were rerun after each fix
-- [ ] Web UI regressions include before/after screenshot evidence (when applicable)
+- [ ] Report produced from fresh evidence at `<qa-output-path>/qa/verification-report.md`
+- [ ] Persona Coverage section lists every persona × journey × charter combination
+- [ ] Journey Execution Log includes per-step verdicts and screenshot paths
+- [ ] Charter Log includes mission, time-box, debrief, and suggested-next for every charter
+- [ ] Off-Script Findings section names each edge case attempted and its outcome
+- [ ] CFR Findings section gives pass/friction/fail per CFR category per journey
+- [ ] Browser Evidence section captures dev server URL, flows tested, viewports, auth method, blocked flows
+- [ ] Issues Filed section rolls up by user-impact tier and by legacy severity
+- [ ] Blocked sessions or missing prerequisites are disclosed explicitly with the exact gap
 
-## Final Verification
+## What this checklist deliberately omits
 
-- [ ] The full verification gate was rerun after the last code change
-- [ ] The most important CLI and API flows were rerun after the final gate
-- [ ] Narrow E2E specs were rerun after the final code change when they were added or updated
-- [ ] The canonical E2E command or covering subset was rerun when the repository supported E2E
-- [ ] The most important Web UI flows were rerun after the final gate (when applicable)
-- [ ] A verification report was produced from fresh evidence, including automated coverage
-- [ ] Blocked scenarios or missing prerequisites were disclosed explicitly
+These belong to the `agent-output-audit` companion skill, not real-user QA:
 
-## Quality Gates
+- CI verification gate execution (lint, build, unit, integration baseline)
+- Task implementation matrix and frontmatter status reconciliation
+- AI test-hygiene red flag scans (RF-1..RF-6)
+- Independent evaluator protocol for AI transcripts
+- Flaky test triage and quarantine workflow
+- Compozy `state.yaml` / `task_NN.md` interactions
 
-- [ ] Flaky rate <2% in canonical suite
-- [ ] Zero `FAIL` from AI test-hygiene audit on P0/P1 tasks
-- [ ] Zero `Critical`/`High` issues open
-- [ ] Coverage delta ≥ baseline (no regression)
-- [ ] Zero unresolved `flaky-suspect` on P0 flows
-- [ ] Suite Health Snapshot populated in verification report
-- [ ] All Quality Gates evaluated PASS/FAIL/N/A; a FAIL on any gate blocks unconditional final PASS
+If a real-user QA session uncovers a finding that requires one of these, file the bug and recommend the right skill, but don't pivot mid-session.

@@ -1,78 +1,78 @@
 # BUG-<num>: <short-title>
 
+**Impact (user-side):** Blocks-Completion | Data-Loss | Trust-Damage | Friction | Cosmetic
 **Severity:** Critical | High | Medium | Low
 **Priority:** P0 | P1 | P2 | P3
-**Type:** Functional | UI | Performance | Security | Data | Crash
-**Status:** pending | resolved | invalid | flaky-suspect | quarantined
-**Reopens task:** <task_NN.md path or "none">
+**Type:** Functional | UI | Accessibility | Usability | Data | Crash
+**Status:** pending | resolved | invalid
+**Persona Affected:** <New User | Power User | Casual User | Mobile User | Accessibility-Reliant | Recovering User>
+**Journey Step:** <J-NN journey name, Step N (verb)>
 
-> Status values (aligned with cy-codex-loop `issue_NNN.md` frontmatter):
+> Severity is the engineering-triage view. Impact is the user-side view. Both must be filled.
+> See `references/bug-severity-by-user-impact.md` for the mapping rubric.
+> Status values:
 > - `pending` — issue is open and unresolved
 > - `resolved` — fixed during this QA run and verified by re-run
 > - `invalid` — triaged as non-actionable (not a defect, duplicate, environmental)
-> - `flaky-suspect` — one run failed, retry passed; awaiting confirmation runs per `references/flaky-triage.md`
-> - `quarantined` — confirmed flaky after diagnosis; isolated from merge gate but still monitored (requires named owner and fix-by date)
 
 ## Environment
 
-- **Build:** <version or commit>
-- **OS:** <operating system if relevant>
-- **Browser:** <browser and version if Web UI>
+- **Build:** <version or commit, production-parity status>
+- **OS:** <operating system and version>
+- **Browser:** <browser and version>
+- **Viewport:** <width × height>
+- **Network:** <wifi-fast | wifi-slow | 4g | 3g | flaky>
+- **Locale:** <en-US | pt-BR | ...>
 - **URL:** <page or endpoint where bug occurs>
 
 ## Summary
 
-<Describe the observable failure in one short paragraph.>
+<Describe the observable failure from the persona's perspective in one short paragraph. What did the user try, what did they see, what did they expect?>
 
 ## Reproduction
 
-```bash
-<exact command or sequence>
-```
+Charter: <CH-NN that surfaced this, or "off-script" / "CFR pass" / "journey execution">
+Tour: <if surfaced inside a tour, name it>
 
-Observed before the fix:
+Steps:
 
-- <observable result>
+1. <plain-language user action>
+2. <plain-language user action>
+3. <where it failed>
+
+Observed:
+
+- <what the user saw / heard / felt>
+- <screenshot path>
 
 ## Expected
 
-<Describe the correct behavior.>
+<Describe the correct user-side behavior. Cite the journey goal observable when relevant.>
 
 ## Root cause
 
-<Describe the actual source of the failure, not the symptom.>
+<Describe the actual source of the failure (when known), not the symptom. Engineering fills this in during fix.>
 
 ## Fix
 
-<Describe the production change that fixed the root cause.>
+<Describe the production change that resolved the root cause. Engineering fills this in.>
 
 ## Verification
 
 - <narrow reproduction rerun>
-- <broader regression or full gate rerun>
+- <re-run of the affected journey from `references/journey-maps.md`>
+- <CFR pass on the affected category, if applicable>
 
 ## Impact
 
-- **Users Affected:** <all / subset / specific role>
-- **Frequency:** <always / sometimes / rarely>
+- **Users Affected:** <all of <persona> | subset described | specific role>
+- **Frequency:** <always | sometimes | rare>
 - **Workaround:** <describe or "none">
-
-## Automation Follow-up
-
-- **Required:** Yes | No
-- **Status:** Added | Pending | Blocked | N/A
-- **Spec / Command:** <path, suite, or command>
-- **Notes:** <rationale or blocker>
-
-## Flake Evidence (when Status is `flaky-suspect` or `quarantined`)
-
-- **Failure Pattern:** consistent | intermittent | order-dependent | env-only
-- **Reproducibility Rate:** <e.g. 3/10 runs>
-- **Suspected Category:** async-wait | concurrency | order-dep | external | non-determinism | other
-- **Owner:** <named person, not team>
-- **Fix-by Date:** <YYYY-MM-DD>
+- **Trust cost:** <one sentence on what this signals to the user about the product>
 
 ## Related
 
-- Test Case: <TC-ID if applicable>
+- Test Case: <TC-ID from qa-report, if applicable>
 - Figma Design: <URL if UI bug>
+- Related journeys: <J-NN list>
+- Related charters: <CH-NN list>

@@ -3,3 +3,7 @@ __pycache__/
 .DS_Store
 .env
 skills/**/**/autoresearch*
+.agents/skills
+.claude/skills
+.claude/ledger
+.codex/ledger

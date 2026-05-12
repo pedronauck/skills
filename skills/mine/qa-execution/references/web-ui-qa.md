@@ -10,7 +10,6 @@ Read this reference when the project has a Web UI surface and browser flows are 
 - Web UI QA Categories (Functional, Form Validation, Error/Loading, Navigation, Responsive, Accessibility, User Understanding, Anti-Smoke Guardrail)
 - Authentication Flows
 - Viewport Testing
-- Pipeline Position
 
 ## Preferred Browser Order
 
@@ -124,7 +123,7 @@ Test when the changed surface affects layout or when responsive behavior is regr
 ### Anti-Smoke Guardrail
 - [ ] A route-render check is treated as smoke only, not as proof of behavior
 - [ ] A list-count check is treated as smoke unless it is tied to a specific persisted object from the scenario
-- [ ] Browser evidence is paired with CLI/API/runtime evidence for at least one overlapping object or artifact
+- [ ] Browser evidence is paired with the journey's expected end-state observable (the goal in `references/journey-maps.md`)
 
 ## Authentication Flows
 
@@ -168,13 +167,8 @@ agent-browser --session desktop snapshot -i
 agent-browser --session desktop screenshot <qa-output-path>/desktop.png
 ```
 
-## Pipeline Position
+## When to run Web UI QA
 
-Browser-based QA runs **after** CLI-based validation in this order:
+Web UI QA runs **after the build is deployed and reachable** in a real-user-realistic environment. The CI gate (lint, build, unit, integration) is a precondition for QA — not a QA step. If those aren't already green, stop and surface the gap; running user QA on a broken build wastes the session.
 
-1. Lint + type-check + static analysis
-2. Build
-3. Unit tests
-4. Integration tests
-5. **Start dev server -> Browser/E2E flows** (Web UI QA)
-6. Visual regression (if baselines exist)
+For audits of AI-implemented work that need CI-gate execution as part of verification, use the `agent-output-audit` companion skill instead.
