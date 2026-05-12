@@ -25,6 +25,21 @@ Mark every item as complete before claiming the QA pass is done.
 - [ ] Runtime readiness was confirmed with observable signals
 - [ ] Fixtures or fake projects were realistic and minimal
 
+## Task Implementation Audit
+
+Skip this section only if no task, phase, PRD, tech spec, or implementation-plan artifacts exist.
+
+- [ ] Task/phase/spec artifacts were discovered and listed
+- [ ] Every task marked completed or claimed complete was compared against actual implementation files
+- [ ] Every material requirement, subtask, deliverable, and success criterion was mapped to evidence
+- [ ] Checked boxes and status fields were treated as claims, not proof
+- [ ] Public behavior or automated tests were executed for each material completed task
+- [ ] Incomplete completed tasks were marked `REOPEN` or linked to a `BUG-*` issue
+- [ ] Large missing features were not silently passed as QA success
+- [ ] The verification report includes a Task Implementation Audit section with per-task verdicts
+- [ ] Task frontmatter `status:` was used as the declared status; `state.yaml` was read but not written
+- [ ] When running in `.compozy/tasks/<slug>/`, `memory/qa-execution.md` was written with canonical sections **before** any frontmatter status was flipped (memory-precedes-status invariant)
+
 ## Web UI Validation
 
 Skip this section if the project has no Web UI surface.

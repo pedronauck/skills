@@ -27,6 +27,33 @@ Manual-only or blocked:
   - <flow name>: <reason>
   - <flow name>: <reason>
 
+TASK IMPLEMENTATION AUDIT (when task, phase, PRD, or tech spec artifacts exist)
+-------------------------------------------------------------------------------
+Compozy slug: <.compozy/tasks/<slug>/ or "n/a">
+Plan sources:
+  - <task/phase/spec path>
+Summary:
+  - Tasks audited: <count>
+  - PASS: <count>
+  - PARTIAL: <count>
+  - FAIL: <count>
+  - REOPEN: <count>
+  - BLOCKED: <count>
+  - Fixed during QA: <count>
+Results:
+  - Task: <task_NN.md path>
+    Declared status (frontmatter): <pending | in_progress | completed>
+    QA verdict: <PASS | PARTIAL | FAIL | REOPEN | BLOCKED>
+    Techspec deliverable: <section in _techspec.md or "none">
+    Implementation evidence: <files, specs, commands, browser evidence>
+    Verification evidence: <commands and outcomes>
+    Gaps: <none or missing requirements/checklist items>
+    Action: <none | fixed | frontmatter reverted to <status> | BUG-NNN filed>
+Reopened tasks (frontmatter reverted from `completed`):
+  - <task_NN.md path>: <reason> | New frontmatter status: <pending | in_progress> | Bug: <BUG-NNN or none>
+Memory file written: <.compozy/tasks/<slug>/memory/qa-execution.md or "n/a">
+state.yaml: read-only (cy-codex-loop owns mutation via update-state.py)
+
 BROWSER EVIDENCE (when Web UI flows were tested)
 -------------------------------------------------
 Dev server: <start command and confirmed URL>
@@ -59,4 +86,4 @@ By severity:
   - Medium: <count>
   - Low: <count>
 Details:
-  - <BUG-ID>: <short-title> | Severity: <level> | Priority: <P0-P3> | Status: <Open or Fixed>
+  - <BUG-ID>: <short-title> | Severity: <level> | Priority: <P0-P3> | Status: <pending | resolved | invalid> | Reopens task: <task_NN.md path or "none">

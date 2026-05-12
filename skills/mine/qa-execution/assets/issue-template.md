@@ -3,7 +3,13 @@
 **Severity:** Critical | High | Medium | Low
 **Priority:** P0 | P1 | P2 | P3
 **Type:** Functional | UI | Performance | Security | Data | Crash
-**Status:** Open
+**Status:** pending | resolved | invalid
+**Reopens task:** <task_NN.md path or "none">
+
+> Status values (aligned with cy-codex-loop `issue_NNN.md` frontmatter):
+> - `pending` — issue is open and unresolved
+> - `resolved` — fixed during this QA run and verified by re-run
+> - `invalid` — triaged as non-actionable (not a defect, duplicate, environmental)
 
 ## Environment
 

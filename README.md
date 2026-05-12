@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **121 agent skills** for Claude Code and compatible AI coding assistants — **26 original** (⭐️), **21 hand-picked** (💎), **17 marketing & business** (📣), plus **57 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **122 agent skills** for Claude Code and compatible AI coding assistants — **27 original** (⭐️), **21 hand-picked** (💎), **17 marketing & business** (📣), plus **57 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -26,7 +26,7 @@ ln -s $(pwd)/skills/mine ~/.claude/skills/mine
 
 Skills are organized into four top-level buckets:
 
-- `skills/mine/` — 26 original skills authored in this repository (⭐️)
+- `skills/mine/` — 27 original skills authored in this repository (⭐️)
 - `skills/curated/` — 21 hand-picked community skills (💎)
 - `skills/marketing/` — 17 marketing, business, and writing skills (📣)
 - `skills/community/` — 57 broader community skills
@@ -67,6 +67,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 ### UI/UX Design
 
+- **[ui-craft](./skills/mine/ui-craft)** ⭐️ — Anti-AI-slop guardrails for UI/UX work — usability heuristics, accessibility floors, design-system discipline, 14 named slop patterns with severity tags, tunable design dials (`VISUAL_VARIANCE`/`MOTION_INTENSITY`/`INFORMATION_DENSITY`), scene-driven decisions, Product vs Brand registers, anti-defaults blocklist, 7 named UI archetypes, plus performance / motion / dark-mode reference packs and executable contrast + token-drift scripts
 - **[design-spec-extraction](./skills/community/design-spec-extraction)** — Extract production-ready JSON design specs from visual inputs using a 7-pass architecture
 
 ### Backend & APIs
@@ -143,7 +144,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[a11y-testing](./skills/community/a11y-testing)** — Automated accessibility testing with axe-core, Playwright, and jest-axe
 - **[test-antipatterns](./skills/mine/test-antipatterns)** ⭐️ — Prevent common testing anti-patterns like testing mock behavior
 - **[qa-report](./skills/mine/qa-report)** ⭐️ — Generate test plans, manual test cases, regression suites, and bug reports
-- **[qa-execution](./skills/mine/qa-execution)** ⭐️ — Discover the repo verification contract, run build/lint/test/start gates, exercise end-to-end workflows, and re-verify
+- **[qa-execution](./skills/mine/qa-execution)** ⭐️ — Audit task/spec completion against real implementation evidence, discover the repo verification contract, run build/lint/test/start gates, exercise end-to-end CLI/HTTP/browser workflows, reopen incomplete tasks via frontmatter, and re-verify. Integrates with `cy-codex-loop` slugs at `.compozy/tasks/<slug>/`.
 - **[verification-before-completion](./skills/community/verification-before-completion)** — Run verification commands and confirm output before claiming success
 - **[adversarial-review](./skills/community/adversarial-review)** — Spawn opposing AI model reviewers to adversarially challenge work
 
