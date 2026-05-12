@@ -2,6 +2,16 @@
 
 Comprehensive guide to regression testing strategies and execution. When executing regression suites against a live repository, use the `qa-execution` companion skill which follows this same execution order and priority scheme.
 
+## Contents
+
+- What is Regression Testing?
+- Regression Test Suite Structure (Smoke / Full / Targeted)
+- Building a Regression Suite (critical paths, prioritization, grouping, automation tagging)
+- Regression Suite Examples (E-commerce)
+- Execution Strategy (order, pass/fail criteria)
+- Regression Test Management (maintenance, automation considerations)
+- Regression Test Execution Report (summary, automated coverage, critical failures, recommendation)
+
 ---
 
 ## What is Regression Testing?

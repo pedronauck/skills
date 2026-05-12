@@ -2,6 +2,16 @@
 
 Read this reference when the project has a Web UI surface and browser flows are in scope.
 
+## Contents
+
+- Preferred Browser Order
+- `agent-browser` Fallback Core Loop (Navigation, Snapshot/Interaction, Evidence, Waiting)
+- Key Rules
+- Web UI QA Categories (Functional, Form Validation, Error/Loading, Navigation, Responsive, Accessibility, User Understanding, Anti-Smoke Guardrail)
+- Authentication Flows
+- Viewport Testing
+- Pipeline Position
+
 ## Preferred Browser Order
 
 1. Use `browser-use:browser` first when the Browser plugin is available.

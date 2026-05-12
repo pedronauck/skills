@@ -1,6 +1,6 @@
 ---
 name: qa-report
-description: Generate comprehensive test plans, test cases, regression test suites, automation annotations, and bug reports for QA engineers. Includes Figma MCP integration for design validation. Use when planning QA before execution, documenting test strategies, marking which flows require E2E follow-up, or creating structured bug reports. Do not use for executing tests against a live repository or running verification gates — use qa-execution for that.
+description: Generate comprehensive test plans, test cases, regression test suites, automation annotations, and bug reports for QA engineers. Includes Figma MCP integration for design validation. Drives every deliverable from a Required Reading Router that points to `references/test_case_templates.md`, `references/regression_testing.md`, `references/figma_validation.md`, and `references/bug_report_templates.md` — inline content in the SKILL body is a tripwire, the references are the contract. Use when planning QA before execution, documenting test strategies, marking which flows require E2E follow-up, or creating structured bug reports. Do not use for executing tests against a live repository or running verification gates — use qa-execution for that.
 trigger: explicit
 argument-hint: "[qa-output-path]"
 ---
@@ -8,6 +8,25 @@ argument-hint: "[qa-output-path]"
 # QA Test Planner
 
 Plan and document QA deliverables — test plans, test cases, regression suites, Figma validations, and bug reports — in a structured format compatible with `qa-execution` execution.
+
+## Required Reading Router
+
+Match your task to the row. Read the listed files **in full before** producing the deliverable. They are not appendices — they are the templates and contracts the deliverable must conform to. Inline content in this SKILL.md is a pointer, not a substitute.
+
+| Task                                          | MUST read                                                              |
+| --------------------------------------------- | ---------------------------------------------------------------------- |
+| Writing a Test Plan (Step 3)                  | `references/test_case_templates.md`                                    |
+| Generating Test Cases (Step 4)                | `references/test_case_templates.md`                                    |
+| Building a Regression Suite (Step 5)          | `references/regression_testing.md`                                     |
+| Validating against Figma (Step 6)             | `references/figma_validation.md`                                       |
+| Filing a Bug Report (Step 7)                  | `references/bug_report_templates.md` + `assets/issue-template.md`      |
+
+## Reference Index
+
+- `references/test_case_templates.md` — every template variant (Standard, Functional, UI/Visual, Integration, Regression, Security, Performance), required fields per type, and the Automation Metadata block that `qa-execution` parses.
+- `references/regression_testing.md` — suite tiers (Smoke / Targeted / Full / Sanity), prioritization rules, automation tagging, execution order, pass/fail/conditional criteria.
+- `references/figma_validation.md` — Figma MCP queries, the spec → inspect → document workflow, responsive checks at 1280 / 768 / 375, common discrepancies catalog.
+- `references/bug_report_templates.md` — Standard, UI/Visual, and Performance bug variants with the full required-field set; `assets/issue-template.md` is the minimum-viable subset bundled for in-skill use.
 
 ## Required Inputs
 
@@ -48,22 +67,34 @@ Parse the user request to determine which deliverable to generate:
 
 **Step 3: Generate Test Plans**
 
-1. Read `references/test_case_templates.md` for the test plan structure.
+1. **STOP. Read `references/test_case_templates.md` in full before drafting the plan.** That file owns every section heading, the Automation Metadata block, and the per-type required fields. The mandatory-section list below is a tripwire, not the contract.
 2. Generate a test plan document with these mandatory sections:
    - Executive summary with objectives and key risks.
    - Scope definition (in-scope and out-of-scope).
    - Test strategy and approach.
    - Automation strategy covering which flows should become E2E, which remain manual-only, and which are blocked by environment gaps.
    - Environment requirements (OS, browsers, devices).
-   - Entry criteria (what must be true before testing begins).
-   - Exit criteria (what must be true before testing ends, including pass-rate thresholds and automation follow-up expectations for critical flows).
+   - **Entry criteria** (separated and explicit, all must hold before testing begins):
+     - Build is stable on the target SHA.
+     - Test data is loaded and matches fixture expectations.
+     - Environment health-check passes (services reachable, migrations applied, dependencies installed).
+     - Requirements are baselined and traceable to test cases.
+   - **Exit criteria** (separated and explicit, all must hold before testing concludes):
+     - 100% of P0 test cases PASS.
+     - ≥ 90% of P1 test cases PASS.
+     - Zero `Critical` or `High` issues open.
+     - Regression suite executed against the change set.
+     - Automation follow-up registered for every `Missing` or `Blocked` automation annotation.
+   - **Retesting vs Regression** distinction (state explicitly which mode applies to each suite execution):
+     - **Retesting**: re-validates the fix of a specific reported defect. Scope is the BUG and its narrow reproduction.
+     - **Regression**: validates that a change did not break unrelated areas. Scope is the broader suite, prioritized by `Risk × Impact`.
    - Risk assessment table (Risk, Probability, Impact, Mitigation).
    - Timeline and deliverables.
 3. Write the plan to `<qa-output-path>/qa/test-plans/<feature-slug>-test-plan.md`.
 
 **Step 4: Generate Test Cases**
 
-1. Read `references/test_case_templates.md` to select the appropriate template variant (Functional, UI, Integration, Regression, Security, Performance).
+1. **STOP. Read `references/test_case_templates.md` in full before writing any test case.** The variant selection (Functional / UI / Integration / Regression / Security / Performance) and the per-variant required fields live there — the inline ID prefix table and field bullets below are tripwires, not the contract.
 2. Assign each test case an ID following the naming scheme:
 
    | Type | Prefix | Example |
@@ -82,6 +113,7 @@ Parse the user request to determine which deliverable to generate:
    - **Preconditions:** Setup requirements and test data.
    - **Test Steps:** Numbered actions with an `**Expected:**` result for each.
    - **Edge Cases:** Boundary values, null inputs, special characters.
+   - **External Dependencies:** Real external systems exercised by this case (network, DB, queue, 3rd-party API, filesystem, clock). Mocks are permitted only in unit tests and strictly at the I/O boundaries listed here. In `Integration` or `E2E` cases, every dependency listed here must be exercised real — `qa-execution` audits this against the test diff per `qa-execution/references/ai-implementation-audit.md`.
    - **Automation Target:** `E2E`, `Integration`, or `Manual-only`.
    - **Automation Status:** `Existing`, `Missing`, `Blocked`, or `N/A`.
    - **Automation Command/Spec:** Existing spec path or command when known.
@@ -91,7 +123,7 @@ Parse the user request to determine which deliverable to generate:
 
 **Step 5: Build Regression Suites**
 
-1. Read `references/regression_testing.md` for suite structure and execution strategy.
+1. **STOP. Read `references/regression_testing.md` in full before classifying tiers, prioritizing, or defining pass/fail criteria.** That file owns the tier definitions, prioritization rubric, automation-tagging rules, execution-order contract, and the `PASS` / `FAIL` / `CONDITIONAL` thresholds. The tier table and percentages below are tripwires, not the contract.
 2. Classify tests into tiers:
 
    | Suite | Duration | Frequency | Coverage |
@@ -120,7 +152,7 @@ Parse the user request to determine which deliverable to generate:
 
 Skip this step if Figma MCP is not configured.
 
-1. Read `references/figma_validation.md` for the validation workflow.
+1. **STOP. Read `references/figma_validation.md` in full before issuing any Figma MCP query.** That file owns the spec→inspect→document workflow, the MCP query catalog, the responsive checks at 1280/768/375, and the common-discrepancies catalog. The property bullets below are tripwires, not the contract.
 2. Extract design specifications from Figma using MCP queries:
    - Dimensions (width, height).
    - Colors (background, text, border — exact hex values).
@@ -138,15 +170,17 @@ Skip this step if Figma MCP is not configured.
 
 **Step 7: Create Bug Reports**
 
-1. Use the unified bug report format from `assets/issue-template.md`, shared with `qa-execution`.
+1. **STOP. Read `references/bug_report_templates.md` in full before filing any bug.** That file owns the Standard, UI/Visual, and Performance variants with their full required-field sets. `assets/issue-template.md` is the minimum-viable subset shared with `qa-execution` — use it for the inline frontmatter, but the variant-specific fields come from the reference.
 2. Assign a bug ID with the `BUG-` prefix (e.g., `BUG-001`).
 3. Every bug report must include:
    - **Severity:** Critical | High | Medium | Low.
    - **Priority:** P0 | P1 | P2 | P3.
+   - **Status:** `pending` | `resolved` | `invalid` | `flaky-suspect` | `quarantined` (aligned with `qa-execution` Step 6 vocabulary; see `assets/issue-template.md` for full definitions).
    - **Environment:** Build, OS, Browser, URL.
    - **Reproduction:** Exact steps to reproduce.
    - **Expected vs Actual:** Clear descriptions.
    - **Impact:** Users affected, frequency, workaround.
+   - **Flake Evidence** (only when Status is `flaky-suspect` or `quarantined`): Failure Pattern, Reproducibility Rate, Suspected Category, Owner, Fix-by Date.
    - **Related:** TC-ID if discovered during test case execution, Figma URL if UI bug.
 4. Write each bug report to `<qa-output-path>/qa/issues/<BUG-ID>.md`.
 5. When creating bug reports interactively, execute `scripts/create_bug_report.sh <qa-output-path>/issues`.

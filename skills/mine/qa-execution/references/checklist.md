@@ -18,6 +18,13 @@ Mark every item as complete before claiming the QA pass is done.
 - [ ] Any pre-existing failures were isolated with evidence
 - [ ] Dev server was started and confirmed ready (when Web UI surface exists)
 
+## Flaky Detection (Baseline)
+
+- [ ] Each baseline failure was run in isolation 3-5 times on the same SHA before classification
+- [ ] No PASS verdict was promoted from a single-retry rerun
+- [ ] All `flaky-suspect` events were recorded in `SUITE HEALTH SNAPSHOT` with timestamp, attempts, retry outcome, and suspected category
+- [ ] Flaky rate in the canonical suite is <2% (or documented as a known blocker)
+
 ## CLI and API Validation
 
 - [ ] Changed workflows were exercised through public interfaces
@@ -39,6 +46,16 @@ Skip this section only if no task, phase, PRD, tech spec, or implementation-plan
 - [ ] The verification report includes a Task Implementation Audit section with per-task verdicts
 - [ ] Task frontmatter `status:` was used as the declared status; `state.yaml` was read but not written
 - [ ] When running in `.compozy/tasks/<slug>/`, `memory/qa-execution.md` was written with canonical sections **before** any frontmatter status was flipped (memory-precedes-status invariant)
+
+## AI Implementation Audit (Compozy mode and any AI-implemented tasks)
+
+- [ ] Test diff scanned for `.skip`/`.only`/`xit`/`t.Skip` since the task baseline
+- [ ] Assertions in modified test files verified to not weaken existing checks
+- [ ] Mocks in Integration/E2E classified tests audited against TC `External Dependencies`
+- [ ] Snapshot or gold-file changes justified by a documented requirement change
+- [ ] Requirement → Test mapping table produced (`covers` / `weak` / `missing`) for every REOPEN candidate
+- [ ] Implementing agent's `memory/<phase>.md` (Compozy mode) read before judging the task
+- [ ] Anomalies classified (`genuine-failure` / `grader-bug` / `ambiguous-task` / `bypass-exploit`) in `memory/qa-execution.md` → `Errors / Corrections`
 
 ## Web UI Validation
 
@@ -73,3 +90,13 @@ Skip this section if the project has no Web UI surface.
 - [ ] The most important Web UI flows were rerun after the final gate (when applicable)
 - [ ] A verification report was produced from fresh evidence, including automated coverage
 - [ ] Blocked scenarios or missing prerequisites were disclosed explicitly
+
+## Quality Gates
+
+- [ ] Flaky rate <2% in canonical suite
+- [ ] Zero `FAIL` from AI test-hygiene audit on P0/P1 tasks
+- [ ] Zero `Critical`/`High` issues open
+- [ ] Coverage delta ≥ baseline (no regression)
+- [ ] Zero unresolved `flaky-suspect` on P0 flows
+- [ ] Suite Health Snapshot populated in verification report
+- [ ] All Quality Gates evaluated PASS/FAIL/N/A; a FAIL on any gate blocks unconditional final PASS

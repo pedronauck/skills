@@ -2,6 +2,15 @@
 
 Guide for validating UI implementation against Figma designs using Figma MCP. When executing validations in a live browser, use the `agent-browser` CLI from the `qa-execution` companion skill.
 
+## Contents
+
+- Prerequisites
+- Validation Workflow (Step 1: Get Design Specs, Step 2: Inspect Implementation, Step 3: Document Discrepancies)
+- What to Validate (Layout & Spacing, Typography, Colors, Components, Interactive States)
+- Common Discrepancies (Typography, Spacing, Color, Responsive)
+- Test Case Template (Desktop 1280, Tablet 768, Mobile 375)
+- Figma MCP Queries (Component Specs, Color System)
+
 ---
 
 ## Prerequisites

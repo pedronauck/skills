@@ -19,6 +19,49 @@ UI craft is the discipline of producing user-facing surfaces that respect the us
 
 A user interface is a contract with a real person. Ship slop and the contract breaks.
 
+## Required Reading Router
+
+Match your task to the row. Read the listed files **in full before generating anything visual**. They are not appendices — they are load-bearing. Inline content in this SKILL.md is a pointer to the reference file, not a substitute for it. Files are loaded JIT (never all at once); but every row whose trigger applies to your task is mandatory, not optional.
+
+| Task                                          | MUST read                                                        |
+| --------------------------------------------- | ---------------------------------------------------------------- |
+| Any interactive widget (dialog, menu, combo)  | `references/accessibility-floor.md`                              |
+| Auditing AI-generated UI                      | `references/ai-slop-patterns.md` + `references/anti-defaults.md` |
+| Designing a novel surface                     | `references/usability-foundations.md`                            |
+| Picking or extending a component pattern      | `references/component-patterns.md`                               |
+| Writing or reviewing user-visible text        | `references/microcopy-quality.md`                                |
+| Implementing or reviewing dark mode           | `references/dark-mode.md`                                        |
+| Animation / transitions / motion review       | `references/motion-patterns.md`                                  |
+| AI / agent UI (chat, streaming, citations)    | `references/human-ai-ux.md`                                      |
+| Working with DESIGN.md or extending tokens    | `references/design-system-integration.md`                        |
+| Performance work / pre-ship gates             | `references/performance.md`                                      |
+| "We need a [Linear/Notion-like] X" brief      | `references/archetypes.md`                                       |
+| No existing token system in the repo          | `references/visual-craft.md`                                     |
+
+## Reference Index
+
+What each file covers (the Router above tells you *when* to load them):
+
+- `references/usability-foundations.md` — Nielsen 10 heuristics, Laws of UX, progressive disclosure, mental models.
+- `references/accessibility-floor.md` — Full WCAG 2.2 AA checklist, ARIA patterns (dialog, combobox, menu, tabs, slider, listbox), verification recipes.
+- `references/visual-craft.md` — Typography scales, color systems, spacing rhythm, motion physics, dark mode, elevation.
+- `references/component-patterns.md` — Do/don't per component: buttons, inputs, dialogs, navigation, tables, dropdowns, tabs, popovers, toasts.
+- `references/microcopy-quality.md` — Full banned-vocabulary list, tone guides per surface, error/empty/CTA copy rules.
+- `references/ai-slop-patterns.md` — Before/after for each of the 14 anti-slop patterns. Detection prompts. Remediation recipes.
+- `references/anti-defaults.md` — 17 literal artifacts to refuse on sight (emoji-as-icon, "Inter" by reflex, centred hero, placeholder names, gradient text, glassmorphism padrão, modal-as-first-thought, etc.).
+- `references/human-ai-ux.md` — Microsoft + IBM agent/AI UI guidelines distilled.
+- `references/design-system-integration.md` — Canonical DESIGN.md sections, semantic tokens, shadcn/Radix composition, rules-files for AI codegen.
+- `references/performance.md` — 80ms perceived-performance threshold, font-loading zero-CLS strategy, executable pre-ship gate.
+- `references/motion-patterns.md` — 100/300/500 duration rule, easing curves, Tailwind/CSS/Framer code, reduced-motion templates, severity-tagged anti-patterns.
+- `references/dark-mode.md` — Surface-lightness elevation, accent desaturation, semantic token strategy, dangerous combinations.
+- `references/archetypes.md` — Seven named archetypes (Bento, Command Palette, Focus Mode, Live Status, Intelligent List, Empty State Hero, Inline Editor) each with a six-slot signature contract.
+
+### Scripts
+
+- `scripts/check-contrast.mjs` — verify foreground/background WCAG AA/AAA + APCA Lc. Zero-dependency, accepts hex / rgb / oklch. Wire into CI when token files change.
+- `scripts/detect-token-drift.mjs` — scan source for raw hex / rgb / hsl / oklch outside designated token paths. Reports file:line with replacement suggestion.
+- `scripts/validate-metadata.py` — validate this skill's `name`/`description` frontmatter against the agentskills.io spec.
+
 ## Tunable Design Dials
 
 Three named dials let the user steer taste without dragging the conversation through dozens of micro-preferences. Declare values before generating anything visual, and pin them in the deliverable so a future review can re-anchor.
@@ -110,24 +153,18 @@ One sentence, written from the user's perspective. *"The user opens this dialog 
 ### Step 3 — Apply the usability filter
 Run the surface through Nielsen's 10 heuristics + the load-bearing Laws of UX (Jakob, Hick, Miller, Fitts, Tesler). Identify the one or two that pose the most risk for this surface.
 
-For depth, read `references/usability-foundations.md` when the surface is novel, complex, or being audited.
+**STOP. If this surface is novel, complex, or being audited, read `references/usability-foundations.md` in full before continuing this step.** The inline mention of "Nielsen 10 + Laws of UX" here is not a substitute for the reference.
 
 **Stop condition:** If the surface violates a heuristic without justification (e.g. no visible system status during a long-running action, hidden destructive primary action), redesign before continuing.
 
 ### Step 4 — Enforce the accessibility floor
-WCAG 2.2 AA is the floor, not the ceiling. Non-negotiables for every interactive surface:
+WCAG 2.2 AA is the floor, not the ceiling. Gist tripwires — the floor items that catch most slop:
 
-- Text contrast ≥ 4.5:1 (≥ 3:1 for ≥ 18.66px bold or ≥ 24px regular)
-- Non-text UI / state indicators contrast ≥ 3:1
-- Focus visible on every interactive element (2px outline minimum, not just color change)
-- All interactive surfaces reachable and operable by keyboard (Tab, Shift+Tab, Enter, Space, Esc, Arrow keys per WAI-ARIA pattern)
-- Target size ≥ 24×24 CSS pixels (≥ 44×44 on touch surfaces)
-- `prefers-reduced-motion` honored: replace transforms/translates with opacity-only or no motion
-- Semantic landmarks (`main`, `nav`, `header`, `footer`, `aside`) and headings in order (one `h1`, then `h2` siblings, no level skips)
-- Form controls have programmatic labels (`<label for>`, `aria-labelledby`, or `aria-label`)
-- Errors associated with their field via `aria-describedby` and announced via `aria-live="polite"` or `role="alert"` for blocking errors
+- Text contrast ≥ 4.5:1 (≥ 3:1 for large text); non-text/state indicators ≥ 3:1; **focus-visible** ≥ 2px and ≥ 3:1 on every interactive element.
+- Full keyboard reachability and operation (Tab, Shift+Tab, Enter, Space, Esc, Arrows per WAI-ARIA); target size ≥ 24×24 (≥ 44×44 on touch); `prefers-reduced-motion` honored.
+- Semantic landmarks + heading order; form controls programmatically labeled; errors associated via `aria-describedby` and announced via `aria-live` / `role="alert"`.
 
-For ARIA component patterns (dialog, combobox, menu, tabs, slider, listbox) and verification recipes, read `references/accessibility-floor.md`.
+**STOP. Read `references/accessibility-floor.md` in full before implementing or reviewing any interactive widget.** That file contains the complete non-negotiables list, the ARIA component patterns (dialog, combobox, menu, tabs, slider, listbox), and the verification recipes. The three bullets above are tripwires, not the contract.
 
 **Stop condition:** If a floor item cannot be met, that is a blocker, not a trade-off.
 
@@ -141,7 +178,7 @@ Draw values from the design system. If the system is missing a value:
 - **Motion:** duration 80–240ms for state, 240–400ms for entry/exit, easing per the system (`ease-out` for entry, `ease-in` for exit)
 - **Elevation:** use the elevation scale (`--shadow-1` … `--shadow-5`); no ad-hoc box-shadows
 
-For typography scales, color theory, spacing rhythm, dark-mode strategy, and motion physics, read `references/visual-craft.md`.
+**STOP. Read `references/visual-craft.md` in full whenever the design system lacks a value you need, when there is no token system at all, or when you are extending typography / color / spacing / motion / elevation scales.** Do not invent a value inline if the reference defines a system for it.
 
 **Stop condition:** If a value cannot be drawn from the system and the gap is real, propose adding a token to DESIGN.md (see Step 9), do not inline-invent.
 
@@ -159,7 +196,7 @@ Open `assets/state-matrix.md`. For the component, fill every row that applies:
 - **error** — validation or async failure; specific, plain-language, recovery-oriented
 - **success** — confirmation that an action landed; transient unless audit-relevant
 
-For do/don't per component (buttons, inputs, dialogs, navigation, tables, dropdowns, tabs, popovers, toasts) read `references/component-patterns.md`.
+**STOP. Read `references/component-patterns.md` in full before designing or reviewing any of:** buttons, inputs/forms, dialogs/modals, navigation, tables, cards, dropdown/combobox, tabs, popovers/tooltips, toasts. Do/don't rules live there, not here.
 
 **Stop condition:** Any state listed but not designed is a known slop pattern (`StateMatrixHoles` — see anti-slop table below). Design it now, not later.
 
@@ -173,23 +210,17 @@ Then run the **two-level slop test**:
 
 Escape the trap by going back to the scene sentence and re-deriving from the specific user, moment, and physical context. Generic anti-defaults are still defaults.
 
-For detection prompts, before/after examples, and remediation recipes, read `references/ai-slop-patterns.md`. For the literal-artifact blocklist (emoji-as-icon, "Inter" by reflex, centred hero, placeholder names, gradient text, etc.) read `references/anti-defaults.md`.
+**STOP. Read BOTH `references/ai-slop-patterns.md` (before/after + remediation for each of the 14 patterns, plus detection prompts) AND `references/anti-defaults.md` (the 17 literal artifacts to refuse on sight — emoji-as-icon, "Inter" by reflex, centred hero, placeholder names, gradient text, glassmorphism padrão, modal-as-first-thought, etc.) before declaring the surface free of slop.** Anti-default detection is the failure mode this skill exists to prevent — the table below is a scorecard, not the source of truth.
 
 **Stop condition:** Any pattern hit. Any anti-default literal present without a scene-sentence justification. Fix before moving on.
 
 ### Step 8 — Apply microcopy quality
-Every visible word earns its place. Rules:
+Every visible word earns its place. Gist tripwires — the patterns that catch most slop:
 
-- **CTA buttons:** action verb + object (`Delete project`, not `OK` / `Submit` / `Click here`)
-- **Errors:** what happened + why + how to recover, in plain language, no blame (`Couldn't save — your session expired. Sign in again to continue.`)
-- **Empty states:** explain what lives here, why it's empty, and the one action that fills it
-- **Help text:** under the field, only when the label is ambiguous; never repeat the label
-- **Confirmation dialogs:** title = the decision (`Delete this project?`), body = the consequence (`All workflows, runs, and logs will be permanently removed.`), primary = the action verb (`Delete project`)
-- **No AI vocabulary:** no `seamless`, `delve`, `elevate`, `empower`, `unleash`, `harness`, `tapestry`, `landscape`, `journey`, `unlock the power of`, `take it to the next level`
-- **No empty greetings:** no `Welcome!`, no `Hi there!`, no `Let's get started!`
-- **No filler:** no `Please`, no `Note that`, no `In order to` (just `To`)
+- **CTAs:** action verb + object (`Delete project`, not `OK` / `Submit` / `Click here`). **Errors:** what happened + why + how to recover, plain language, no blame. **Empty states:** explain what lives here + the one action that fills it.
+- **No AI vocabulary:** `seamless`, `delve`, `elevate`, `empower`, `unleash`, `harness`, `tapestry`, `landscape`, `journey`, `unlock the power of`. **No empty greetings:** `Welcome!`, `Hi there!`, `Let's get started!`. **No filler:** `Please`, `Note that`, `In order to` (use `To`).
 
-For tone guides per surface type and a full banned-vocabulary list, read `references/microcopy-quality.md`.
+**STOP. Read `references/microcopy-quality.md` in full before writing or reviewing any user-visible text.** That file holds the full banned-vocabulary list, tone guides per surface type, and the confirmation/help/error templates. The bullets above are tripwires, not the full contract.
 
 **Stop condition:** Any banned phrase appears. Replace.
 
@@ -202,7 +233,7 @@ Before declaring the surface done:
 4. **Reduced-motion test:** toggle `prefers-reduced-motion: reduce` and confirm no rejected motion.
 5. **Document deltas to the design system:** if a new token, variant, or component pattern was introduced, append it to `DESIGN.md` (or the relevant token file) **in the same change set**. Tokens-without-DESIGN.md updates are silent design-system drift.
 
-For verification recipes per ARIA pattern, read `references/accessibility-floor.md#verification`.
+**STOP. Read `references/accessibility-floor.md#verification` for the per-ARIA-pattern verification recipes.** If Core Web Vitals, motion, fonts, or images are in scope for this surface, also read `references/performance.md` for the executable pre-ship gate.
 
 **Stop condition:** Anything in this list that cannot be checked because the surface is not actually runnable is a blocker — say so in the deliverable, do not claim "done."
 
@@ -249,30 +280,6 @@ Catch these thought patterns and STOP:
 | "The user will figure it out"                                 | Recognition over recall — they should not have to figure it out |
 | "Looks good on my screen"                                     | Test mobile + dense data + long strings + reduced motion   |
 
-## Reference Index
-
-Read JIT, never preload:
-
-- `references/usability-foundations.md` — read when designing a novel surface or auditing an existing one. Covers Nielsen 10 heuristics, Laws of UX, progressive disclosure, mental models.
-- `references/accessibility-floor.md` — read when implementing or verifying any interactive widget, especially dialogs, menus, comboboxes, tabs, sliders. Includes ARIA patterns and verification recipes.
-- `references/visual-craft.md` — read when there is no token system or the existing system needs extending. Typography scales, color systems, spacing rhythm, motion physics, dark mode, elevation.
-- `references/component-patterns.md` — read when designing or reviewing one of: buttons, inputs/forms, dialogs/modals, navigation, tables, cards, dropdown/combobox, tabs, popovers/tooltips, toasts.
-- `references/microcopy-quality.md` — read when writing or reviewing any user-visible text. Includes the full banned-vocabulary list and tone guides per surface.
-- `references/ai-slop-patterns.md` — read when auditing AI-generated UI or when a detection-table hit needs full detail. Includes before/after for each of the 14 patterns.
-- `references/anti-defaults.md` — read when a request feels like a category default. 17 literal artifacts to refuse on sight (emoji-as-icon, "Inter" by reflex, centred hero, placeholder names, gradient text, glassmorphism padrão, modal-as-first-thought, etc.).
-- `references/human-ai-ux.md` — read when building agent or AI-feature interfaces (chat, streaming responses, citations, confidence, recovery). Microsoft + IBM guidelines distilled.
-- `references/design-system-integration.md` — read when reading or extending DESIGN.md, working with semantic tokens, structuring shadcn/Radix composition, or writing rules-files for AI codegen.
-- `references/performance.md` — read when shipping any new surface, when Core Web Vitals regress, or when motion / images / fonts / bundle size enter the picture. Includes the 80ms perceived-performance threshold, font-loading zero-CLS strategy, and an executable pre-ship gate.
-- `references/motion-patterns.md` — read when adding or reviewing any animation. Includes the 100/300/500 duration rule, quality easing curves, code patterns for Tailwind / CSS / Framer Motion, reduced-motion templates, and severity-tagged anti-patterns.
-- `references/dark-mode.md` — read when implementing or reviewing a dark theme, when adding tokens that need a dark counterpart, or when "the dark mode looks worse" is a real comment. Surface-lightness elevation, accent desaturation, semantic token strategy, focus visibility, dangerous combinations.
-- `references/archetypes.md` — read when picking a pattern or when "we need a [thing] like Linear / Notion" is the brief. Seven named archetypes (Bento, Command Palette, Focus Mode, Live Status, Intelligent List, Empty State Hero, Inline Editor) each with a six-slot signature contract.
-
-### Scripts
-
-- `scripts/check-contrast.mjs` — verify foreground/background WCAG AA/AAA + APCA Lc for any color pair or JSON token batch. Zero-dependency, accepts hex / rgb / oklch. Wire into CI as a gate when token files change.
-- `scripts/detect-token-drift.mjs` — scan source for raw hex / rgb / hsl / oklch values used outside designated token paths. Reports file:line with replacement suggestion. Wire into the pre-ship checklist or pre-commit hook.
-- `scripts/validate-metadata.py` — validate this skill's own `name`/`description` frontmatter against the agentskills.io spec.
-
 ## DESIGN.md Integration
 
 This skill is not a DESIGN.md skill. It is a UI craft skill that respects DESIGN.md when present.
@@ -284,7 +291,7 @@ This skill is not a DESIGN.md skill. It is a UI craft skill that respects DESIGN
 4. **Propose, don't rewrite.** When a new variant or token is genuinely needed, add it to DESIGN.md as a focused diff in the same change set as the UI work. Do not rewrite the file.
 5. **Bootstrap only when invited.** If DESIGN.md does not exist and the user wants UI work to continue, fall back to `references/visual-craft.md` defaults and surface the gap as a finding. Defer authoring DESIGN.md to a dedicated DESIGN.md skill or workflow when one exists — do not bootstrap as a side effect of a UI ticket.
 
-For the canonical DESIGN.md sections, token discipline, and how DESIGN.md interacts with shadcn/Tailwind and rules-files, read `references/design-system-integration.md`.
+**STOP. Read `references/design-system-integration.md` in full when reading or extending DESIGN.md, working with semantic tokens, structuring shadcn/Radix composition, or writing rules-files for AI codegen.** The canonical DESIGN.md sections and token discipline live there.
 
 ## When NOT To Use
 

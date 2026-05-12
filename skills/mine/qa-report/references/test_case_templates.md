@@ -2,6 +2,17 @@
 
 Standard templates for creating consistent, comprehensive test cases.
 
+## Contents
+
+- Standard Test Case Template (header, objective, preconditions, steps, data, post-conditions, edge cases, related, history, notes)
+- Automation Metadata block (parsed by `qa-execution`)
+- Functional Test Case Template (+ boundary, negative)
+- UI/Visual Test Case Template (visual specs, responsive checks)
+- Integration Test Case Template
+- Regression Test Case Template
+- Security Test Case Template
+- Performance Test Case Template
+
 ---
 
 ## Standard Test Case Template

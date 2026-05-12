@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **122 agent skills** for Claude Code and compatible AI coding assistants — **27 original** (⭐️), **21 hand-picked** (💎), **17 marketing & business** (📣), plus **57 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **123 agent skills** for Claude Code and compatible AI coding assistants — **31 original** (⭐️), **18 hand-picked** (💎), **17 marketing & business** (📣), plus **57 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -18,7 +18,7 @@ Copy or symlink the skills you need into your Claude Code configuration:
 
 ```bash
 # Copy a single skill
-cp -r skills/curated/react ~/.claude/skills/react
+cp -r skills/mine/react ~/.claude/skills/react
 
 # Or symlink an entire bucket
 ln -s $(pwd)/skills/mine ~/.claude/skills/mine
@@ -26,8 +26,8 @@ ln -s $(pwd)/skills/mine ~/.claude/skills/mine
 
 Skills are organized into four top-level buckets:
 
-- `skills/mine/` — 27 original skills authored in this repository (⭐️)
-- `skills/curated/` — 21 hand-picked community skills (💎)
+- `skills/mine/` — 31 original skills authored in this repository (⭐️)
+- `skills/curated/` — 18 hand-picked community skills (💎)
 - `skills/marketing/` — 17 marketing, business, and writing skills (📣)
 - `skills/community/` — 57 broader community skills
 
@@ -45,7 +45,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 ### Frontend & UI
 
-- **[react](./skills/curated/react)** 💎 — Component architecture, hooks, state management, TypeScript integration, and testing
+- **[react](./skills/mine/react)** ⭐️ — Component architecture, hooks, state management, TypeScript integration, and testing
 - **[tailwindcss](./skills/curated/tailwindcss)** 💎 — Tailwind CSS v4 patterns, design tokens, and tailwind-variants
 - **[shadcn](./skills/community/shadcn)** — Building UI components with shadcn/ui, Radix UI primitives, and design tokens
 - **[motion](./skills/community/motion)** — React animations with Motion (formerly Framer Motion) -- gestures, scroll effects, spring physics
@@ -75,7 +75,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[hono](./skills/curated/hono)** 💎 — Hono framework development with documentation search and API reference
 - **[elysia](./skills/community/elysia)** — Type-safe APIs with Elysia including routing, validation, plugins, and error handling
 - **[drizzle-orm](./skills/community/drizzle-orm)** — Drizzle ORM best practices -- schemas, queries, mutations, transactions, migrations
-- **[drizzle-safe-migrations](./skills/curated/drizzle-safe-migrations)** 💎 — Production-safe Drizzle migration workflows for schema changes
+- **[drizzle-safe-migrations](./skills/mine/drizzle-safe-migrations)** ⭐️ — Production-safe Drizzle migration workflows for schema changes
 - **[drizzle-postgres](./skills/community/drizzle-postgres)** — PostgreSQL and Drizzle ORM best practices for type-safe database apps
 - **[better-auth-best-practices](./skills/community/better-auth-best-practices)** — Better Auth TypeScript authentication framework integration
 - **[better-auth-organization-best-practices](./skills/community/better-auth-organization-best-practices)** — Multi-tenant organizations, RBAC, teams, members, and invitations with Better Auth's organization plugin
@@ -131,6 +131,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 
 - **[ai-sdk](./skills/community/ai-sdk)** — Vercel AI SDK for building AI-powered features
 - **[skill-best-practices](./skills/mine/skill-best-practices)** ⭐️ — Author professional-grade agent skills following the agentskills.io spec
+- **[skill-load-tips](./skills/mine/skill-load-tips)** ⭐️ — Refactor existing SKILL.md files so the agent actually loads bundled references — Required Reading Router, hard STOP directives, gist tripwires, and one-level reference depth
 - **[autoresearch](./skills/mine/autoresearch)** ⭐️ — Autonomously optimize any skill by running evals, mutating prompts, and keeping improvements
 - **[agent-md-refactor](./skills/curated/agent-md-refactor)** 💎 — Refactor bloated AGENTS.md/CLAUDE.md files into organized, linked documentation
 - **[find-skills](./skills/community/find-skills)** — Discover and install agent skills from the open agent skills ecosystem
@@ -156,7 +157,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 - **[no-workarounds](./skills/mine/no-workarounds)** ⭐️ — Enforce root-cause fixes over workarounds, hacks, and symptom patches
 - **[find-rules](./skills/community/find-rules)** — Discover project rules, coding standards, and architectural guidelines
 - **[fix-coderabbit-review](./skills/mine/fix-coderabbit-review)** ⭐️ — End-to-end remediation workflow for PR review feedback
-- **[git-rebase](./skills/curated/git-rebase)** 💎 — Git rebase operations and merge conflict resolution with clean history
+- **[git-rebase](./skills/mine/git-rebase)** ⭐️ — Git rebase operations and merge conflict resolution with clean history
 - **[refactoring-analysis](./skills/mine/refactoring-analysis)** ⭐️ — Identify refactoring opportunities using Martin Fowler's code smells catalog with prioritized reports
 
 ### Planning & Research

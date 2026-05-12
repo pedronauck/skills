@@ -2,6 +2,12 @@
 
 Unified templates shared with `qa-execution`. All bug reports use the `BUG-<num>` ID scheme and follow the structure in `assets/issue-template.md`.
 
+## Contents
+
+- Standard Bug Report (environment, summary, reproduction, expected, root cause, fix, verification, impact, related)
+- UI/Visual Bug Variant (adds Design vs Implementation section)
+- Performance Bug Variant (adds Metrics section)
+
 ---
 
 ## Standard Bug Report
