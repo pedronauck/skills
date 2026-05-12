@@ -216,7 +216,7 @@ Three Moderates compound to Serious. Three Serious compound to Critical-by-patte
 ## Sources
 
 - `taste-skill` (Leonxlnx, open-design ecosystem) — explicit anti-slop literal blocklist pattern
-- `impeccable` (compozy/agh) — reflex-reject lists and scene-driven decision framework
+- `impeccable` (pbakaus/impeccable) — reflex-reject lists and scene-driven decision framework
 - `ui-ux-pro-max` (open-design ecosystem) — pre-delivery anti-pattern checklist
 - `ai-slop-patterns.md` (this skill) — categorized failure modes; this file is the literal-artifact companion
 - Refactoring UI — *Designing With Color*, *Typography*, *Visual Hierarchy*
