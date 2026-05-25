@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **125 agent skills** for Claude Code and compatible AI coding assistants — **30 original** (⭐️), **31 hand-picked** (💎), **18 marketing & business** (📣), plus **46 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **126 agent skills** for Claude Code and compatible AI coding assistants — **31 original** (⭐️), **31 hand-picked** (💎), **18 marketing & business** (📣), plus **46 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -44,7 +44,7 @@ ln -s $(pwd)/skills/mine ~/.claude/skills/mine
 
 Skills are organized into four top-level buckets:
 
-- `skills/mine/` — 30 original skills authored in this repository (⭐️)
+- `skills/mine/` — 31 original skills authored in this repository (⭐️)
 - `skills/curated/` — 31 hand-picked community skills (💎)
 - `skills/marketing/` — 18 marketing, business, and writing skills (📣)
 - `skills/community/` — 46 broader community skills
@@ -95,6 +95,7 @@ Original skills authored in this repository.
 - **[typescript-advanced](./skills/mine/typescript-advanced)** — Advanced type system -- generics, conditional types, mapped types, template literals
 - **[ui-craft](./skills/mine/ui-craft)** — Anti-AI-slop guardrails for UI/UX work — usability heuristics, accessibility floors, design-system discipline, 14 named slop patterns with severity tags, tunable design dials (`VISUAL_VARIANCE`/`MOTION_INTENSITY`/`INFORMATION_DENSITY`), scene-driven decisions, Product vs Brand registers, anti-defaults blocklist, 7 named UI archetypes, plus performance / motion / dark-mode reference packs and executable contrast + token-drift scripts
 - **[writing-tech-post](./skills/mine/writing-tech-post)** — SOTA authoring loop for engineering blog posts — 8 archetype contracts (launch / postmortem / migration / performance / tutorial / research-translation / AI-agent / security), 5-rung abstraction ladder with rung-whiplash diagnostic, 12-form evidence taxonomy with `claim → artifact → reading` cadence, 7-publisher voice matrix, four disclosure contracts (blameless / coordinated-disclosure / paper-link-first / what-we'd-do-differently), narrative arcs + closer taxonomy, and a read-only `lint-post.py` pre-publish gate
+- **[yc-apply](./skills/mine/yc-apply)** — Drive a Y Combinator batch application end-to-end through a 10-phase workspace — captures the live YC form, profiles founders and stress-tests the idea via an embedded grill loop, runs a mandatory 5-agent parallel external-research pass on the startup, drafts every field with a buzzword scanner and a provenance-labeled accepted-answer rubric, generates founder-video bullet notes (no script), enforces a script-checked 10-check pre-submit gate, then unlocks a post-invite interview-prep simulator and reapplicant delta tracking. Built from 84 YC essays + 28 interview transcripts
 
 ### Curated 💎
 
