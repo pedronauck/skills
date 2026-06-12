@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **126 agent skills** for Claude Code and compatible AI coding assistants — **31 original** (⭐️), **31 hand-picked** (💎), **18 marketing & business** (📣), plus **46 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **127 agent skills** for Claude Code and compatible AI coding assistants — **32 original** (⭐️), **31 hand-picked** (💎), **18 marketing & business** (📣), plus **46 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -44,7 +44,7 @@ ln -s $(pwd)/skills/mine ~/.claude/skills/mine
 
 Skills are organized into four top-level buckets:
 
-- `skills/mine/` — 31 original skills authored in this repository (⭐️)
+- `skills/mine/` — 32 original skills authored in this repository (⭐️)
 - `skills/curated/` — 31 hand-picked community skills (💎)
 - `skills/marketing/` — 18 marketing, business, and writing skills (📣)
 - `skills/community/` — 46 broader community skills
@@ -71,6 +71,7 @@ Original skills authored in this repository.
 - **[architectural-analysis](./skills/mine/architectural-analysis)** — Deep architectural audit for dead code, duplication, anti-patterns, and code smells
 - **[bubbletea](./skills/mine/bubbletea)** — Build terminal UIs with Go and Bubbletea -- Elm architecture, Lipgloss styling, dual-pane layouts, and reusable components
 - **[council](./skills/mine/council)** — Run decisions through 5 independent advisors, anonymous peer review, and a chairman synthesis (Karpathy-style LLM Council)
+- **[cmux-orchestration](./skills/mine/cmux-orchestration)** — Coordinate cmux panes and surfaces to launch, prompt, monitor, and verify Claude Opus and Codex GPT-5.5 worker TUIs — controller owns assignment, state, conflict control, and integration; workers gather evidence and report bounded patches
 - **[drizzle-safe-migrations](./skills/mine/drizzle-safe-migrations)** — Production-safe Drizzle migration workflows for schema changes
 - **[fix-coderabbit-review](./skills/mine/fix-coderabbit-review)** — End-to-end remediation workflow for PR review feedback
 - **[git-rebase](./skills/mine/git-rebase)** — Git rebase operations and merge conflict resolution with clean history
