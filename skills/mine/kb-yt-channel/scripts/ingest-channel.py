@@ -1,5 +1,30 @@
 #!/usr/bin/env python3
-"""Create or update a KB topic from a YouTube channel."""
+"""Create or update a KB topic from a YouTube channel.
+
+Thin orchestrator over ``kb ingest channel``. This script owns the KB-side
+*organization* of a channel topic; ``kb ingest channel`` owns the ingest
+*mechanics*.
+
+Delegated to ``kb ingest channel`` (do not reimplement here):
+  - channel/playlist URL normalization and video enumeration
+  - resume/dedup (videos already present in raw/youtube are skipped)
+  - bounded concurrency, throttling, adaptive backoff, and per-video retries
+  - native-language caption selection (``--sub-langs orig``)
+  - transcription policy (captions | auto | stt) and STT
+  - per-video frontmatter and the raw/youtube/*.md files
+
+Owned by this script (not done by kb):
+  - scaffolding the topic under ``yt-channels/<slug>/`` with topic.yaml
+  - maintaining the ``yt-channels/`` category docs
+  - patching the topic CLAUDE.md with channel metadata
+  - wiki index dashboards (Dashboard.md, Source Index.md)
+  - the run report under outputs/reports/
+  - post-ingest validation (topic info, lint, index, search)
+
+Rate-limit, proxy, and cookie settings are read by ``kb`` from its config and
+environment (``[youtube]`` in kb.toml, ``YOUTUBE_PROXY``,
+``YOUTUBE_COOKIES_FILE`` ...), not from this script.
+"""
 
 from __future__ import annotations
 
@@ -11,23 +36,10 @@ import re
 import shutil
 import subprocess
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qs, urlparse, urlunparse
-
 
 SLUG_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
-VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
-SOURCE_URL_RE = re.compile(r"^source_url:\s*(\S+)\s*$", re.MULTILINE)
-VIDEO_ID_FIELD_RE = re.compile(r"^video_id:\s*([A-Za-z0-9_-]{11})\s*$", re.MULTILINE)
-
-
-@dataclass(frozen=True)
-class Video:
-    video_id: str
-    title: str
-    url: str
 
 
 class CommandError(RuntimeError):
@@ -55,76 +67,6 @@ def run(args: list[str], cwd: Path, check: bool = True) -> subprocess.CompletedP
     if check and completed.returncode != 0:
         raise CommandError(args, completed.returncode, completed.stdout, completed.stderr)
     return completed
-
-
-def normalize_channel_url(raw_url: str) -> str:
-    value = raw_url.strip()
-    if not value:
-        raise ValueError("channel URL is required")
-    if "://" not in value:
-        value = "https://" + value
-    parsed = urlparse(value)
-    if "youtube.com" not in parsed.netloc.lower():
-        raise ValueError(f"expected a youtube.com channel URL, got {raw_url!r}")
-    if parsed.path == "/watch" or parse_qs(parsed.query).get("v"):
-        raise ValueError("expected a channel URL, not a video URL")
-    path = parsed.path.rstrip("/")
-    if not path:
-        raise ValueError("channel URL path is required")
-    if path.endswith("/videos"):
-        normalized_path = path
-    elif path.endswith("/shorts") or path.endswith("/streams"):
-        normalized_path = path.rsplit("/", 1)[0] + "/videos"
-    else:
-        normalized_path = path + "/videos"
-    return urlunparse((parsed.scheme or "https", parsed.netloc, normalized_path, "", "", ""))
-
-
-def video_id_from_url(url: str) -> str | None:
-    parsed = urlparse(url)
-    values = parse_qs(parsed.query).get("v")
-    if values and VIDEO_ID_RE.match(values[0]):
-        return values[0]
-    path_value = parsed.path.rstrip("/").rsplit("/", 1)[-1]
-    if VIDEO_ID_RE.match(path_value):
-        return path_value
-    return None
-
-
-def resolve_videos(channel_url: str, limit: int | None, yt_dlp: str, vault: Path) -> list[Video]:
-    command = [
-        yt_dlp,
-        "--flat-playlist",
-        "--no-warnings",
-        "--print",
-        "%(id)s\t%(title)s\t%(webpage_url)s",
-    ]
-    if limit is not None:
-        command.extend(["--playlist-end", str(limit)])
-    command.append(channel_url)
-    completed = run(command, cwd=vault)
-    videos: list[Video] = []
-    seen: set[str] = set()
-    for line in completed.stdout.splitlines():
-        parts = line.split("\t")
-        if len(parts) < 2:
-            continue
-        video_id = parts[0].strip()
-        title = parts[1].strip()
-        url = parts[2].strip() if len(parts) >= 3 else ""
-        if not VIDEO_ID_RE.match(video_id):
-            continue
-        if not url or url == "NA":
-            url = f"https://www.youtube.com/watch?v={video_id}"
-        if video_id in seen:
-            continue
-        seen.add(video_id)
-        videos.append(Video(video_id=video_id, title=title, url=url))
-    if not videos:
-        raise RuntimeError("yt-dlp returned no videos for the channel")
-    if limit is not None and len(videos) < limit:
-        eprint(f"warning: requested {limit} videos, resolved {len(videos)}")
-    return videos
 
 
 def validate_inputs(args: argparse.Namespace) -> None:
@@ -261,7 +203,7 @@ def patch_topic_claude(
     title: str,
     domain: str,
     channel_url: str,
-    limit: int | None,
+    selection: str,
     transcribe: str,
     command_line: str,
 ) -> None:
@@ -279,7 +221,6 @@ def patch_topic_claude(
     text = re.sub(r"^\*\*Domain:\*\*.*$", domain_line, text, count=1, flags=re.MULTILINE)
     marker_start = "<!-- kb-yt-channel:start -->"
     marker_end = "<!-- kb-yt-channel:end -->"
-    selection = "all uploads" if limit is None else f"latest {limit} uploads"
     section = f"""
 {marker_start}
 ## YouTube channel ingest
@@ -302,22 +243,6 @@ Raw transcripts live in raw/youtube/. Ingest reports live in outputs/reports/. T
     if not text.startswith(f"# {title}"):
         text = re.sub(r"^# .+$", f"# {title}", text, count=1, flags=re.MULTILINE)
     claude_path.write_text(text, encoding="utf-8")
-
-
-def existing_video_ids(topic_dir: Path) -> set[str]:
-    ids: set[str] = set()
-    raw_youtube = topic_dir / "raw" / "youtube"
-    if not raw_youtube.exists():
-        return ids
-    for path in raw_youtube.glob("*.md"):
-        text = path.read_text(encoding="utf-8", errors="ignore")
-        for match in VIDEO_ID_FIELD_RE.finditer(text):
-            ids.add(match.group(1))
-        for match in SOURCE_URL_RE.finditer(text):
-            video_id = video_id_from_url(match.group(1))
-            if video_id:
-                ids.add(video_id)
-    return ids
 
 
 def table_cell(value: str) -> str:
@@ -498,91 +423,65 @@ def parse_json_output(text: str) -> Any:
         return None
 
 
-def write_report(topic_dir: Path, summary: dict[str, Any]) -> Path:
-    reports = topic_dir / "outputs" / "reports"
-    reports.mkdir(parents=True, exist_ok=True)
-    now = dt.datetime.now()
-    stamp = now.strftime("%Y-%m-%d-%H%M%S")
-    path = reports / f"{stamp}-youtube-channel-ingest.md"
-    lines = [
-        "---",
-        f"title: YouTube Channel Ingest Report - {summary['topic']}",
-        "type: output",
-        "stage: lint-report",
-        f"domain: {summary.get('domain', 'youtube-channel')}",
-        f"created: {now.strftime('%Y-%m-%d')}",
-        f"issues_found: {len(summary['failures'])}",
-        "issues_fixed: 0",
-        "tags:",
-        "  - youtube-channel",
-        "  - ingest",
-        "---",
-        "",
-        "# YouTube Channel Ingest Report",
-        "",
-        f"- Channel URL: {summary['channelUrl']}",
-        f"- Normalized channel URL: {summary['normalizedChannelUrl']}",
-        f"- Topic: {summary['topic']}",
-        f"- Transcript policy: {summary['transcribe']}",
-        f"- Selection: {summary['selection']}",
-        f"- Resolved videos: {len(summary['videos'])}",
-        f"- Successful ingests: {len(summary['ingested'])}",
-        f"- Skipped existing videos: {len(summary['skipped'])}",
-        f"- Failures: {len(summary['failures'])}",
-        "",
-        "## Videos",
-        "",
-    ]
-    for video in summary["videos"]:
-        lines.append(f"- {video['video_id']} - {video['title']} - {video['url']}")
-    lines.extend(["", "## Ingested", ""])
-    for item in summary["ingested"]:
-        lines.append(f"- {item['video_id']} - {item['title']}")
-    lines.extend(["", "## Skipped", ""])
-    for item in summary["skipped"]:
-        lines.append(f"- {item['video_id']} - {item['title']}")
-    lines.extend(["", "## Failures", ""])
-    if summary["failures"]:
-        for item in summary["failures"]:
-            lines.extend(
-                [
-                    f"### {item['video_id']} - {item['title']}",
-                    "",
-                    f"- URL: {item.get('url', '') or 'n/a'}",
-                    f"- Error: {item['error']}",
-                ]
-            )
-            for stream_name in ("stderr", "stdout"):
-                stream = str(item.get(stream_name, "")).strip()
-                if stream:
-                    lines.extend(
-                        [
-                            "",
-                            f"{stream_name}:",
-                            "",
-                            "```text",
-                            stream,
-                            "```",
-                        ]
-                    )
-            lines.append("")
-    else:
-        lines.append("- None")
-    lines.extend(["", "## Validation", ""])
-    for item in summary.get("validation", []):
-        lines.append(f"- {item['command']}: exit {item['exit_code']}")
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return path
-
-
 def build_command_line(args: argparse.Namespace) -> str:
     selector = "--all" if args.all else f"--limit {args.limit}"
-    embed = " --embed" if args.embed else ""
+    extras = f" --sub-langs {args.sub_langs}" if args.sub_langs else ""
+    if args.concurrency is not None:
+        extras += f" --concurrency {args.concurrency}"
+    if args.throttle is not None:
+        extras += f" --throttle {args.throttle}"
+    if args.embed:
+        extras += " --embed"
+    if args.no_index:
+        extras += " --no-index"
     return (
         "python3 .agents/skills/kb-yt-channel/scripts/ingest-channel.py "
         f"--vault {args.vault} --channel-url {args.channel_url} --topic-slug {args.topic_slug} "
-        f"--title {json.dumps(args.title)} --domain {args.domain} {selector} --transcribe {args.transcribe}{embed}"
+        f"--title {json.dumps(args.title)} --domain {args.domain} {selector} --transcribe {args.transcribe}{extras}"
     )
+
+
+def ingest_channel(args: argparse.Namespace, vault: Path, dry_run: bool) -> dict[str, Any]:
+    """Delegate channel ingest to ``kb ingest channel`` and return its JSON summary.
+
+    stdout (the JSON summary) is captured; stderr is inherited so kb's per-video
+    progress and diagnostics stream live to the caller.
+    """
+    command = [
+        args.kb_path,
+        "ingest",
+        "channel",
+        args.channel_url,
+        "--topic",
+        f"yt-channels/{args.topic_slug}",
+        "--transcribe",
+        args.transcribe,
+    ]
+    if args.all:
+        command.append("--all")
+    else:
+        command.extend(["--limit", str(args.limit)])
+    if args.sub_langs:
+        command.extend(["--sub-langs", args.sub_langs])
+    if args.concurrency is not None:
+        command.extend(["--concurrency", str(args.concurrency)])
+    if args.throttle is not None:
+        command.extend(["--throttle", args.throttle])
+    if dry_run:
+        command.append("--dry-run")
+    eprint("$ " + " ".join(command))
+    completed = subprocess.run(
+        command,
+        cwd=str(vault),
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=None,
+        env=os.environ.copy(),
+    )
+    summary = parse_json_output(completed.stdout)
+    if not isinstance(summary, dict):
+        raise CommandError(command, completed.returncode, completed.stdout or "", "")
+    return summary
 
 
 def validation_command(label: str, args: list[str], vault: Path) -> dict[str, Any]:
@@ -597,110 +496,36 @@ def validation_command(label: str, args: list[str], vault: Path) -> dict[str, An
     }
 
 
-def run_ingest(args: argparse.Namespace) -> dict[str, Any]:
-    validate_inputs(args)
-    vault = Path(args.vault).expanduser().resolve()
-    if not vault.exists():
-        raise RuntimeError(f"vault does not exist: {vault}")
-    normalized_channel_url = normalize_channel_url(args.channel_url)
-    limit = None if args.all else args.limit
-    selection = "all uploads" if limit is None else f"latest {limit} uploads"
-    videos = resolve_videos(normalized_channel_url, limit, args.yt_dlp_path, vault)
-    summary: dict[str, Any] = {
-        "channelUrl": args.channel_url,
-        "normalizedChannelUrl": normalized_channel_url,
-        "topic": f"yt-channels/{args.topic_slug}",
-        "topicPath": str(vault / "yt-channels" / args.topic_slug),
-        "domain": args.domain,
-        "transcribe": args.transcribe,
-        "selection": selection,
-        "videos": [video.__dict__ for video in videos],
-        "ingested": [],
-        "skipped": [],
-        "failures": [],
-        "validation": [],
-    }
-    if args.dry_run:
-        summary["dryRun"] = True
-        return summary
-    topic_dir = scaffold_topic(vault, args.topic_slug, args.title, args.domain, args.kb_path)
-    command_line = build_command_line(args)
-    write_topic_metadata(topic_dir, args.topic_slug, args.title, args.domain)
-    ensure_agents_symlink(topic_dir)
-    update_category_docs(vault)
-    patch_topic_claude(
-        topic_dir,
-        args.topic_slug,
-        args.title,
-        args.domain,
-        normalized_channel_url,
-        limit,
-        args.transcribe,
-        command_line,
-    )
-    existing_ids = existing_video_ids(topic_dir)
-    for video in videos:
-        if video.video_id in existing_ids:
-            summary["skipped"].append(video.__dict__)
-            continue
-        try:
-            completed = run(
-                [
-                    args.kb_path,
-                    "ingest",
-                    "youtube",
-                    video.url,
-                    "--topic",
-                    f"yt-channels/{args.topic_slug}",
-                    "--transcribe",
-                    args.transcribe,
-                ],
-                cwd=vault,
-            )
-            summary["ingested"].append(
-                {
-                    **video.__dict__,
-                    "result": parse_json_output(completed.stdout),
-                }
-            )
-            existing_ids.add(video.video_id)
-        except CommandError as err:
-            summary["failures"].append(
-                {
-                    **video.__dict__,
-                    "error": str(err),
-                    "stdout": err.stdout,
-                    "stderr": err.stderr,
-                }
-            )
-            continue
-    source_count = len(youtube_sources(topic_dir))
-    update_topic_inventory(topic_dir, source_count)
-    write_channel_indexes(topic_dir, args.title, args.domain, source_count)
-    index_command = [args.kb_path, "index", "--topic", f"yt-channels/{args.topic_slug}", "--name", args.topic_slug]
-    if not args.embed:
-        index_command.append("--embed=false")
-    validation_specs = [
-        ("topic info", [args.kb_path, "topic", "info", f"yt-channels/{args.topic_slug}"]),
-        ("lint", [args.kb_path, "lint", f"yt-channels/{args.topic_slug}", "--save"]),
-        ("index", index_command),
+def run_validation(args: argparse.Namespace, vault: Path, summary: dict[str, Any]) -> None:
+    slug = args.topic_slug
+    topic_id = f"yt-channels/{slug}"
+    specs: list[tuple[str, list[str]]] = [
+        ("topic info", [args.kb_path, "topic", "info", topic_id]),
+        ("lint", [args.kb_path, "lint", topic_id, "--save"]),
+    ]
+    if not args.no_index:
+        index_command = [args.kb_path, "index", "--topic", topic_id, "--name", slug]
+        if not args.embed:
+            index_command.append("--embed=false")
+        specs.append(("index", index_command))
+    specs.append(
         (
             "search",
             [
                 args.kb_path,
                 "search",
-                args.topic_slug,
+                slug,
                 "--topic",
-                f"yt-channels/{args.topic_slug}",
+                topic_id,
                 "--collection",
-                args.topic_slug,
+                slug,
                 "--lex",
                 "--format",
                 "json",
             ],
-        ),
-    ]
-    for label, command in validation_specs:
+        )
+    )
+    for label, command in specs:
         result = validation_command(label, command, vault)
         summary["validation"].append(result)
         if result["exit_code"] != 0:
@@ -715,10 +540,13 @@ def run_ingest(args: argparse.Namespace) -> dict[str, Any]:
                 }
             )
             break
-    topic_info = next((item.get("json") for item in summary["validation"] if item["command"] == "topic info"), None)
+    topic_info = next(
+        (item.get("json") for item in summary["validation"] if item["command"] == "topic info"),
+        None,
+    )
     if isinstance(topic_info, dict):
         source_count = int(topic_info.get("sourceCount", 0))
-        successful = len(summary["ingested"]) + len(summary["skipped"])
+        successful = len(summary.get("ingested", [])) + len(summary.get("skipped", []))
         if source_count < successful:
             summary["failures"].append(
                 {
@@ -730,16 +558,135 @@ def run_ingest(args: argparse.Namespace) -> dict[str, Any]:
                     "stderr": "",
                 }
             )
+
+
+def write_report(topic_dir: Path, summary: dict[str, Any]) -> Path:
+    reports = topic_dir / "outputs" / "reports"
+    reports.mkdir(parents=True, exist_ok=True)
+    now = dt.datetime.now()
+    stamp = now.strftime("%Y-%m-%d-%H%M%S")
+    path = reports / f"{stamp}-youtube-channel-ingest.md"
+    videos = summary.get("videos", [])
+    ingested = summary.get("ingested", [])
+    skipped = summary.get("skipped", [])
+    failures = summary.get("failures", [])
+    lines = [
+        "---",
+        f"title: YouTube Channel Ingest Report - {summary.get('topic', '')}",
+        "type: output",
+        "stage: lint-report",
+        f"domain: {summary.get('domain', 'youtube-channel')}",
+        f"created: {now.strftime('%Y-%m-%d')}",
+        f"issues_found: {len(failures)}",
+        "issues_fixed: 0",
+        "tags:",
+        "  - youtube-channel",
+        "  - ingest",
+        "---",
+        "",
+        "# YouTube Channel Ingest Report",
+        "",
+        f"- Channel URL: {summary.get('channel_url', '')}",
+        f"- Normalized channel URL: {summary.get('normalized_channel_url', '')}",
+        f"- Topic: {summary.get('topic', '')}",
+        f"- Transcript policy: {summary.get('transcribe', '')}",
+        f"- Caption languages: {', '.join(summary.get('caption_languages', []) or ['default'])}",
+        f"- Selection: {summary.get('selection', '')}",
+        f"- Resolved videos: {len(videos)}",
+        f"- Successful ingests: {len(ingested)}",
+        f"- Skipped existing videos: {len(skipped)}",
+        f"- Failures: {len(failures)}",
+        "",
+        "## Videos",
+        "",
+    ]
+    for video in videos:
+        lines.append(f"- {video.get('video_id', '')} - {video.get('title', '')} - {video.get('url', '')}")
+    lines.extend(["", "## Ingested", ""])
+    for item in ingested:
+        lines.append(f"- {item.get('video_id', '')} - {item.get('title', '')}")
+    lines.extend(["", "## Skipped", ""])
+    for item in skipped:
+        lines.append(f"- {item.get('video_id', '')} - {item.get('title', '')}")
+    lines.extend(["", "## Failures", ""])
+    if failures:
+        for item in failures:
+            lines.extend(
+                [
+                    f"### {item.get('video_id', '')} - {item.get('title', '')}",
+                    "",
+                    f"- URL: {item.get('url', '') or 'n/a'}",
+                    f"- Error: {item.get('error', '')}",
+                ]
+            )
+            for stream_name in ("stderr", "stdout"):
+                stream = str(item.get(stream_name, "")).strip()
+                if stream:
+                    lines.extend(["", f"{stream_name}:", "", "```text", stream, "```"])
+            lines.append("")
+    else:
+        lines.append("- None")
+    lines.extend(["", "## Validation", ""])
+    for item in summary.get("validation", []):
+        lines.append(f"- {item['command']}: exit {item['exit_code']}")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
+def run_ingest(args: argparse.Namespace) -> dict[str, Any]:
+    validate_inputs(args)
+    vault = Path(args.vault).expanduser().resolve()
+    if not vault.exists():
+        raise RuntimeError(f"vault does not exist: {vault}")
+
+    # The native `kb ingest channel` requires the topic to already exist, so the
+    # topic is scaffolded first even for a dry run.
+    topic_dir = scaffold_topic(vault, args.topic_slug, args.title, args.domain, args.kb_path)
+    write_topic_metadata(topic_dir, args.topic_slug, args.title, args.domain)
+    ensure_agents_symlink(topic_dir)
+    update_category_docs(vault)
+
+    channel = ingest_channel(args, vault, args.dry_run)
+    summary: dict[str, Any] = dict(channel)
+    summary["topic"] = f"yt-channels/{args.topic_slug}"
+    summary["topic_path"] = str(topic_dir)
+    summary["domain"] = args.domain
+    summary.setdefault("ingested", [])
+    summary.setdefault("skipped", [])
+    summary.setdefault("failures", [])
+    summary.setdefault("videos", [])
+    summary["validation"] = []
+
+    if args.dry_run:
+        summary["dry_run"] = True
+        return summary
+
+    patch_topic_claude(
+        topic_dir,
+        args.topic_slug,
+        args.title,
+        args.domain,
+        channel.get("normalized_channel_url") or args.channel_url,
+        channel.get("selection", ""),
+        args.transcribe,
+        build_command_line(args),
+    )
+    source_count = len(youtube_sources(topic_dir))
+    update_topic_inventory(topic_dir, source_count)
+    write_channel_indexes(topic_dir, args.title, args.domain, source_count)
+
+    run_validation(args, vault, summary)
+
     report_path = write_report(topic_dir, summary)
-    summary["reportPath"] = str(report_path)
-    summary["dryRun"] = False
+    summary["report_path"] = str(report_path)
+    summary["dry_run"] = False
     return summary
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Create or update a KB topic from a YouTube channel.")
     parser.add_argument("--vault", default=".", help="Vault root path")
-    parser.add_argument("--channel-url", required=True, help="YouTube channel URL")
+    parser.add_argument("--channel-url", required=True, help="YouTube channel or playlist URL")
     parser.add_argument("--topic-slug", required=True, help="Topic slug under yt-channels/")
     parser.add_argument("--title", required=True, help="Topic title")
     parser.add_argument("--domain", required=True, help="Topic domain")
@@ -747,13 +694,41 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     selector.add_argument("--limit", type=int, help="Maximum newest uploads to ingest")
     selector.add_argument("--all", action="store_true", help="Ingest all channel uploads")
     parser.add_argument("--transcribe", choices=["captions", "auto", "stt"], default="captions")
-    parser.add_argument("--yt-dlp-path", default=os.environ.get("YOUTUBE_YT_DLP_PATH", "yt-dlp"))
+    parser.add_argument(
+        "--sub-langs",
+        default="orig",
+        help="Caption language preference passed to kb (default 'orig' = native original track; "
+        "or a comma list like 'pt,en').",
+    )
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        default=None,
+        help="Concurrent transcript fetches for kb (default from [youtube].bulk_concurrency).",
+    )
+    parser.add_argument(
+        "--throttle",
+        default=None,
+        help="Delay between transcript fetches for kb, e.g. 2s (default from [youtube].bulk_throttle).",
+    )
     parser.add_argument("--kb-path", default="kb")
-    parser.add_argument("--embed", action="store_true", help="Run vector embedding after QMD collection sync")
-    parser.add_argument("--dry-run", action="store_true", help="Resolve videos without mutating the vault")
+    parser.add_argument("--embed", action="store_true", help="Run vector embedding during the index validation step")
+    parser.add_argument(
+        "--no-index",
+        dest="no_index",
+        action="store_true",
+        help="Skip the kb index validation step (defer indexing; useful for parallel multi-channel runs).",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Scaffold the topic skeleton and list the videos kb would ingest, without ingesting any.",
+    )
     args = parser.parse_args(argv)
     if args.limit is not None and args.limit < 1:
         parser.error("--limit must be greater than zero")
+    if args.concurrency is not None and args.concurrency < 1:
+        parser.error("--concurrency must be at least 1")
     return args
 
 
