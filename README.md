@@ -71,7 +71,7 @@ Original skills authored in this repository.
 - **[architectural-analysis](./skills/mine/architectural-analysis)** — Deep architectural audit for dead code, duplication, anti-patterns, and code smells
 - **[bubbletea](./skills/mine/bubbletea)** — Build terminal UIs with Go and Bubbletea -- Elm architecture, Lipgloss styling, dual-pane layouts, and reusable components
 - **[council](./skills/mine/council)** — Run decisions through 5 independent advisors, anonymous peer review, and a chairman synthesis (Karpathy-style LLM Council)
-- **[cmux-orchestration](./skills/mine/cmux-orchestration)** — Coordinate cmux panes and surfaces to launch, prompt, monitor, and verify Claude Opus and Codex GPT-5.5 worker TUIs — controller owns assignment, state, conflict control, and integration; workers gather evidence and report bounded patches
+- **[cmux-orchestration](./skills/mine/cmux-orchestration)** — Coordinate cmux panes and surfaces to launch, prompt, monitor, and verify Claude Opus and Codex GPT-5.5 worker TUIs — supports plan-first delegation (Claude Code plan mode, Codex Plan mode); controller owns assignment, state, conflict control, and integration; workers gather evidence and report bounded patches
 - **[drizzle-safe-migrations](./skills/mine/drizzle-safe-migrations)** — Production-safe Drizzle migration workflows for schema changes
 - **[fix-coderabbit-review](./skills/mine/fix-coderabbit-review)** — End-to-end remediation workflow for PR review feedback
 - **[git-rebase](./skills/mine/git-rebase)** — Git rebase operations and merge conflict resolution with clean history
