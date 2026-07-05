@@ -1,16 +1,18 @@
 ---
 name: qa-execution
 description: >-
-  Executes real-user QA sessions through public interfaces using personas,
-  journeys, exploratory charters, test tours, edge-case probes, CFR checks, and
-  browser evidence. Reads qa-report artifacts from <qa-output-path>/qa/ when
-  present, captures issues/screenshots/reports under the same output tree, and
-  classifies bugs by user impact. Use when validating a release candidate,
-  migration, refactor, or user-facing change against production-like behavior.
-  Do not use for AI implementation audits, task-status reconciliation, CI gate
-  runs, integration/security/performance templates, or flaky-test triage; use
-  agent-output-audit for those.
-argument-hint: "[qa-output-path]"
+  Runs real-user dogfooding sessions through public interfaces: persona-driven
+  journey walks via browser, thematic tours, edge probes, experiential lenses,
+  and paper-cut hunting. Reads plans from the living QA docs tree
+  (<qa-docs-path>, default docs/qa/), dedups against the global bug registry
+  before filing, applies the fix-loop governor (auto-fix only small and
+  contained, with a regression test; escalate the rest to a human), updates
+  state.csv verdicts, and writes an incremental per-run report created the
+  moment the session matrix exists. Use when validating a release candidate,
+  branch diff, migration, or user-facing change against production-like
+  behavior. Do not use for CI gate runs, AI implementation audits, or
+  integration/security/performance suites; use agent-output-audit for those.
+argument-hint: "[qa-docs-path]"
 metadata:
   author: Pedro Nauck
   github: https://github.com/pedronauck
@@ -18,142 +20,111 @@ metadata:
 ---
 # Real-User QA Execution
 
-QA the way a real person would experience the product: assigned a persona, walking a journey, exercising charters bound to specific tours, probing the edges users actually hit, and validating CFRs that no single feature owns.
+QA the way a real person experiences the product: a persona walks a journey through public interfaces, feels the friction, hits the edges, and reports what happened. The session is the work; the living docs remember it.
+
+Three rules define everything here:
+
+1. **Stay in persona.** Every interaction goes through what a real user can see and touch. No dev-tools shortcuts to "verify", no reading code to decide what should happen mid-session, no patching over a stall. What the persona can't reach, the session can't use.
+2. **Claims carry proof.** A `pass` means the expected observable was seen, confirmed through an independent read path, and survives refresh — with evidence captured. A green matrix nobody can audit is a lie with extra steps.
+3. **Write back or it didn't happen.** Every session updates the living tree: charter debrief, `state.csv` verdicts, bug registry, dated report. A round that leaves no trace in the tree did not run.
 
 ## Required Reading Router
 
 Match your task to the row. Read the listed files **in full before** producing output. They are not appendices — they are load-bearing. Inline content in this SKILL.md is a pointer, not a substitute.
 
-| Task                                                                 | MUST read                                                                                  |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Assigning personas to sessions (Step 2)                              | `references/user-personas.md`                                                              |
-| Selecting high-value journeys (Step 2)                               | `references/journey-maps.md`                                                               |
-| Writing exploratory charters and picking tours (Step 3)              | `references/exploratory-charters.md` + `references/test-tours.md`                          |
-| Executing browser flows (Step 4)                                     | `references/web-ui-qa.md`                                                                  |
-| Probing off-script user edge cases (Step 5)                          | `references/test-tours.md` + `references/user-edge-cases.md`                               |
-| Running the Cross-Functional Requirement pass (Step 6)               | `references/cfr-checks.md`                                                                 |
-| Classifying bug severity by user impact (Step 7)                     | `references/bug-severity-by-user-impact.md`                                                |
-| Building the QA scope checklist                                      | `references/checklist.md`                                                                  |
+| Task                                                        | MUST read                                                            |
+| ----------------------------------------------------------- | -------------------------------------------------------------------- |
+| Starting any run: scope, matrix, report creation (Steps 1-2)| `references/status-and-reporting.md`                                 |
+| Walking a journey session in persona (Step 3)               | `references/session-protocol.md` + `references/persona-fidelity.md`  |
+| Running tours and edge probes (Step 4)                      | `references/tours.md` + `references/edge-cases.md`                   |
+| Running the experiential lens pass (Step 5)                 | `references/lenses.md`                                               |
+| Filing or updating bugs (Step 6)                            | `../qa-report/references/bug-registry.md`                            |
+| Deciding whether to fix now or escalate (Step 7)            | `references/fix-loop.md`                                             |
+| Updating `state.csv` verdicts (Step 8)                      | `../qa-report/references/state-schema.md`                            |
+| Drafting a charter missing from the plan (Step 2)           | `../qa-report/references/session-charters.md`                        |
 
 ## Reference Index
 
-- `references/user-personas.md` — Canonical persona set (New User / Power User / Casual User / Mobile User / Accessibility-Reliant / Recovering User), attributes, and assignment rules.
-- `references/journey-maps.md` — Journey anatomy (entry → actions → goal → exit + abandonment), high-value journey selection, mapping template.
-- `references/exploratory-charters.md` — Charter format (mission + persona + surface + tour + time-box), charter modes (freestyle / strategy-based / scenario-based / collaborative / charter-with-tour), worked examples, debrief format.
-- `references/test-tours.md` — Canonical tour catalog: Feature, Money, Garbage, Back-Button, Multi-Tab, Network, Locale, Paste, Autofill, Interrupt. One tour per charter.
-- `references/user-edge-cases.md` — Catalog of non-technical edge cases real users hit (navigation, form, session, network, device, locale, accessibility, interrupt, trust/recovery).
-- `references/cfr-checks.md` — 45-minute CFR pass: usability (Nielsen short list), accessibility (WCAG AA quick check), perceived performance, compatibility, error recoverability, production parity.
-- `references/bug-severity-by-user-impact.md` — User-impact rubric (Blocks-Completion / Data-Loss / Trust-Damage / Friction / Cosmetic) with mapping to legacy severity/priority.
-- `references/web-ui-qa.md` — `agent-browser` command set, snapshot/interact/verify loop, auth flows, viewport testing, anti-smoke guardrails.
-- `references/checklist.md` — Real-user QA checklist by category: persona coverage, journey coverage, charter coverage, off-script & edge case coverage, CFR coverage, bug filing, browser evidence, final report.
+- `references/session-protocol.md` — the persona session loop: browser driving, snapshot/act/verify cycle, the evidence standard (independent read path, survives refresh), paper-cut capture, session logging.
+- `references/persona-fidelity.md` — the guardrails that keep the session real: public-interfaces-only rule, forbidden evaluator framings, stall-is-a-finding, the allowlist.
+- `references/tours.md` — canonical 10-tour catalog (Feature, Money, Garbage, Back-Button, Multi-Tab, Network, Locale, Paste, Autofill, Interrupt) with the surface-to-tour matrix.
+- `references/edge-cases.md` — the non-technical edge cases real users hit: navigation, form, session, network, device, locale, accessibility, interrupt, trust/recovery.
+- `references/lenses.md` — six experiential lenses a dogfooder holds during the walk: usability, accessibility, perceived performance, compatibility, error recoverability, production parity.
+- `references/fix-loop.md` — the governor: what may be fixed inside the run, regression-test-per-fix, one logical fix per commit, "Decisions for a Human", and the exit gate.
+- `references/status-and-reporting.md` — the 6-value session status enum, report lifecycle (created at matrix time, updated incrementally), tracker write-back, and the round-close checklist.
+- `assets/report-template.md` — the per-run report (seeded to `<qa-docs-path>/templates/report.md` at bootstrap; prefer the project copy).
+- Cross-skill canonicals (one-way dependency, zero duplication): `../qa-report/references/bug-registry.md` (bug ids, dedup, impact rubric), `../qa-report/references/state-schema.md` (tracker columns and enums), `../qa-report/references/session-charters.md` (charter format this skill consumes).
 
 ## Required Inputs
 
-- **qa-output-path** (optional): Directory where QA artifacts (issues, screenshots, verification reports) are stored. When provided, create the directory if it does not exist and use it for all QA outputs. When omitted, fall back to repository conventions or `/tmp/qa-execution-<slug>`.
+- **qa-docs-path** (optional): Root of the living QA docs tree. Defaults to `docs/qa` at the repository root. If the tree does not exist, run `qa-report` first (or bootstrap the minimal tree per `../qa-report/references/qa-docs-layout.md`) — this skill never writes to a temp directory.
 
 ## Procedures
 
-**Step 1: Resolve Output Directory and Read qa-report Artifacts**
+**Step 1: Resolve the Tree, the Scope, and the Preconditions**
 
-1. Resolve the QA artifact directory. If the user provided a `qa-output-path` argument, use it. Otherwise use repository conventions, falling back to `/tmp/qa-execution-<slug>`. Create the `qa/` subdirectory and `qa/screenshots/`, `qa/issues/` under it.
-2. Check whether `<qa-output-path>/qa/test-plans/`, `<qa-output-path>/qa/test-cases/`, and any persona/journey/charter artifacts exist from a prior `qa-report` run. If they do, read them to seed Steps 2-3: persona assignments, journey maps, charter missions, and TC-* test cases prioritized by qa-report.
-3. Confirm the dev server URL or the runtime entry point is reachable in a production-parity build before any test runs. **Do not run QA on a build that hasn't passed CI** — that's `agent-output-audit`'s job, not this skill's. If CI hasn't been confirmed green, surface the gap and stop.
+1. Resolve `<qa-docs-path>` and read, in order: `README.md` (entry points, dev-server command, area codes), `state.csv`, open bugs in `bugs/`, and the charters planned for this cycle. The tree is the memory — running without reading it recreates the duplication this design exists to kill.
+2. Determine the scope:
+   - **Branch/PR run:** diff against the trunk and enumerate the user-visible changes; the run covers the journeys they touch plus one adjacent canary journey. No user-visible change → report that and stop; there is nothing to dogfood.
+   - **Release/full run:** the journeys and charters the cycle plan marked in scope.
+3. Preconditions: the automated suite is green (CI is a precondition, not a QA step — gaps route to `agent-output-audit`), and the product is reachable in a production-parity build (dev server per README, real auth path, no mocks). Not reachable → surface the exact gap and stop.
 
-**Step 2: Assign Personas and Select Journeys**
+**Step 2: Build the Session Matrix and Create the Report NOW**
 
-1. **STOP. Read `references/user-personas.md` in full before picking personas.** The six canonical personas (New User / Power User / Casual User / Mobile User / Accessibility-Reliant / Recovering User) and their attribute schema live there. The persona-of-convenience anti-pattern is the most common QA failure mode.
-2. Pick **at least 3 personas** for this release-candidate QA pass, covering the product's actual audience. Include at least one Mobile User when a mobile surface exists; include at least one Accessibility-Reliant persona unless explicitly out of scope (record the skip reasoning).
-3. **STOP. Read `references/journey-maps.md` in full before selecting journeys.** Journey anatomy (entry → actions → goal → exit + abandonment paths), high-value journey selection criteria, and the journey-map template live there.
-4. Pick **3-7 high-value journeys** for this pass. Use these prompts: what generates revenue, what handles sensitive data, what's used most frequently, what's the first impression, what's the recovery path. Include at least one cross-feature journey when the product has them.
-5. For each journey, document at least one **abandonment path** — the realistic way a real user gives up partway through. Abandonment paths surface the highest-impact bugs.
-6. Record persona × journey assignments in working notes. Each journey gets at least one persona; each persona gets at least one journey.
+1. **STOP. Read `references/status-and-reporting.md` in full before assembling the matrix or creating the report.** The status enum and the report lifecycle are exact contracts owned by that file.
+2. Assemble the session matrix from the planned charters: persona × journey × tour × time-box, ordered by risk. If a charter is missing for an in-scope journey, draft it per `../qa-report/references/session-charters.md` before running — never walk unplanned.
+3. Create `<qa-docs-path>/reports/<YYYY-MM-DD>-<scope>.md` from the report template **immediately** — before the first session. Fill scope, personas, flows, and the matrix with every row `Pending`. The report on disk is the source of truth for resume; update it after every session and every fix, not at the end.
 
-**Step 3: Plan Exploratory Charters**
+**Step 3: Walk Journey Sessions in Persona**
 
-1. **STOP. Read `references/exploratory-charters.md` in full before writing any charter.** Charter anatomy (mission + persona + surface + tour + time-box), charter modes, time-box guidance, debrief format. Charters are the single biggest predictor of whether the session finds real bugs.
-2. **STOP. Read `references/test-tours.md` in full before picking tours.** The 10-tour catalog (Feature / Money / Garbage / Back-Button / Multi-Tab / Network / Locale / Paste / Autofill / Interrupt) and the surface-to-tour matrix live there.
-3. For each persona × journey × surface, write a charter with: a one-sentence mission, the persona, the entry URL, **exactly one tour**, and a time-box (30 / 60 / 90 minutes). Save charter drafts to `<qa-output-path>/qa/test-plans/charters/` when applicable.
-4. Mix charter modes deliberately: at least one charter-with-tour for each P0 journey, at least one freestyle for new surfaces, at least one scenario-based for cross-feature journeys.
-5. Order the session list by risk: highest-impact journey × highest-blast-radius tour first. Run the most fragile combinations while tester attention is fresh.
+1. **STOP. Read `references/session-protocol.md` and `references/persona-fidelity.md` in full before the first session.** The bullets below are tripwires, not the contract — the evidence standard and the fidelity rules live in those files.
+2. For each charter, in matrix order: adopt the persona (device, network, locale profile), enter through the charter's real entry point, and walk the journey verb by verb — verifying each step's expected observable, capturing checkpoint evidence, and following branch and abandonment paths where the flow marks them.
+3. Verify to the **true end state**: side effects landed correctly (right recipient, right content, right destination), the result survives refresh and fresh load. Confirm through an independent read path before recording `Pass`.
+4. Hunt paper cuts throughout: persona-felt friction that no functional check fails. Record each with persona + severity; sharp ones enter the fix loop as findings.
+5. When something is only completable by a human (real payment, external email, SMS), mark the leg `Blocked (needs human verify)` with exact instructions for the human — never fake the leg.
+6. End each session at the time-box, append the debrief to the charter file, and update the report's matrix row.
 
-**Step 4: Execute Journey Sessions (Web UI primary)**
+**Step 4: Run Tours and Edge Probes**
 
-Skip this step's Web UI portion if the project has no Web UI surface — but still run CLI/HTTP journeys against the same persona × journey × charter plan.
+1. **STOP. Read `references/tours.md` and `references/edge-cases.md` in full before running any tour or probe.** Each tour names off-script actions specific to its theme — they are not interchangeable.
+2. Run each charter's single tour against its surface, in persona, inside the box, asking at each action: *"would this matter for this tour's theme?"*
+3. Pick 5-10 edge cases matching the surface and persona; attempt them; record attempted-and-clean as evidence too.
 
-1. **STOP. Read `references/web-ui-qa.md` in full before opening a browser.** That file owns the complete `agent-browser` command surface, the snapshot-driven core loop, auth flows, and the viewport testing matrix.
-2. For each charter from Step 3, in the order set there:
-   - **Stay in persona.** If a New User wouldn't know about a feature, don't use it. If a Power User would use a keyboard shortcut, use it.
-   - Navigate to the entry URL: `agent-browser open <url>`. Confirm the persona's device profile (viewport, throttle, locale) via `--session` + `--viewport` flags as appropriate.
-   - Snapshot interactively: `agent-browser snapshot -i`.
-   - Walk the journey verb by verb. After every interaction, re-snapshot and verify the expected observable for that step. Time each step against the journey's time budget.
-   - Capture a screenshot at every verification checkpoint: `agent-browser screenshot <qa-output-path>/qa/screenshots/<journey-id>-step<N>.png`.
-   - Record observed time-to-feedback for any action that should feel fast (button clicks, form validation).
-   - When the journey forks into a branch or an abandonment path, follow it and record outcome.
-3. For CLI / HTTP journeys, drive workflows through the same interfaces real operators or end-users would use, not internal test helpers. Capture exact command, input, and observable result for each scenario.
-4. Close the browser session after all flows complete: `agent-browser close`.
+**Step 5: Experiential Lens Pass**
 
-**Step 5: Run Off-Script Tours & User Edge Cases**
+1. **STOP. Read `references/lenses.md` in full before starting the lens pass.** The six lens checklists and their severity defaults live there.
+2. Pick the 2 journeys covering the largest changed surface and re-walk them holding the six lenses — a 45-minute box, findings recorded as `pass` / `friction` / `fail` per lens.
 
-1. **STOP. Read `references/test-tours.md` in full before launching tours.** Each tour names off-script actions specific to its theme — they are not interchangeable.
-2. **STOP. Read `references/user-edge-cases.md` in full before probing edges.** That file's catalog (navigation, form, session, network, device, locale, accessibility, interrupt, trust/recovery) is the canonical edge-case list — not unit-level edge cases.
-3. For each charter from Step 3, run the assigned tour against the surface:
-   - Stay in persona, stay in time-box.
-   - Execute the tour's off-script actions, asking *"would this matter for this tour's theme?"* at each one.
-   - Pick 5-10 relevant entries from `user-edge-cases.md` that match the surface and persona. Don't try every edge case — the time-box governs.
-4. For every finding, capture the persona felt (not just the technical observation): *"a mobile user with one hand could not reach the submit button"* is more actionable than *"button is 8px out of touch target"*.
-5. Document attempted edge cases in the charter debrief whether they fired or not — confirmed-clean is also evidence.
+**Step 6: File Bugs into the Registry**
 
-**Step 6: Cross-Functional Requirement Pass**
+1. **STOP. Read `../qa-report/references/bug-registry.md` in full before minting any id.**
+2. Dedup first: search `bugs/` and the affected rows' `bug_ids`. Re-found → append `## Re-found`; regressed → reopen with `## Regressed`. Only genuinely new symptoms get a new `BUG-NNNN`.
+3. File with the user first: impact tier, persona, journey step, reproduction from the persona's entry point, evidence paths. Link the id into the affected `state.csv` rows.
 
-1. **STOP. Read `references/cfr-checks.md` in full before starting the CFR pass.** That file owns the six CFR categories (usability, accessibility, perceived performance, compatibility, error recoverability, production parity) and the 45-minute time-box.
-2. Pick **2 journeys** from your charters that exercise the largest surface area. Re-walk them as a CFR audit, not a journey verification.
-3. At each step, ask the six CFR categories. Mark each `pass`, `friction`, or `fail`.
-4. Run the WCAG AA quick check (keyboard, screen reader, visual) on the changed surface. The full conformance audit is out of scope — short check only.
-5. Run the compatibility smoke (latest Chrome + Safari + Firefox + iOS Safari + Android Chrome) on any surface that touched layout or forms.
-6. Validate production parity: not in incognito, cookies enabled, realistic extension set, real auth path, realistic worst-case network.
-7. File one bug per CFR finding using the severity rubric in `references/bug-severity-by-user-impact.md`. Most CFR findings are `Friction` or `Trust-Damage`; promote to `Blocks-Completion` only when the failure abandons the user.
+**Step 7: Fix Loop (governed)**
 
-**Step 7: File Bugs by User Impact**
+1. **STOP. Read `references/fix-loop.md` in full before touching any code.**
+2. Judge the size of each fix **before** editing: auto-fix only when small, well-understood, low-risk, contained, and free of product trade-offs. Everything else goes to the report's **Decisions for a Human** with options and a recommendation.
+3. Every auto-fix ships a regression test that failed before and passes after (or a documented replay with the stated reason no automated test is meaningful), one logical fix per commit, and a re-run of the impacted journey **and its adjacent journeys** under the same persona.
 
-1. **STOP. Read `references/bug-severity-by-user-impact.md` in full before classifying any bug.** The five-tier user-impact rubric and the mapping to legacy Severity/Priority live there.
-2. Use `assets/issue-template.md` to write issue files under `<qa-output-path>/qa/issues/`. Name each `BUG-<NNN>.md`.
-3. For every bug, fill:
-   - `Impact (user-side):` — Blocks-Completion / Data-Loss / Trust-Damage / Friction / Cosmetic.
-   - `Severity:` and `Priority:` — via the mapping rubric.
-   - `Persona Affected:` — the persona whose session surfaced the bug.
-   - `Journey Step:` — the J-NN journey name and the step number where it fired.
-   - Cite the charter (CH-NN) and tour in `Reproduction:`.
-4. When a bug ties to a `qa-report` test case, include the TC-ID in `Related`. The `Automation Follow-up:` block (audit-only) does not apply to this skill — leave it out.
-5. Reproduce each failure consistently before proposing a fix. For bounded root-cause fixes inside the QA scope, apply the fix, re-run the impacted journey, and update the bug to `resolved`. For larger features, file and move on; do not silently pass.
+**Step 8: Close the Round**
 
-**Step 8: Write the Verification Report**
-
-1. Re-run the most critical journeys from Step 4 after any code change made during the QA pass.
-2. Summarize evidence using `assets/verification-report-template.md` and write the report to `<qa-output-path>/qa/verification-report.md`.
-3. Mandatory sections (per the template):
-   - **PERSONA COVERAGE** — every persona × charter combination.
-   - **JOURNEY EXECUTION LOG** — per-step verdicts, screenshot paths, abandonment paths covered.
-   - **CHARTER LOG** — mission, tour, time-box, debrief, suggested-next per charter.
-   - **OFF-SCRIPT FINDINGS** — edge cases attempted and outcomes.
-   - **CFR FINDINGS** — pass/friction/fail per CFR category per journey.
-   - **BROWSER EVIDENCE** — dev server, flows, viewports, auth, blocked flows.
-   - **ISSUES FILED** — totals by user impact tier and by legacy severity.
-4. Disclose blocked sessions, missing credentials, or environment gaps explicitly with the exact prerequisite that stopped execution.
-5. Do not claim PASS without fresh evidence from the current state of the build. The verification report is the contract — if a section is empty, that's a coverage gap, not a green light.
+1. **STOP. Re-read the round-close checklist in `references/status-and-reporting.md`.**
+2. Exit gate: run the project's full automated suite once. A green matrix with a red suite is not ready — say so in Final Status.
+3. Write back: every matrix row terminal (no `Pending` left), `state.csv` verdicts updated per the schema, bug statuses current, charter debriefs appended, report's Final Status written with totals by impact tier.
+4. Never claim PASS without fresh evidence from the current build. An empty report section is a coverage gap, not a green light.
 
 ## Companion Skills
 
-- **qa-report** — Plans the deliverables this skill consumes: personas, journey maps, charters, test cases, regression suites, Figma fidelity validation. The shared output directory `<qa-output-path>/qa/` is the contract between them.
-- **agent-output-audit** — Audits AI-implemented work / Compozy task slugs. Owns the CI verification gate, AI test-hygiene scans (RF-1..RF-6), the independent evaluator protocol, flaky-test triage, task-status reconciliation, and quality gates. **Do not duplicate that work here**; if a real-user QA session uncovers AI-implementation concerns, file the bug and recommend running `agent-output-audit` separately.
-- **agent-browser** (curated) — Web UI driver used in Step 4 and Step 5. The command set is documented in `references/web-ui-qa.md`.
+- **qa-report** — Plans what this skill runs and owns the living tree's schemas (tracker, bug registry, charters). Results written here feed the next cycle's planning.
+- **agent-output-audit** — Owns CI verification gates, AI test-hygiene scans, task-status reconciliation, flaky-test triage. If a session uncovers those concerns, file the finding and name that gate; do not pivot mid-session.
+- **agent-browser** — The browser driver used in Steps 3-5; command surface documented in `references/session-protocol.md`.
 
 ## Error Handling
 
-- If the build is not reachable in a production-parity environment, stop and surface the gap. Do not test against local mocks or a CI-only artifact — the QA result will not generalize.
-- If the dev server fails to start or `agent-browser` is unavailable, skip Web UI flows, document the blocker in the verification report, and continue with CLI/HTTP journeys when applicable.
-- If a browser flow hangs or times out, close the session with `agent-browser close`, record the failure, and attempt the flow once more from a clean session before marking it as blocked.
-- If credentials, test data, or environment access are missing for a planned journey, classify it as `blocked`, document the exact prerequisite, and proceed with the remaining journeys.
-- If the persona × journey × charter list exceeds the available QA window, prioritize by user-impact risk (Blocks-Completion candidates first, then Data-Loss, then Trust-Damage). Defer lower-impact journeys to a follow-up pass and record the deferral.
-- If a session uncovers something out of scope for real-user QA (CI failure, test code looking suspicious, task status mismatched, flaky test in an automated suite), file the bug, name the right gate (`agent-output-audit` or the CI pipeline), and do not pivot mid-session.
-- If a CFR pass exceeds the 45-minute box, stop and file a follow-up CFR charter. Tester fatigue at hour 2 produces false positives.
-- If the dev server requires real third-party services (payment, email, SSO) and they are unavailable, validate every reachable boundary and record the live-step blockers explicitly. Do not substitute mocks for the final user proof.
+- If `<qa-docs-path>` does not exist, stop and run `qa-report` bootstrap first. Never invent a parallel output location.
+- If the dev server or browser tooling is unavailable, mark the browser legs `Blocked (needs human verify)` with the exact missing prerequisite, and continue with CLI/HTTP journeys that remain walkable in persona.
+- If a browser flow hangs, close the session, record it, retry once from a clean session; then mark blocked. A stall is a finding to file, not a thing to work around (see `persona-fidelity.md`).
+- If credentials or test data are missing for a journey, mark its sessions blocked with the exact prerequisite and proceed with the rest.
+- If the matrix exceeds the available window, cut by risk (Blocks-Completion candidates first, then Data-Loss, then Trust-Damage), mark the cut sessions `Skipped` with reasoning, and say so in Final Status — never silently shrink coverage.
+- If a fix attempt grows beyond the governor's bounds mid-edit, revert it, restore the row to `Fail`, and move the item to Decisions for a Human. Half-applied fixes are worse than open bugs.

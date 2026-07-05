@@ -1,17 +1,18 @@
 ---
 name: qa-report
 description: >-
-  Plans real-user QA deliverables: personas, journey maps, exploratory
-  charters, persona/journey/tour/CFR test cases, regression suites, Figma
-  validation checks, automation intent, and user-impact bug reports. Writes
-  artifacts under <qa-output-path>/qa/ for qa-execution to consume. Use when
-  planning QA before execution, documenting journey-driven test strategy,
-  marking flows that need E2E follow-up, or filing structured bug reports. Do
-  not use for live execution, AI implementation audits, CI gate ownership, or
-  technical integration/security/performance suites; use qa-execution or
-  agent-output-audit instead.
+  Plans real-user QA as living repo docs. Owns the canonical <qa-docs-path>
+  tree (default docs/qa/): state.csv scenario tracker, global bug registry with
+  stable BUG-NNNN ids, project personas, journey flowcharts, session charters,
+  coverage taxonomy, and automation backlog. Maps user-visible change as
+  Mermaid journey flows BEFORE deriving scenarios, plans persona-driven
+  session charters for the cycle, and enforces "every journey walked by a
+  persona" completeness. Use when bootstrapping or updating a project's QA
+  docs, planning a QA cycle before execution, or registering bugs into the
+  durable registry. Do not use for live session execution, browser evidence
+  capture, or fix loops; use qa-execution for those.
 trigger: explicit
-argument-hint: "[qa-output-path]"
+argument-hint: "[qa-docs-path]"
 metadata:
   author: Pedro Nauck
   github: https://github.com/pedronauck
@@ -19,229 +20,110 @@ metadata:
 ---
 # Real-User QA Planner
 
-Plan and document the deliverables that drive real-user QA execution — personas, journey maps, exploratory charters, persona/journey/tour test cases, regression suites, Figma fidelity validations, and user-impact bug reports.
+Plan QA the way the product will actually be judged: as journeys real people walk, not as test cases that accumulate. This skill owns the project's **living QA docs** — one canonical tree that survives every QA round — and plans the persona-driven sessions that `qa-execution` runs.
+
+Two rules define everything here:
+
+1. **Living docs, not round artifacts.** All durable QA knowledge lives in one committed tree (`<qa-docs-path>`, default `docs/qa/`). Rounds append to it; they never create parallel trees, never reset ids, never overwrite history.
+2. **Sessions, not cases.** The atomic planning unit is the **session charter** (persona + journey + tour + time-box), derived from journey flowcharts. Coverage means "every planned journey was walked by a persona this cycle" — never "every persona has N test cases".
 
 ## Required Reading Router
 
-Match your task to the row. Read the listed files **in full before** producing the deliverable. They are not appendices — they are the templates and contracts the deliverable must conform to. Inline content in this SKILL.md is a pointer, not a substitute.
+Match your task to the row. Read the listed files **in full before** producing the deliverable. They are not appendices — they are the contracts the deliverable must conform to. Inline content in this SKILL.md is a pointer, not a substitute.
 
-| Task                                              | MUST read                                                                                  |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Defining personas (Step 3 — persona deliverable)  | `references/persona_test_cases.md` + `../qa-execution/references/user-personas.md`         |
-| Mapping a journey (Step 3 — journey deliverable)  | `references/journey_test_plans.md` + `../qa-execution/references/journey-maps.md`          |
-| Writing an exploratory charter (Step 3)           | `references/exploratory_charters.md` + `../qa-execution/references/exploratory-charters.md` |
-| Planning a tour-driven test case (Step 4)         | `references/test_tours_catalog.md` + `../qa-execution/references/test-tours.md`            |
-| Generating standard / functional / UI test cases  | `references/test_case_templates.md`                                                        |
-| Generating CFR test cases (Step 4)                | `references/cfr_test_cases.md` + `../qa-execution/references/cfr-checks.md`                |
-| Building a regression suite (Step 5)              | `references/regression_testing.md`                                                         |
-| Validating against Figma (Step 6)                 | `references/figma_validation.md`                                                           |
-| Filing a bug report (Step 7)                      | `references/bug_report_templates.md` + `assets/issue-template.md` + `../qa-execution/references/bug-severity-by-user-impact.md` |
+| Task                                                       | MUST read                                              |
+| ---------------------------------------------------------- | ------------------------------------------------------ |
+| Bootstrapping or adopting the QA docs tree (Step 1)        | `references/qa-docs-layout.md`                         |
+| Authoring or updating project personas (Step 2)            | `references/personas.md`                               |
+| Mapping journeys and flowcharts (Step 3)                   | `references/journeys-and-flows.md`                     |
+| Deriving scenarios and updating the tracker (Step 4)       | `references/state-schema.md` + `references/taxonomy.md`|
+| Planning session charters for a cycle (Step 5)             | `references/session-charters.md`                       |
+| Registering or updating bugs (Step 6)                      | `references/bug-registry.md`                           |
+| Recording automation intent                                | `references/automation-backlog.md`                     |
 
 ## Reference Index
 
-- `references/test_case_templates.md` — Test case variants for real-user QA: Standard, Functional, UI/Visual, Regression, Smoke, Persona, Journey, Charter, Tour, CFR. The Automation Metadata block parsed by `qa-execution`.
-- `references/persona_test_cases.md` — TC-PERSONA-* template and persona attributes recording schema.
-- `references/journey_test_plans.md` — TC-JOURNEY-* template and journey-driven plan structure.
-- `references/exploratory_charters.md` — Charter planning template plus worked examples for common product surfaces.
-- `references/test_tours_catalog.md` — Planning view of the test tour catalog. Each tour generates one TC-TOUR-*. Canonical tour definitions live in `../qa-execution/references/test-tours.md` (avoid drift).
-- `references/cfr_test_cases.md` — TC-CFR-* template for usability / accessibility / perf-perception / compatibility / recoverability test cases.
-- `references/regression_testing.md` — Journey-driven regression suite tiers (Smoke / Targeted / Full / Sanity), prioritization, automation tagging, pass/fail criteria.
-- `references/figma_validation.md` — Figma MCP queries, spec → inspect → document workflow, responsive checks at 1280 / 768 / 375.
-- `references/bug_report_templates.md` — Standard, UI/Visual, and User-Friction bug variants with full required-field sets. `assets/issue-template.md` is the minimum-viable subset bundled for in-skill use and shared with `qa-execution`.
+- `references/qa-docs-layout.md` — the canonical `<qa-docs-path>` tree, bootstrap procedure for new projects, adoption procedure for projects with existing scattered QA artifacts.
+- `references/state-schema.md` — `state.csv` column schema, status enums, id minting, update rules, and the merge convention that keeps a shared CSV diffable.
+- `references/bug-registry.md` — global `BUG-NNNN` registry: minting, dedup-before-file, bug statuses, and the five-tier user-impact rubric (the canonical severity model for both skills).
+- `references/personas.md` — the seed persona catalog (New / Power / Casual / Mobile / Accessibility-Reliant / Recovering User) and how to derive project-specific personas into `<qa-docs-path>/personas.md`.
+- `references/journeys-and-flows.md` — flows before matrix: journey anatomy, abandonment paths, Mermaid flowchart mapping, and how flows (not features) define what gets tested.
+- `references/session-charters.md` — the charter as atomic unit, cycle planning, cadence tiers (smoke / targeted / full / sanity), and the coverage inversion.
+- `references/taxonomy.md` — the five coverage dimensions every cycle must consider: journeys, functional, experiential, edge/error/empty, cross-cutting.
+- `references/automation-backlog.md` — automation intent lives in ONE backlog doc, never as metadata attached to sessions.
+- `assets/state.csv` — seed tracker (header + example row).
+- `assets/bug-template.md` — seed bug file template (copied to `<qa-docs-path>/templates/bug.md` at bootstrap).
+- `assets/charter-template.md` — seed charter template (copied to `<qa-docs-path>/templates/charter.md` at bootstrap).
 
 ## Required Inputs
 
-- **qa-output-path** (optional): Directory where all QA artifacts are stored. When provided, create the directory if it does not exist. When omitted, use the current working directory. This path must match the same argument passed to `qa-execution` when both skills are used together.
-
-## Shared Output Structure
-
-All artifacts follow this directory layout, shared with `qa-execution`:
-
-```
-<qa-output-path>/qa/
-├── test-plans/          # Test plan documents (journey plans, regression suites, persona docs)
-│   └── charters/        # Charter drafts (CH-NN-*.md)
-├── test-cases/          # Individual test case files (TC-*.md)
-├── issues/              # Bug reports (BUG-*.md)
-├── screenshots/         # Visual evidence and Figma comparisons
-└── verification-report.md  # Generated by qa-execution
-```
+- **qa-docs-path** (optional): Root of the living QA docs tree. Defaults to `docs/qa` at the repository root. This is a durable, committed location — never a temp dir. If the argument points outside the repository, confirm with the operator before proceeding: living docs outside the repo lose review, diff, and history.
 
 ## Procedures
 
-**Step 1: Resolve Output Directory**
+**Step 1: Resolve or Bootstrap the QA Docs Tree**
 
-1. If the user provided a `qa-output-path` argument, use that path.
-2. Otherwise, default to the current working directory.
-3. Create the `qa/` subdirectory under the resolved path, then `qa/test-plans/`, `qa/test-plans/charters/`, `qa/test-cases/`, `qa/issues/`, `qa/screenshots/`.
+1. Resolve `<qa-docs-path>` (argument or `docs/qa` default).
+2. **STOP. Read `references/qa-docs-layout.md` in full before creating or modifying anything.** It owns the canonical tree and the bootstrap/adopt procedures.
+3. If the tree exists, read `<qa-docs-path>/README.md` and `state.csv` first — every planning decision below builds on the existing state, never parallel to it.
+4. If the tree does not exist, bootstrap it per the layout reference: create the directories, seed `state.csv` from `assets/state.csv`, copy the three templates into `<qa-docs-path>/templates/`, and write the project `README.md`.
+5. If the repository has QA artifacts scattered outside the tree (old per-round `qa/` dirs, orphan bug files), follow the adoption procedure in the layout reference: index them, migrate durable knowledge, and never silently duplicate ids.
 
-**Step 2: Identify the Deliverable Type**
+**Step 2: Establish Project Personas**
 
-Parse the user request to determine which deliverable to generate:
+1. **STOP. Read `references/personas.md` in full before deriving or updating any persona.** The seed catalog and the derivation rules live there.
+2. If `<qa-docs-path>/personas.md` exists, update it only when the product's audience changed. Personas are durable instance data — they persist across cycles.
+3. If absent, derive 3-6 project personas from the seed catalog, adapted to the product's real audience, and write them to `<qa-docs-path>/personas.md`.
 
-| Request Pattern | Deliverable | Output Path |
-|-----------------|-------------|-------------|
-| "Define personas for…" | Persona document | `test-plans/personas.md` |
-| "Map the journey for…" | Journey map | `test-plans/<journey-slug>-map.md` |
-| "Plan exploratory session for…" | Charter draft | `test-plans/charters/CH-<NN>-<slug>.md` |
-| "Create test plan for…" | Test Plan (journey-centric) | `test-plans/<feature-slug>-test-plan.md` |
-| "Generate test cases for…" | Test cases (TC-FUNC / TC-UI / TC-REG / SMOKE / TC-PERSONA / TC-JOURNEY / TC-TOUR / TC-CFR) | `test-cases/` |
-| "Build regression suite…" | Journey-driven regression suite | `test-plans/<suite-name>-regression.md` |
-| "Compare with Figma…" | Figma fidelity TC | `test-cases/TC-UI-*.md` |
-| "Document bug…" | Bug report (user-impact framing) | `issues/BUG-*.md` |
+**Step 3: Map Journeys as Flows (before any scenario exists)**
 
-**Step 3: Generate Test Plans (Journey-Centric)**
+1. **STOP. Read `references/journeys-and-flows.md` in full before mapping any journey.** The flow requirements summarized in point 3 below are a tripwire, not the contract.
+2. Scope the mapping: for a branch/PR cycle, enumerate every **user-visible** change in the diff; for a release cycle, cover the product's high-value journeys.
+3. For each journey, write or update `<qa-docs-path>/journeys/<journey-id>.md`: the YAML journey map plus a Mermaid flowchart covering entry → actions → branch points (validation error, empty state, permission denied) → side effects (emails, jobs, notifications) → the **true end state**, including at least one abandonment path.
+4. Do not write a single scenario before the flow exists. Scenarios derived without a flow test pages; scenarios derived from flows test journeys — and the bugs that matter live between the pages.
 
-1. **STOP. Read `references/journey_test_plans.md` in full before drafting the plan.** That file owns the section structure, the Automation Metadata block, and the entry/exit criteria framed by user impact.
-2. Generate a test plan document with these mandatory sections:
-   - Executive summary with the user value the change delivers and the journey-level risks.
-   - **Personas covered** (cite each from `../qa-execution/references/user-personas.md`).
-   - **Journeys mapped** (cite each from `../qa-execution/references/journey-maps.md`; include abandonment paths).
-   - **Charters planned** (mission + persona + tour + time-box for each).
-   - **CFR scope** (which of the six CFR categories the change affects).
-   - Test strategy and approach.
-   - Automation strategy — which journeys should become E2E, which remain manual-only, which are blocked.
-   - **Entry criteria** (all must hold before execution begins):
-     - Build is reachable in a production-parity environment.
-     - CI gate has run separately and is green (this skill does not run it — see `agent-output-audit`).
-     - Test data and fixture state matches journey preconditions.
-     - Personas, journeys, and charters are documented.
-   - **Exit criteria** (all must hold before execution concludes):
-     - Every P0 journey reached its goal observable.
-     - Zero open `Blocks-Completion` or `Data-Loss` bugs on P0 journeys.
-     - CFR pass completed on at least 2 journeys with no critical findings open.
-     - Automation follow-up registered for every `Missing` or `Blocked` automation annotation.
-   - **Retesting vs Regression** distinction:
-     - **Retesting** — re-validates the fix of a specific reported defect. Scope is the BUG and its narrow reproduction.
-     - **Regression** — validates that a change did not break unrelated journeys. Scope is the journey-driven suite.
-   - Risk assessment table (Risk, Probability, User-Impact, Mitigation).
-   - Timeline and deliverables.
-3. Write the plan to `<qa-output-path>/qa/test-plans/<feature-slug>-test-plan.md`.
+**Step 4: Derive Scenarios into the Tracker**
 
-**Step 4: Generate Test Cases**
+1. **STOP. Read `references/state-schema.md` and `references/taxonomy.md` in full before minting an id or writing any row.** Column names and enums are exact — the schema owns them.
+2. Walk each flowchart from Step 3 and derive scenarios: one `state.csv` row per scenario, with a stable `<AREA>-NNN` id minted per the schema rules. Check the five taxonomy dimensions so coverage is deliberate, not accidental.
+3. Update existing rows in place (statuses, journey links); never re-create a row that already exists, and record overlaps in the `overlaps` column instead of duplicating.
+4. Rows are planning output here — `qa_status` stays `untested` until `qa-execution` runs them.
 
-1. **STOP. Read `references/test_case_templates.md` in full before writing any test case.** Variant selection (Functional / UI / Regression / Smoke / Persona / Journey / Charter / Tour / CFR) and per-variant required fields live there.
-2. Assign each test case an ID following the naming scheme:
+**Step 5: Plan Session Charters for the Cycle**
 
-   | Type | Prefix | Example |
-   |------|--------|---------|
-   | Functional | TC-FUNC- | TC-FUNC-001 |
-   | UI/Visual | TC-UI- | TC-UI-045 |
-   | Regression | TC-REG- | TC-REG-089 |
-   | Smoke | SMOKE- | SMOKE-001 |
-   | Persona-driven | TC-PERSONA- | TC-PERSONA-012 |
-   | Journey-driven | TC-JOURNEY- | TC-JOURNEY-007 |
-   | Charter (planning artifact) | TC-CHARTER- | TC-CHARTER-003 |
-   | Tour-driven (off-script) | TC-TOUR- | TC-TOUR-014 |
-   | CFR (usability / a11y / perf-perception / compat / recovery) | TC-CFR- | TC-CFR-008 |
+1. **STOP. Read `references/session-charters.md` in full before writing any charter.** The charter fields named below are tripwires, not the contract.
+2. Pick the cadence tier for this cycle (smoke / targeted / full / sanity) and select journeys accordingly.
+3. Write one charter per session to `<qa-docs-path>/charters/CH-<NNN>.md` using the project template: mission, persona, journey, exactly one tour, time-box, must-try guidance.
+4. Order charters by risk: highest-impact journey × highest-blast-radius tour first.
+5. Every planned journey gets at least one charter with an assigned persona. That is the coverage bar — not case counts.
 
-3. Each test case must include:
-   - **Priority:** P0 (Critical) | P1 (High) | P2 (Medium) | P3 (Low).
-   - **Persona:** the user role acting (`../qa-execution/references/user-personas.md`).
-   - **Objective:** what is being validated, from the user's perspective.
-   - **Preconditions:** setup requirements, test data, environment.
-   - **Real-User Conditions:** network profile, device, browser, locale, timezone, autofill state. (Replaces the technical `External Dependencies` field.)
-   - **Test Steps:** numbered actions in user-language with an `**Expected:**` observable for each.
-   - **Edge Cases:** boundary user behaviors (not technical edge cases — see `../qa-execution/references/user-edge-cases.md`).
-   - **Automation Target:** `E2E` | `Manual-only`.
-   - **Automation Status:** `Existing` | `Missing` | `Blocked` | `N/A`.
-   - **Automation Command/Spec:** existing spec path or command when known.
-   - **Automation Notes:** why the case should be automated, remain manual, or is blocked.
-4. Write each test case to `<qa-output-path>/qa/test-cases/<TC-ID>.md`.
-5. When generating test cases interactively, execute `scripts/generate_test_cases.sh <qa-output-path>/test-cases`.
+**Step 6: Register Bugs**
 
-**Step 5: Build Journey-Driven Regression Suites**
+1. **STOP. Read `references/bug-registry.md` in full before minting any bug id.**
+2. Before filing, dedup: search `<qa-docs-path>/bugs/` for an existing bug with the same symptom. Update the existing file instead of duplicating — a re-found bug is history worth keeping on one id.
+3. Mint the next global `BUG-NNNN` from the registry (max existing + 1, never reset), write the bug file from the project template, and link the id into the affected `state.csv` rows (`bug_ids` column).
 
-1. **STOP. Read `references/regression_testing.md` in full before classifying tiers, prioritizing, or defining pass/fail criteria.** Tier definitions, prioritization rubric, automation-tagging rules, execution-order contract, and `PASS` / `FAIL` / `CONDITIONAL` thresholds live there.
-2. Suite tiers are **journey-driven**, not test-case-driven. Each tier picks N journeys, then derives the test cases from those journeys:
+**Step 7: Validate Cycle Completeness**
 
-   | Suite | Duration | Frequency | Journey count |
-   |-------|----------|-----------|---------------|
-   | Smoke | 15-30 min | Daily/per-build | 2-4 P0 journeys |
-   | Targeted | 30-60 min | Per change | Journeys touching the changed surface |
-   | Full | 2-4 hours | Weekly/Release | All P0 + P1 journeys, every persona |
-   | Sanity | 10-15 min | After hotfix | The single journey affected by the hotfix |
+Before handing off to `qa-execution`, verify — and record gaps honestly instead of padding:
 
-3. Prioritize journeys using the user-impact lens:
-   - **P0:** journeys whose failure causes `Blocks-Completion` or `Data-Loss` for paying users.
-   - **P1:** journeys whose failure causes `Trust-Damage` or repeated `Friction` for any persona.
-   - **P2:** secondary journeys, edge personas, lower-traffic surfaces.
-4. Mark automation candidates explicitly:
-   - Tag changed or regression-critical P0/P1 public journeys as `Automation Target: E2E` when the repository already has an E2E harness.
-   - Tag bug-driven public regressions as `Automation Status: Missing` until `qa-execution` confirms the spec was added or updated.
-   - Tag exploratory, visual-judgment, or unsupported flows as `Manual-only` or `Blocked` with a reason.
-5. Define execution order: Smoke first (fail-fast) → P0 journeys → P1 journeys → P2 journeys → exploratory charters.
-6. Define pass/fail criteria framed by user impact:
-   - **PASS:** every P0 journey reaches its goal; zero `Blocks-Completion` / `Data-Loss` open.
-   - **FAIL:** any P0 journey fails to reach goal; any `Blocks-Completion` or `Data-Loss` discovered.
-   - **CONDITIONAL:** P1 journeys with documented workarounds; `Friction` / `Trust-Damage` findings with fix plan in place.
-7. Write the suite document to `<qa-output-path>/qa/test-plans/<suite-name>-regression.md`.
+1. Every journey in scope for this cycle has a flowchart with at least one abandonment path.
+2. Every journey in scope has at least one charter with an assigned persona.
+3. Every scenario row in scope has a stable id, a linked journey, and `qa_status` reflecting reality.
+4. Every open bug has a registry file and appears in the `bug_ids` of at least one row.
+5. The five taxonomy dimensions were considered — a skipped dimension is recorded with reasoning, not silently ignored.
 
-**Step 6: Validate Against Figma Designs**
-
-Skip this step if Figma MCP is not configured.
-
-1. **STOP. Read `references/figma_validation.md` in full before issuing any Figma MCP query.** Spec→inspect→document workflow, MCP query catalog, responsive checks at 1280/768/375, common-discrepancies catalog.
-2. Extract design specifications from Figma using MCP queries: dimensions, colors (exact hex), typography, spacing, border radius/shadows, interactive states.
-3. Generate UI test cases (TC-UI-*) that compare each property against the implementation.
-4. Test responsive behavior at the standard viewports: 375 / 768 / 1280.
-5. When validation reveals discrepancies, generate a bug report following Step 7. Most Figma-fidelity gaps are `Cosmetic` or `Trust-Damage` — promote to `Friction` only when the gap blocks comprehension.
-6. Use `agent-browser` (the `qa-execution` companion skill) when browser-based verification is needed.
-
-**Step 7: Create Bug Reports**
-
-1. **STOP. Read `references/bug_report_templates.md` in full before filing any bug.** Standard, UI/Visual, and User-Friction variants with required-field sets. `assets/issue-template.md` is the minimum-viable shared subset.
-2. **STOP. Read `../qa-execution/references/bug-severity-by-user-impact.md` in full before classifying impact.** The five-tier user-impact rubric (Blocks-Completion / Data-Loss / Trust-Damage / Friction / Cosmetic) and the mapping to legacy Severity/Priority live there.
-3. Assign a bug ID with the `BUG-` prefix (e.g., `BUG-001`).
-4. Every bug report must include:
-   - **Impact (user-side):** Blocks-Completion | Data-Loss | Trust-Damage | Friction | Cosmetic.
-   - **Severity:** Critical | High | Medium | Low (mapped from impact).
-   - **Priority:** P0 | P1 | P2 | P3 (mapped from impact).
-   - **Status:** `pending` | `resolved` | `invalid`.
-   - **Persona Affected:** the persona whose session surfaced the bug.
-   - **Journey Step:** J-NN journey name + step number.
-   - **Environment:** build, OS, browser, viewport, network, locale, URL.
-   - **Reproduction:** charter (CH-NN), tour name, plain-language steps.
-   - **Expected vs Actual:** clear user-side descriptions.
-   - **Impact:** users affected, frequency, workaround, trust cost.
-   - **Related:** TC-ID if discovered during a test case, Figma URL if UI bug, related journeys/charters.
-5. Write each bug report to `<qa-output-path>/qa/issues/<BUG-ID>.md`.
-6. When creating bug reports interactively, execute `scripts/create_bug_report.sh <qa-output-path>/issues`.
-
-**Step 8: Validate Completeness**
-
-1. Verify every test case has an expected user-observable result for each step.
-2. Verify every bug report has reproducible user-language steps.
-3. Verify traceability: test cases cite the persona and journey; bugs cite the test case and charter when applicable.
-4. Verify every persona has at least one test case.
-5. Verify every journey has at least one test case.
-6. Verify every CFR category planned for the change has at least one TC-CFR-*.
-7. Verify every planned critical flow has an explicit automation annotation and that `Missing` or `Blocked` states include a reason.
-8. Cross-reference against `../qa-execution/references/checklist.md` for coverage gaps before handing off to execution.
+Do NOT verify "every persona has N test cases" or any per-case count. Case accumulation is the failure mode this skill exists to prevent.
 
 ## Companion Skills
 
-- **qa-execution** — Executes the deliverables this skill plans. Reads personas, journeys, charters, test cases from `<qa-output-path>/qa/`; writes verification report and bugs back.
-- **agent-output-audit** — Audits AI-implemented work / Compozy task slugs / CI gate / flaky test triage. Use for AI test-hygiene scans (RF-1..RF-6), task-status reconciliation, and quality gates — those concerns are explicitly **out of scope for this skill**.
-- **agent-browser** (curated) — Web UI driver invoked by `qa-execution` during Step 6 Figma validation when browser-based verification is needed.
-
-## Bug Severity vs User Impact
-
-Severity is the engineering-triage view. Impact is the user-side view. Both must be filled per bug. The full mapping rubric lives in `../qa-execution/references/bug-severity-by-user-impact.md`:
-
-| Impact (user-side) | Default Severity | Default Priority | Release impact |
-|---|---|---|---|
-| Blocks-Completion | Critical | P0 | Blocker on any P0 journey |
-| Data-Loss | Critical | P0 | Blocker on any journey |
-| Trust-Damage | High | P1 | Multiple on same journey = blocker |
-| Friction | Medium | P2 | Tracked as redesign signal |
-| Cosmetic | Low | P3 | Batched into polish follow-up |
+- **qa-execution** — Runs the sessions this skill plans and writes results back into the same `<qa-docs-path>` tree (statuses, bugs, reports). The living docs tree is the contract between the two skills.
+- **agent-output-audit** — Owns CI verification gates, AI test-hygiene scans, and task-status reconciliation. Technical integration/security/performance suites route there or to dedicated tooling — never into this skill's plans.
 
 ## Error Handling
 
-- If the `qa-output-path` directory cannot be created, report the error and fall back to the current working directory.
-- If Figma MCP is not configured, skip Figma validation steps and note the gap in the test plan.
-- If `agent-browser` is not available for UI validation, generate test cases as documentation for manual execution and note the limitation.
-- If the repository does not have a known E2E harness, mark affected cases as `Manual-only` or `Blocked` instead of inventing automation commands.
-- If the user provides a feature description that is too vague to generate test cases, ask for specific journeys, personas, or acceptance criteria before proceeding.
-- If a request is for a technical integration / security / performance test case (TC-INT, TC-SEC, TC-PERF, TC-API), explain that those types are out of scope for real-user QA planning. Direct the user to integration tests in code, SAST/DAST tools, and load testing tools respectively. If the user wants to audit AI-implemented work, direct them to `agent-output-audit`.
+- If `<qa-docs-path>` cannot be created (permissions, read-only checkout), stop and surface the error. Never fall back to a temp directory — living docs in `/tmp` are the anti-pattern this skill replaces.
+- If `state.csv` fails to parse (malformed row, wrong column count), stop and repair it first — every downstream step depends on the tracker being loadable. Report what was repaired.
+- If two rows or two bug files claim the same id, treat it as data corruption: keep the older artifact as canonical, re-mint the newer one, and update references. Record the collision in `<qa-docs-path>/README.md` changelog.
+- If the operator asks for technical test suites (integration, security, performance, load), route them to code tests, security review, or load tooling. Record the routing decision; do not absorb the work.
+- If the diff for a branch cycle contains no user-visible change, say so and stop — there is nothing to dogfood. Do not invent scenarios to fill a cycle.

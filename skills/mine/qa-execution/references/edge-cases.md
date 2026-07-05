@@ -1,21 +1,21 @@
-# User Edge Cases
+# Edge Cases
 
 This file catalogs the **non-technical** edge cases real users hit. These are not unit-test edge cases (null inputs, integer overflow, malformed JSON) — those are unit/integration concerns. These are *user-behavior* edge cases that scripted tests miss because they live in the seams between intent and software.
 
-Use during Step 5 of `qa-execution` (Off-Script Tours & User Edge Cases). Pair each with a persona and a tour from `test-tours.md`.
+Use during Step 4 of `qa-execution` (tours & edge probes). Pair each with a persona and one tour from the tour catalog (routed together with this file at Step 4 of the SKILL).
 
 ## Contents
 
 - Why this catalog exists
 - Catalog
-  - Navigation edges (refresh, back, deep-link, multi-tab)
-  - Form & input edges (double-click, autofill, paste, voice input)
-  - Session & auth edges (expiry, multi-tab login, password manager)
-  - Network & timing edges (slow 3G, flaky, DST, clock skew)
-  - Device & viewport edges (rotate, tiny / large viewport, OS zoom)
-  - Locale & accessibility edges (translation overflow, RTL, screen reader)
-  - Interrupt edges (phone lock, app switch, push notification)
-  - Trust & recovery edges (stale errors, moved URLs, magic links)
+  - Navigation edges
+  - Form & input edges
+  - Session & auth edges
+  - Network & timing edges
+  - Device & viewport edges
+  - Locale & accessibility edges
+  - Interrupt edges
+  - Trust & recovery edges
 - How to use this catalog
 - What is NOT in scope here
 - Sources
@@ -50,7 +50,7 @@ A scripted test always submits a form once, in order, with valid data, from a si
 | Submit with autofill | Let browser autofill, submit immediately | Race between fill and validate, wrong-field fill |
 | Paste from Word | Copy text with smart quotes, em-dashes, formatting | Hidden chars submitted, rendering breaks, sort-order surprises |
 | Paste from Excel | Copy a cell with `\t` or newlines | Field-overflow into next field, broken validation |
-| Paste a URL into a non-URL field | Paste `https://...` into a name field | Auto-linkification, length-validation, XSS surface (defensive only) |
+| Paste a URL into a non-URL field | Paste `https://...` into a name field | Auto-linkification, length-validation surprises |
 | Empty submit | Submit a form with no fields filled | Validation copy quality, error proximity, focus management |
 | Browser auto-translate | Right-click → translate page mid-flow | DOM mutation breaks bindings, lost click handlers |
 | Drag-and-drop file the wrong place | Drag a file into a non-drop area | Browser navigates to file URL (data loss for unsaved work) |
@@ -124,8 +124,8 @@ A scripted test always submits a form once, in order, with valid data, from a si
 ## How to use this catalog
 
 1. After picking the persona and tour for a charter, pick 5-10 relevant edge cases from the catalog above. Match the edge case to the surface — onboarding doesn't need a "schedule across DST" test; scheduling does.
-2. Record which edge cases were attempted in the charter debrief.
-3. For each finding, file a bug with `Persona Affected:` and `Journey Step:` filled in (`assets/issue-template.md`).
+2. Record which edge cases were attempted in the charter debrief — attempted-and-clean is evidence too.
+3. For each finding, file via the global bug registry (routed at Step 6 of the SKILL) with `Persona Affected:` and `Journey Step:` filled in.
 4. Don't try every edge case in one box. The time-box governs.
 
 ## What is NOT in scope here

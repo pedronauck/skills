@@ -1,8 +1,8 @@
-# Test Tours
+# Tours
 
-A **tour** is a thematic lens for exploration. It frames the session around a specific failure pattern users actually hit. Picking the right tour for a charter (`exploratory-charters.md`) is the single biggest predictor of whether the session finds real bugs.
+A **tour** is a thematic lens for exploration. It frames the session around a specific failure pattern users actually hit. Picking the right tour for a charter (charters are planned by the `qa-report` skill) is the single biggest predictor of whether the session finds real bugs.
 
-This catalog is the canonical source. The `qa-report` companion skill links to this file from `qa-report/references/test_tours_catalog.md` — do not duplicate content there.
+This catalog is the canonical source — the only home of tour definitions across both QA skills.
 
 ## Contents
 
@@ -34,7 +34,7 @@ Every charter binds to **exactly one tour**. Pick by matching the surface to the
 - **Mission verbs:** "pay", "refund", "upgrade", "convert".
 - **Off-script actions:** abandon mid-payment; switch currency; apply expired coupon; apply more coupons than allowed; pay with declining card; pay with 3DS-required card; receive partial refund; cancel after charge.
 - **What to look for:** ghost charges, double charges, lost discount codes, currency rounding bugs, receipt/invoice mismatches, tax miscalculation, dunning email failures.
-- **Sample evidence:** screenshot of payment success + receipt + bank statement view (if accessible); for failures, screenshot of error + DB/API state.
+- **Sample evidence:** screenshot of payment success + receipt + bank statement view (if accessible); for failures, screenshot of error + the user-visible state.
 
 ### Garbage Tour
 
@@ -88,7 +88,7 @@ Every charter binds to **exactly one tour**. Pick by matching the surface to the
 - **Mission verbs:** "paste", "import", "transfer".
 - **Off-script actions:** paste from Word (smart quotes, em-dashes, hidden styles); paste from Excel (tabs, line breaks); paste from a markdown editor (code fences, links); paste a URL into a non-URL field; paste an image into a text field; paste with browser autofill firing simultaneously.
 - **What to look for:** smart-quotes rendering as `&rdquo;`, line-break loss, hidden formatting submitted to the server, validation-passing input that breaks downstream consumers (CSV export, email render).
-- **Sample evidence:** screenshot of the visible pasted state + the raw stored value (DB or API response if accessible).
+- **Sample evidence:** screenshot of the visible pasted state + the raw stored value via a user-reachable read path (export, re-open, email render).
 
 ### Autofill Tour
 
