@@ -201,12 +201,22 @@ issue blocks shipment.
    `impl-review-events-roundN.jsonl` (event log), `impl-review-result-roundN.err` (stderr),
    `impl-review-status-before-roundN.txt`, `impl-review-status-after-roundN.txt`, and
    `impl-review-validation-error-roundN.md` (only when needed).
-4. Discover project rule files that exist (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/*`,
-   `.cursorrules`, `CONTRIBUTING.md`) to populate `{project_rules}`.
+4. Discover project rule files that exist to populate `{project_rules}`: root-level
+   `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/*`, `.cursorrules`, `CONTRIBUTING.md`, PLUS
+   nested `CLAUDE.md`/`AGENTS.md` files in the directories the diff touches, PLUS any
+   project memory/directive docs the repo keeps (e.g. `docs/_memory/`, standing directives,
+   lessons indexes). Nested and memory rules are where load-bearing invariants usually live —
+   root-only discovery misses them.
 5. Substitute the placeholders in the prompt template:
    - `{scope_summary}` — one-paragraph description of what was implemented. Derive from the
      user's brief, the commit messages, or — if `--context` was passed — the linked spec/PRD.
    - `{context_paths}` — newline-separated repo-root paths from `--context`, or `none`.
+     **Spec-workflow rule:** when the reviewed diff implements a task from a spec directory
+     (e.g. `.compozy/tasks/<slug>/`, `specs/<name>/`, `docs/rfcs/<name>/`), resolve that
+     spec's contract-bearing sibling artifacts — canonical example documents, input/schema
+     tables, QA seeds, test contracts, parity maps — and include them here even when the
+     user passed no `--context`. Passing only the task file is insufficient: a task-file
+     paraphrase must never be the reviewer's only contract source.
    - `{project_rules}` — newline-separated discovered rule-file paths, or `none`.
    - `{changed_files}` — newline-separated repo-root paths.
    - `{diff_path}` — repo-root path to the patch file from step 2.
@@ -254,6 +264,9 @@ issue blocks shipment.
    - every finding has a real file path/line or an explicit reason it is not applicable;
    - blockers include a rationale tied to project rules or architecture constraints;
    - no `TBD`, placeholder text, invented paths, or stdout-only findings;
+   - when spec contract artifacts were passed in `{context_paths}`, the findings explicitly
+     assess contract parity (deliverable vs each canonical artifact, field by field) — a
+     `SHIP` verdict with no contract-parity assessment is an invalid round;
    - comparing the pre/post status snapshots shows no changes outside the expected review
      artifact/log paths.
 3. If validation fails, write `<out>/impl-review-validation-error-roundN.md` with the failed
@@ -303,6 +316,10 @@ issue blocks shipment.
 - The bundled helper paths (`references/impl-review-prompt.md`, `references/readiness-checks.md`,
   `scripts/validate-findings.sh`) are read-only templates/helpers — read or run them, never
   edit them during a review round.
+- For spec-workflow diffs, a round whose `{context_paths}` omitted the spec's contract-bearing
+  artifacts is an invalid round: engineering quality alone can never produce `SHIP`. Real
+  incident: seven rounds reached `SHIP` on a deliverable that contradicted the spec's canonical
+  example document because no round ever received it.
 
 ## Error Handling
 

@@ -81,6 +81,7 @@ A scenario is only *done* for a cycle when `qa_status` is terminal (`pass`/`bloc
 - `qa-execution` updates columns 8-14 after sessions, plus `notes`.
 - Update in place. Never append a duplicate row to record a new verdict — the new verdict replaces the old one; history lives in the dated reports (`last_report` points at the latest).
 - When a surface changes (new diff touches a scenario's journey), the executor or planner resets `qa_status` to `untested` — a stale `pass` is worse than no verdict.
+- **Implementers flag between cycles.** Whoever lands a user-visible behavior change (UI, CLI verb, API route, config key, copy) — including agents completing non-QA tasks — applies the flag as part of task completion: new behavior → add `untested` rows; changed behavior → reset the affected rows to `untested`; pure refactors declare "no user-visible change". Flag, don't retest — the next cycle's targeted tier picks up `untested` rows as its scope. This is what keeps the tracker alive between QA cycles.
 
 ## Merge convention
 

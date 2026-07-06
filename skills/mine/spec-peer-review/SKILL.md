@@ -182,11 +182,20 @@ approval.
    `peer-review-events-roundN.jsonl` (event log), `peer-review-result-roundN.err` (stderr),
    `peer-review-status-before-roundN.txt`, `peer-review-status-after-roundN.txt`, and
    `peer-review-validation-error-roundN.md` (only when needed).
-3. Discover project rule files that exist (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/*`,
-   `.cursorrules`, `CONTRIBUTING.md`) to populate `{project_rules}`.
+3. Discover project rule files that exist to populate `{project_rules}`: root-level
+   `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/*`, `.cursorrules`, `CONTRIBUTING.md`, PLUS
+   nested `CLAUDE.md`/`AGENTS.md` in the areas the spec touches, PLUS any project
+   memory/directive docs the repo keeps (e.g. `docs/_memory/`, standing directives, lessons
+   indexes). Nested and memory rules are where load-bearing invariants usually live.
 4. Substitute the placeholders:
    - `{spec_path}` — exact path to the spec under review.
    - `{context_paths}` — newline-separated paths from `--context`, or the literal `none`.
+     **Spec-corpus rule:** when the spec resolves under a spec directory (e.g.
+     `.compozy/tasks/<slug>/`), resolve its sibling corpus artifacts — requirements/use-case
+     documents, canonical example documents, input tables, QA seeds, test contracts,
+     analysis summaries, ADRs — and include them here even when the user passed no
+     `--context`. A spec reviewed in isolation from its own corpus lets paraphrase drift
+     and requirement contradictions pass unseen.
    - `{project_rules}` — newline-separated discovered rule-file paths, or `none`.
    - `{findings_path}` — exact absolute path to `<out>/peer-review-findings-roundN.md`.
    - `{round}` — numeric review round `N`.
@@ -231,6 +240,10 @@ approval.
    - every finding has a real section/path reference;
    - blockers include a rationale tied to project rules or architecture constraints;
    - no `TBD`, placeholder text, invented paths, or stdout-only findings;
+   - when sibling corpus artifacts were passed in `{context_paths}`, the findings explicitly
+     assess the spec's consistency with them (requirements honored, canonical contracts not
+     diluted, concrete artifacts wired as required reading for implementers) — a `READY`
+     verdict with no corpus-consistency assessment is an invalid round;
    - comparing the pre/post status snapshots shows no changes outside the expected review
      artifact/log paths.
 3. If validation fails, write `<out>/peer-review-validation-error-roundN.md` with the failed
@@ -275,6 +288,12 @@ approval.
 - The bundled helper paths (`references/peer-review-prompt.md`, `references/quality-markers.md`,
   `scripts/validate-findings.sh`) are read-only templates/helpers — read or run them, never
   edit them during a review round.
+- For specs living in a spec directory, a round whose `{context_paths}` omitted the sibling
+  corpus is an invalid round. Real incident: a task decomposition paraphrased its spec's
+  canonical example document without linking it; the implementer built from the paraphrase,
+  seven implementation-review rounds reached `SHIP`, and the shipped result contradicted the
+  product contract wholesale. Spec review is the earliest gate that can catch a decomposition
+  that fails to wire its canonical artifacts.
 
 ## Error Handling
 

@@ -9,9 +9,11 @@ CONTEXT FILES TO READ:
 - Project rules (read every one that exists, ignore the rest): {project_rules}
 
 Before reasoning, read every context file above in full. Also read any project convention
-files that exist in the repository even if not listed (for example `CLAUDE.md`, `AGENTS.md`,
-`.cursor/rules/*`, `.cursorrules`, `CONTRIBUTING.md`) and hold the project's own rules as the
-authority for what counts as a blocker.
+files that exist in the repository even if not listed — root-level `CLAUDE.md`, `AGENTS.md`,
+`.cursor/rules/*`, `.cursorrules`, `CONTRIBUTING.md`, nested `CLAUDE.md`/`AGENTS.md` in the
+areas the spec touches, and any project memory/directive docs (e.g. `docs/_memory/`, standing
+directives, lessons) — and hold the project's own rules as the authority for what counts as a
+blocker.
 
 TARGET FINDINGS FILE:
 {findings_path}
@@ -25,7 +27,17 @@ SCOPED-WRITE CONTRACT:
 
 YOUR JOB:
 1. Read every context file fully before reasoning.
-2. Identify BLOCKERS (issues that prevent approval):
+2. CORPUS CONSISTENCY: when the context includes the spec's sibling corpus (requirements
+   documents, canonical example documents, input tables, QA seeds, test contracts, analysis
+   summaries), cross-check the spec against each one. A spec section that contradicts a
+   corpus artifact, or silently dilutes a concrete contract into a paraphrase (renaming
+   inputs, dropping a provider/integration, hardcoding what a requirement says must stay
+   declared), is a BLOCKER. Also flag as a BLOCKER any concrete contract artifact the spec
+   or its task decomposition depends on but never links as required reading for
+   implementers — an unlinked canonical document is an unenforced one.
+3. Identify BLOCKERS (issues that prevent approval):
+   - Corpus contradictions: the spec contradicts or dilutes a requirement, constraint, or
+     canonical artifact present in the provided context (see item 2).
    - Boundary or coupling leaks across modules, packages, layers, or services.
    - Persistent data changes without a safe migration / backfill / rollout plan.
    - Missing verification for risky behavior (no test/contract/observability surface named).
@@ -34,8 +46,8 @@ YOUR JOB:
    - Hidden coupling to deferred or out-of-scope features.
    - Partial-surface completion baked into the plan (backend only, frontend only, docs/tests "later").
    - Test-shape violations designed in (assertions that freeze incidental literals instead of proving behavior).
-3. Identify NITS (non-blocking improvements): clarity, naming, test-density, observability/event coverage, doc co-ship completeness.
-4. Issue a READINESS verdict: READY / BLOCKED / NEEDS_REWORK.
+4. Identify NITS (non-blocking improvements): clarity, naming, test-density, observability/event coverage, doc co-ship completeness.
+5. Issue a READINESS verdict: READY / BLOCKED / NEEDS_REWORK.
 
 CONSTRAINTS:
 - Prefer "delete the old thing" over "preserve compat" unless the spec gives a concrete reason to keep both.
