@@ -1,20 +1,11 @@
 ---
 name: agent-exploration
 description: >-
-  Dispatches scoped-write explorer agents in parallel for general research and
-  exploration of any codebase, topic, or domain. The operator passes --path
-  (output directory), --agents (parallel count), --prompt (research question),
-  and optionally --ide, --model, --reasoning to control the Compozy runtime. The
-  parent scouts the territory first to divide work, then invokes `compozy exec
-  --agent explorer` N times in parallel (via the harness's async/background
-  facility); each invocation writes one analysis file at
-  <path>/analysis/NN_analysis_<slug>.md following a seven-section schema. The
-  parent then synthesizes <path>/analysis/summary.md. The explorer agent lives
-  in the Compozy global registry at ~/.compozy/agents/explorer/AGENT.md and is
-  installed by the bundled script when absent. Use when running parallel
-  multi-area research that must produce written artifacts. Do not use for
-  competitor-only research already covered by cy-research-competitors,
-  single-file lookups answerable by Explore, or edits to existing code.
+  Dispatches scoped-write explorer agents in parallel via `compozy exec` for
+  multi-area research that must produce written artifacts — one seven-section
+  analysis file per slice plus a parent-authored summary. Use when a research
+  question spans several distinct areas and chat output is not enough. Do not
+  use for single-file lookups (use Explore) or edits to existing code.
 trigger: explicit
 argument-hint: "[--path <dir>] [--agents <num>] [--prompt <text>] [--ide <ide>] [--model <model>] [--reasoning <effort>]"
 metadata:
@@ -55,29 +46,27 @@ Resolve every bundled helper relative to the directory that holds this `SKILL.md
 ## Required Inputs
 
 - `--path <dir>` (required): Output directory. Analysis files are written under `<path>/analysis/`. Any project-relative or absolute directory works (for example `docs/research/<topic>/`, `tasks/<slug>/`, or a path outside the repo). The skill is not tied to any specific project layout.
-- `--agents <num>` (optional, default 3, hard cap 8): Number of explorer invocations to dispatch in parallel. Caps prevent runaway dispatch when the prompt is vague.
+- `--agents <num>` (optional, default 3, hard cap 8): Number of explorer invocations to dispatch in parallel.
 - `--prompt <text>` (required): The research question. Quoted multi-line strings are supported. If omitted, the parent asks the operator before continuing.
 - `--ide <ide>` (optional, default `claude`): Compozy runtime for each dispatched invocation. Forwarded to `compozy exec --ide`. Accepted values mirror `compozy exec`: `codex`, `claude`, `cursor-agent`, `droid`, `opencode`, `pi`, `gemini`, `copilot`.
-- `--model <name>` (optional, default `opus`): Forwarded to `compozy exec --model`. See **Model Options** for the two supported profiles (Opus default; GLM 5.2 via `--ide pi --model openrouter/z-ai/glm-5.2`). When the chosen IDE does not support the requested model, `compozy` surfaces the error and the slice fails — re-dispatch with a compatible model.
+- `--model <name>` (optional, default `opus`): Forwarded to `compozy exec --model`. See **Model Options** for the two supported profiles (Opus default; Grok 4.5 High Fast via `--ide cursor-agent --model 'grok-4.5[effort=high,fast=true]'`). When the chosen IDE does not support the requested model, `compozy` surfaces the error and the slice fails — re-dispatch with a compatible model.
 - `--reasoning <effort>` (optional, default `xhigh`): Forwarded to `compozy exec --reasoning-effort`. Accepted values: `low`, `medium`, `high`, `xhigh`.
 
 If `--path` or `--prompt` is missing, the parent asks the operator a single clarification before continuing. Never invent defaults for either. Apply the documented defaults for `--ide`, `--model`, `--reasoning` silently when omitted; reject an invalid `--ide` rather than falling back.
 
 ## Model Options
 
-Two dispatch profiles are supported. Opus is the default; GLM 5.2 is a cheaper/faster alternative that, on deep multi-file reasoning, matched Opus on the core findings when its citations were verified against source. Pick per run via `--ide`/`--model`.
+Two dispatch profiles are supported. Opus is the default; Grok 4.5 High Fast is the fast alternative for breadth work. Pick per run via `--ide`/`--model`.
 
-| Profile                         | Flags                                            | When                                                              |
-| ------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------- |
-| Opus (default, high-fidelity)   | `--ide claude --model opus --reasoning xhigh`    | Hardest slices; when citation precision must be maximal.          |
-| GLM 5.2 (fast/cheap, via pi)    | `--ide pi --model openrouter/z-ai/glm-5.2`       | Breadth research, cost-sensitive runs, high slice counts.         |
+| Profile                                | Flags                                                          | When                                                       |
+| -------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------- |
+| Opus (default, high-fidelity)           | `--ide claude --model opus --reasoning xhigh`                   | Hardest slices; when citation precision must be maximal.    |
+| Grok 4.5 High Fast (via cursor-agent)   | `--ide cursor-agent --model 'grok-4.5[effort=high,fast=true]'`  | Breadth research, cost-sensitive runs, high slice counts.   |
 
-GLM-via-pi caveats (non-negotiable — a GLM run that ignores these fails silently):
+Grok profile notes:
 
-- **Use the `pi` harness, never `opencode`, for GLM.** `opencode` routes GLM through an internal explorer subagent that emits little ACP output, starving Compozy's activity watchdog — the run stalls and is killed with zero output (reproduced twice). `pi` streams tool-calls continuously and completes.
-- **`--reasoning` is NOT forwarded to `pi`** (its Compozy runtime spec drops reasoning args). Raise GLM's thinking either on the model — `--model openrouter/z-ai/glm-5.2:xhigh` — or once via `"defaultThinkingLevel": "xhigh"` in `~/.pi/agent/settings.json`. pi's built-in default is `medium`.
-- **GLM auth** lives in `~/.pi/agent/auth.json` (`{"openrouter":{"type":"api_key","key":"sk-or-..."}}`), independent of the daemon env. Requires `pi` + `pi-acp` on PATH (`npm i -g @earendil-works/pi-coding-agent pi-acp`).
-- GLM output can carry cosmetic identifier typos (dropped letters, e.g. `atempt`); Step 5's citation spot-check is the gate that catches them — never skip it on a GLM run.
+- Reasoning effort and fast mode are pinned inside the model string (`[effort=high,fast=true]`); the `--reasoning` flag does not control this profile.
+- Single-quote the model string — the square brackets are shell glob characters.
 
 ## Output Layout
 
@@ -104,7 +93,7 @@ GLM-via-pi caveats (non-negotiable — a GLM run that ignores these fails silent
    At least one must be present.
 3. If both are absent, ask the operator a single question: "The `explorer` Compozy agent is not installed at `~/.compozy/agents/explorer/AGENT.md`. Install it now? [yes/no]". Do not proceed silently.
 4. On "yes", run the bundled bootstrap helper: `<agent-exploration-dir>/scripts/install-explorer.sh`. The helper installs to `~/.compozy/agents/explorer/AGENT.md` and refuses to overwrite an existing file.
-5. On "no", abort the dispatch with a one-line message.
+5. On "no", abort the dispatch with a one-line message — the agent definition is never inlined into a slice prompt.
 6. After installation, re-check that the file exists before continuing.
 7. (Optional sanity check) Run `compozy agents inspect explorer` and confirm the entry is discoverable. Any error here blocks dispatch.
 
@@ -112,8 +101,8 @@ GLM-via-pi caveats (non-negotiable — a GLM run that ignores these fails silent
 
 1. Parse `--path`, `--agents`, `--prompt`, `--ide`, `--model`, `--reasoning` from the invocation. If `--path` or `--prompt` is missing, ask the operator and stop.
 2. Default `--agents` to `3` when omitted. Reject values below 1 or above 8 — ask the operator to choose a value in range.
-3. Default `--ide` to `claude`, `--model` to `opus`, `--reasoning` to `xhigh` when omitted. Validate `--ide` against the accepted list (`codex`, `claude`, `cursor-agent`, `droid`, `opencode`, `pi`, `gemini`, `copilot`); reject invalid values with a clear message instead of silent fallback. Do not validate `--model` ahead of time — let `compozy` surface incompatibilities.
-4. Resolve `--path` to an absolute path. If the directory does not exist, ask the operator whether to create it before continuing.
+3. Default `--ide` to `claude`, `--model` to `opus`, `--reasoning` to `xhigh` when omitted. Validate `--ide` against the accepted list (`codex`, `claude`, `cursor-agent`, `droid`, `opencode`, `pi`, `gemini`, `copilot`) and `--reasoning` against `low`, `medium`, `high`, `xhigh`; reject invalid values with a clear message instead of silent fallback. Do not validate `--model` ahead of time — let `compozy` surface incompatibilities.
+4. Resolve `--path` to an absolute path. If the directory does not exist, ask the operator whether to create it before continuing; if creation fails, stop and report the filesystem error.
 5. Create `<path>/analysis/` if absent. The dispatched agents refuse to write into a missing directory.
 
 **Step 3: Parent-led initial scout (MANDATORY — do not skip)**
@@ -183,7 +172,7 @@ compozy exec \
 
 Notes that apply to both paths:
 - `compozy exec` already defaults `--access-mode` to `full`, so no extra runtime-permission flag is required.
-- **When `--ide pi` (GLM), `--reasoning-effort` is ignored by the runtime** (see Model Options). The dispatch script still passes it harmlessly; to actually control GLM's thinking, pin it on the model (`openrouter/z-ai/glm-5.2:xhigh`) or set pi's `defaultThinkingLevel`. Never dispatch GLM through `--ide opencode` (it stalls).
+- **When `--ide cursor-agent` (Grok profile), reasoning effort is pinned in the model string** (`grok-4.5[effort=high,fast=true]`); the forwarded `--reasoning-effort` value does not control it (see Model Options).
 - Do not pin `--timeout` in the dispatch template. The Compozy default is an **activity timeout** (job canceled only when no output is received within the period), which the dispatched agent's normal tool-call streaming keeps reset. If a specific slice legitimately needs a longer silent window (e.g., synthesising over 25+ sources), the operator can append `--timeout 30m` (or higher) to that single invocation.
 - Treat any non-zero exit code as a slice failure and re-dispatch that slice with the contract restated. Never synthesise a missing slice's analysis as if its dispatch succeeded.
 
@@ -221,14 +210,6 @@ If a section is empty, a file is missing, a cited path is fake, or the schema is
 
 ## Error Handling
 
-Operational tripwires only — the full failure taxonomy lives in `references/dispatch-rules.md` (Failure Handling) and `references/checklist.md`.
+Input, installation, and scout failures are handled inline where they occur — each item in Steps 1–3 names its own recovery. Contract violations, fabricated evidence, schema-incomplete analyses, and retries route through the Required Reading Router: **STOP, re-read `references/dispatch-rules.md` in full**, then re-dispatch the offending slice — the dispatched agent owns the write. One round-level rule lives only here:
 
-- **`compozy` binary not found on PATH:** abort with a one-line message instructing the operator to install Compozy (`/Users/pedronauck/dev/compozy/looper`). Do not fall back to harness-native subagent tools.
-- **`~/.compozy/agents/explorer/AGENT.md` missing and operator declines install:** abort the dispatch with a one-line message. Do not inline-define the agent in the slice prompt.
-- **`--ide` invalid:** list the accepted values (`codex`, `claude`, `cursor-agent`, `droid`, `opencode`, `pi`, `gemini`, `copilot`) and ask the operator to choose a valid one. Do not fall back silently to `claude`.
-- **`--reasoning` invalid:** ask the operator for one of `low`, `medium`, `high`, `xhigh`.
-- **`--path` directory cannot be created:** stop and report the filesystem error. Do not fall back to the current working directory silently.
-- **`--agents` out of range:** ask the operator for an in-range value. Do not auto-clamp.
-- **Scout cannot find `--agents` non-overlapping slices:** reduce the dispatch count, inform the operator, and proceed with the smaller set.
-- **`compozy exec` exits non-zero, contract violation, schema-incomplete analysis, fabricated evidence, or ambiguous-prompt refusal:** **STOP. Re-read `references/dispatch-rules.md` in full** before re-dispatching. The parent never authors the missing content; the dispatched agent owns the write.
-- **Network/disk error during dispatch:** fail the round entirely. Do not produce a half-set of analyses. Re-dispatch after the error is resolved.
+- **Network/disk error during dispatch:** fail the round entirely — a half-set of analyses is unacceptable. Re-dispatch after the error is resolved.

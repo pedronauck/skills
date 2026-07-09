@@ -32,7 +32,7 @@
 | - | -------------------- | -------------------------------- | ------------------------------------ |
 | 1 |                      |                                  |                                      |
 
-## Anti-Slop Detection Hits
+## Anti-slop Scorecard Hits
 
 For each of the 14 patterns in `references/ai-slop-patterns.md`, mark presence + severity.
 

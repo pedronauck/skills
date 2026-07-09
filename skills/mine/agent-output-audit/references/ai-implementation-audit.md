@@ -1,6 +1,6 @@
 # AI Implementation Audit
 
-This reference catalogs the **observable signals** `qa-execution` Step 4A uses when auditing test code produced by an AI agent. It defines what to scan for, how to classify findings, and how to record them. It does **not** explain *why* each pattern is wrong or *how* to fix it — that belongs to test-pattern/anti-pattern skills (`test-antipatterns` exists today; a positive `test-patterns` skill may be added later).
+This reference catalogs the **observable signals** `agent-output-audit` uses when auditing test code produced by an AI agent. It defines what to scan for, how to classify findings, and how to record them. It does **not** explain *why* each pattern is wrong or *how* to fix it — that belongs to the `testing-boss` skill's pattern and anti-pattern catalogs.
 
 ## Contents
 
@@ -100,7 +100,7 @@ For every Success Criterion in `task_NN.md` (frontmatter or body) and every link
 - `weak` — A test exists in the criterion area but uses a permissive matcher, checks the wrong layer (internal state instead of public outcome), or only checks the happy path of a multi-path criterion.
 - `missing` — No test references the criterion area, or every candidate test is `.skip`/`.only`-fenced, mocked away, or asserts unrelated state.
 
-A `weak` row blocks `PASS` on a P0/P1 task. A `missing` row blocks `PASS` on any task. Record the table in the Task Implementation Matrix column `ai_audit_findings` and in `verification-report.md` under the per-task block.
+A `weak` row blocks `PASS` on a P0/P1 task. A `missing` row blocks `PASS` on any task. Record the table in the Task Implementation Matrix column `ai_audit_findings` and in `audit-report.md` under the per-task block.
 
 ## Verdict Matrix
 
@@ -122,8 +122,8 @@ When multiple flags fire on the same task, take the strictest verdict.
 
 Record findings in three places:
 
-1. `verification-report.md` → `TASK IMPLEMENTATION AUDIT` block → per-task `AI audit findings:` field (list red flag IDs that fired with their verdicts).
-2. `verification-report.md` → `SUITE HEALTH SNAPSHOT` → `AI audit findings:` count.
+1. `audit-report.md` → `TASK IMPLEMENTATION AUDIT` block → per-task `AI audit findings:` field (list red flag IDs that fired with their verdicts).
+2. `audit-report.md` → `SUITE HEALTH SNAPSHOT` → `AI audit findings:` count.
 3. Compozy mode only: `.compozy/tasks/<slug>/memory/qa-execution.md` → `Errors / Corrections` section, **before** any frontmatter status flip (memory-precedes-status invariant).
 
 ## Sources

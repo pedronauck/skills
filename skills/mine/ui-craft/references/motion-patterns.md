@@ -276,7 +276,7 @@ Motion can make slow things feel fast.
 | Using `ease` keyword by default                                   | Moderate   |
 | Duration > 800ms on a functional interaction                      | Moderate   |
 
-Severity ties back to `SKILL.md`'s Anti-Slop Detection Table — Critical and Serious block merge.
+Severity ties back to `SKILL.md`'s Anti-slop scorecard — Critical and Serious block merge.
 
 ## Library Choice — Decision Matrix
 

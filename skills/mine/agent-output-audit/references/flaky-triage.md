@@ -1,6 +1,6 @@
 # Flaky Test Triage
 
-This reference defines vocabulary, diagnosis protocol, and quarantine policy for flaky tests encountered during `qa-execution`. It exists because retrying a failing test until it passes is the most common way real bugs reach production — and the `qa-execution` skill must not silently promote a flake to `PASS` via retry. It does **not** document how to fix each cause; that is a test-pattern concern.
+This reference defines vocabulary, diagnosis protocol, and quarantine policy for flaky tests encountered during an `agent-output-audit` run. It exists because retrying a failing test until it passes is the most common way real bugs reach production — and the `agent-output-audit` skill must not silently promote a flake to `PASS` via retry. It does **not** document how to fix each cause; that is a test-pattern concern.
 
 ## Vocabulary
 
@@ -10,7 +10,7 @@ This reference defines vocabulary, diagnosis protocol, and quarantine policy for
 
 ## Cause classification
 
-When labeling a flake event in the verification report, pick one category:
+When labeling a flake event in the audit report, pick one category:
 
 - `async-wait` — failure varies with timing of async I/O or DOM updates.
 - `concurrency` — failure varies with parallel execution or shared mutable state.
@@ -33,9 +33,9 @@ When a test fails in baseline or in a re-run, do **not** classify it as pre-exis
 
 ## Retry policy
 
-- **PROHIBITED**: Promoting a `FAIL` to `PASS` because a single retry passed. This includes CI-level "retry on failure" features when their outcomes are not surfaced in the verification report.
+- **PROHIBITED**: Promoting a `FAIL` to `PASS` because a single retry passed. This includes CI-level "retry on failure" features when their outcomes are not surfaced in the audit report.
 - **Allowed**: Running the diagnosis protocol above and classifying the test as `flaky-suspect` or `quarantined`.
-- **Required**: Every flake event (failure → retry → pass) is recorded in `verification-report.md` under `SUITE HEALTH SNAPSHOT` → `Flaky events this run` with test name, attempts, retry outcome, and suspected category.
+- **Required**: Every flake event (failure → retry → pass) is recorded in `audit-report.md` under `SUITE HEALTH SNAPSHOT` → `Flaky events this run` with test name, attempts, retry outcome, and suspected category.
 - **Threshold**: `Flake rate >= 2%` in the canonical suite is a `FAIL` on the `Flaky rate <2%` Quality Gate. Above this, the QA run cannot conclude with an unconditional `PASS`.
 
 ## Quarantine workflow
@@ -45,7 +45,7 @@ When a `flaky-suspect` is confirmed flaky after the diagnosis protocol (i.e., th
 1. **Assign a named owner within 24 hours.** Not a team. A person. Without an owner, the test is auto-removed from the suite after one sprint.
 2. **Set a fix-by date.** Maximum two sprints from quarantine. Past that date, the test is removed and a `BUG-<num>` is filed under `Type: Functional` with `Priority: P1`.
 3. **Isolate from the merge gate.** Quarantined tests must still run in CI but their result must not block merges.
-4. **Monitor**: Each `qa-execution` run reports the quarantine count in `SUITE HEALTH SNAPSHOT`.
+4. **Monitor**: Each `agent-output-audit` run reports the quarantine count in `SUITE HEALTH SNAPSHOT`.
 5. **Re-entry gate**: A quarantined test returns to the main suite only after **10 consecutive clean runs** across CI and local. Document the 10 runs in the `BUG-<num>.md` resolution evidence.
 
 ## Compozy mode interaction

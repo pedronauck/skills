@@ -12,7 +12,7 @@
 #
 # Required:
 #   --ide        Compozy runtime (e.g. claude, codex, cursor-agent, ...).
-#   --model      Model name (e.g. opus, gpt-5.5).
+#   --model      Model name (e.g. opus, 'grok-4.5[effort=high,fast=true]').
 #   --reasoning  Reasoning effort: low | medium | high | xhigh.
 #
 # Optional:

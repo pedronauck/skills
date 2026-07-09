@@ -111,7 +111,7 @@ Provide one or more of:
 
 ## Severity rollup
 
-Tally hits against the Anti-Slop Detection Table (see `SKILL.md`):
+Tally hits against the Anti-slop scorecard (see `SKILL.md`):
 
 - Critical: ____ — **must be 0** to merge
 - Serious:  ____ — **must be 0** to pass review approval

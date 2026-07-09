@@ -1,6 +1,6 @@
 # Independent Evaluator Protocol
 
-This reference codifies the stance `qa-execution` Step 4A takes when auditing AI-implemented work. It exists because the agent that wrote the code interprets its own output charitably — and a self-report is not evidence.
+This reference codifies the stance `agent-output-audit` takes when auditing AI-implemented work. It exists because the agent that wrote the code interprets its own output charitably — and a self-report is not evidence.
 
 ## Principle
 
@@ -13,7 +13,7 @@ This is not about distrust of the model. It is about how context affects evaluat
 - Fresh re-execution of the smallest public proof (CLI invocation, HTTP request, browser flow, worker job) against the current state of the repository.
 - Direct read of the test file at its current commit, matched against the literal acceptance criterion using the Requirement → Test mapping defined by the AI Implementation Audit reference (loaded separately from SKILL.md, not via this file).
 - Static analysis of the diff since the task baseline (`git log --follow <test_file>`, `git diff <baseline_sha>..HEAD -- <test_file>`).
-- Successful exit codes from canonical commands recorded with timestamps in `verification-report.md`.
+- Successful exit codes from canonical commands recorded with timestamps in `audit-report.md`.
 
 ## What does NOT count as evidence
 
@@ -35,12 +35,12 @@ When auditing a task under `.compozy/tasks/<slug>/`:
    - `ambiguous-task` — the requirement was unclear and the agent picked an interpretation.
    - `bypass-exploit` — the agent found a path that satisfies the literal test but not the requirement (e.g., hardcoded an expected value, skipped a step the test did not enforce).
 3. **Record classifications in `memory/qa-execution.md` → `Errors / Corrections` section.** This write happens **before** any frontmatter `status:` flip (memory-precedes-status invariant from `cy-codex-loop`).
-4. **Then** apply Step 4A's normal verification — re-execute the smallest proof, read the diff, and run the AI test-hygiene Red Flag scans (RF-1..RF-6) defined in the AI Implementation Audit reference, which Step 4A.3b loads directly from SKILL.md.
+4. **Then** apply the audit's normal verification — re-execute the smallest proof, read the diff, and run the AI test-hygiene Red Flag scans (RF-1..RF-6) defined in the AI Implementation Audit reference (Step 4 of SKILL.md).
 5. **Then** decide the `qa_verdict`. If transcript classification surfaced a `bypass-exploit` or `genuine-failure` not addressed by the implementation, the verdict cannot be `PASS` regardless of green tests.
 
 ## Why this matters in Compozy mode
 
-`cy-codex-loop` is built around the premise that an agent implements a task and self-reports completion via `state.yaml` and `task_NN.md` frontmatter. `qa-execution` is the independent evaluator in that loop. If the auditor accepts the implementer's framing, the loop has no real verification — only ceremonial verification — and `task_NN.md status: completed` becomes a coordination signal, not a quality signal.
+`cy-codex-loop` is built around the premise that an agent implements a task and self-reports completion via `state.yaml` and `task_NN.md` frontmatter. `agent-output-audit` is the independent evaluator in that loop. If the auditor accepts the implementer's framing, the loop has no real verification — only ceremonial verification — and `task_NN.md status: completed` becomes a coordination signal, not a quality signal.
 
 ## Sources
 
