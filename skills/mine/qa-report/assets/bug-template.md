@@ -1,11 +1,11 @@
-# BUG-<NNNN>: <one-line title, user-first>
+# BUG-<YYYYMMDD>-<slug>: <one-line title, user-first>
 
 - **Status:** open <!-- open | fixed | verified | wont-fix | invalid -->
 - **Impact (user-side):** <Blocks-Completion | Data-Loss | Trust-Damage | Friction | Cosmetic>
 - **Severity:** <Critical | High | Medium | Low> · **Priority:** <P0 | P1 | P2 | P3>
 - **Persona Affected:** <persona name>
-- **Journey Step:** <J-NN name>, step <N>
-- **Scenarios:** <state.csv ids, semicolon-separated>
+- **Journey Step:** <J-<slug> name>, step <N>
+- **Scenarios:** <scenario ids, semicolon-separated>
 - **Found:** <YYYY-MM-DD> · **Report:** <path to the run report>
 - **Origin:** <only for migrated bugs — path of the pre-registry artifact>
 
@@ -15,7 +15,7 @@
 
 ## Reproduction
 
-- **Charter:** CH-<NNN> · **Tour:** <tour name>
+- **Charter:** CH-<slug> · **Tour:** <tour name>
 - **Environment:** <device / viewport / network / locale, per the persona row>
 
 1. <exact step from the persona's entry point>

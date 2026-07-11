@@ -9,13 +9,13 @@
 
 | Persona | Base | Device / Network / Locale | Sessions |
 |---|---|---|---|
-| <name> | <seed base> | <profile> | CH-<NNN>, ... |
+| <name> | <seed base> | <profile> | CH-<slug>, ... |
 
 ## Flows in Scope
 
 <!-- One entry per journey; link the journey file, embed or reference its Mermaid flow. -->
 
-- `J-<NN> <name>` — <one-line value statement> (`../journeys/J-<NN>-<slug>.md`)
+- `J-<slug>` — <one-line value statement> (`../journeys/J-<slug>.md`)
 
 ## Session Matrix & Results
 
@@ -23,15 +23,30 @@
 
 | # | Charter | Journey / Scenario | Persona | Tour | Status | Issue | Fix commit |
 |---|---|---|---|---|---|---|---|
-| 1 | CH-<NNN> | J-<NN> / <id> | <name> | <tour> | Pending | | |
+| 1 | CH-<slug> | J-<slug> / <id> | <name> | <tour> | Pending | | |
 
 Status legend: `Pending | Pass | Fixed | Skipped | Blocked (needs human verify) | Blocked (human decision)`
+
+## Session Debriefs
+
+<!-- One block per charter run, written within 5 minutes of the box ending. The charter file stays untouched. -->
+
+### CH-<slug> — <persona>
+
+- **Ran:** <started> → <ended> (box respected: yes/no)
+- **Findings:**
+  - <finding, with impact-tier rationale>
+- **Bugs filed/updated:** [BUG-<YYYYMMDD>-<slug>, ...]
+- **Scenarios settled:** <id → verdict, ...>
+- **Paper cuts:** <persona-felt friction, sharpness noted>
+- **Surprises:** <unexpected observations>
+- **Suggested next charter:** <what this session did not reach>
 
 ## What Was Fixed
 
 <!-- One entry per governed auto-fix. -->
 
-### BUG-<NNNN>: <title>
+### BUG-<YYYYMMDD>-<slug>: <title>
 - **Symptom:** <user-side observable>
 - **Root cause:** <stated separately from the symptom>
 - **Fix:** <commit SHA, one logical fix>
@@ -44,13 +59,13 @@ Status legend: `Pending | Pass | Fixed | Skipped | Blocked (needs human verify) 
 
 | Persona | Where (journey/step) | Felt | Sharpness | Outcome |
 |---|---|---|---|---|
-| <name> | J-<NN> step <N> | "<persona language>" | sharp/dull | fixed (SHA) / deferred / watching |
+| <name> | J-<slug> step <N> | "<persona language>" | sharp/dull | fixed (SHA) / deferred / watching |
 
 ## Runtime Errors Observed
 
 <!-- Console/log errors surfaced during walks, even when the flow visually passed. -->
 
-- <error> — <where, evidence path, filed as BUG-NNNN or explained>
+- <error> — <where, evidence path, filed as a registry bug or explained>
 
 ## Human Verifications Needed
 
@@ -62,7 +77,7 @@ Status legend: `Pending | Pass | Fixed | Skipped | Blocked (needs human verify) 
 
 <!-- Escalations from the fix-loop governor: what's broken, options with trade-offs, recommendation. -->
 
-### <finding title> (BUG-<NNNN>)
+### <finding title> (BUG-<YYYYMMDD>-<slug>)
 - What's broken: <user-side, evidence path>
 - Why not auto-fixed: <governor bound it fails>
 - Options: 1. <option — trade-off> 2. <option — trade-off>
