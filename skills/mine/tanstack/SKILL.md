@@ -1,30 +1,34 @@
 ---
 name: tanstack
-description: TanStack ecosystem patterns for React — Query (caching, mutations, prefetching, SSR hydration), DB (collections, live queries, optimistic updates), Form (state, Zod validation, field components), Router (file-based routing, type-safe navigation, search params, loaders), and Start (server functions, middleware, auth, SSR). Use when writing or reviewing code with any of these TanStack libraries. Don't use for non-TanStack data libraries (SWR, Apollo, RTK Query), non-React TanStack ports (Solid, Svelte), or backend-only work.
-allowed-tools: Read, Grep, Glob
-metadata:
-  author: Pedro Nauck
-  github: https://github.com/pedronauck
-  repository: https://github.com/pedronauck/skills
+description: TanStack Query, Router, and Form patterns for React. Use when writing useQuery/queryOptions, mutations, caching, file-based routes, search params, loaders, or TanStack Form validation. Don't use for TanStack Start, TanStack DB/collections, Zustand client state, or non-TanStack routing.
 ---
-# TanStack Developer Guide
 
-Before writing or reviewing code in a TanStack area, read the matching reference file(s) below **in full** — they hold the patterns, anti-patterns, and validation checklists this page only points to. The reference is the contract; this page is the index.
+# TanStack
 
-## Which reference to read
+Match the task to one or more Branches rows and read every listed file **in full** before producing output — those references are the contract; the tripwires below are only a final self-check.
 
-| When you are working on… | Read in full first |
-|--------------------------|--------------------|
-| `useQuery`/`useMutation`, prefetch, infinite lists, SSR hydration, or `staleTime`/cache config | `references/query-patterns.md` |
-| Typed collections, live queries, optimistic collection mutations, or persistence handlers | `references/db-patterns.md` |
-| Forms, field components, Zod validation, or async/debounced field checks | `references/form-patterns.md` |
-| Routes, loaders, search-param validation, navigation, auth layouts, or router setup | `references/router-patterns.md` |
-| Server functions, middleware, sessions, SSR streaming, env split, or deploy adapters | `references/start-patterns.md` |
+## Branches
 
-Working across two or more areas (e.g. a route loader that calls a server function and feeds a form)? Read every matching file before you design.
+| When you are… | Read in full |
+| --- | --- |
+| Defining or changing query keys / factories | `references/query-keys.md` |
+| Setting staleTime, gcTime, invalidation, placeholder/initial data | `references/query-caching.md` |
+| Writing mutations, optimistic updates, or mutation state | `references/query-mutations.md` |
+| Prefetching, parallel queries, infinite queries, or cancellation | `references/query-fetch-patterns.md` |
+| SSR dehydrate/hydrate, offline networkMode, or query persistence | `references/query-ssr-offline.md` |
+| Query error boundaries or select/performance | `references/query-errors-performance.md` |
+| Registering the router, `from` typing, virtual routes, or router defaults | `references/router-type-and-org.md` |
+| Route loaders, ensureQueryData, or parallel route loading | `references/router-data-loading.md` |
+| Search params, Link/navigate, route masks, or preload | `references/router-search-nav.md` |
+| Lazy routes, not-found, route context, or auth beforeLoad | `references/router-split-errors-context.md` |
+| TanStack Form hooks, Zod validators, or field components | `references/form.md` |
 
-Choose one data paradigm per entity — vanilla Query **or** DB collections, never both on the same entity.
+*Done when:* every matched reference was read, the change follows its patterns, and no tripwire is violated.
 
-## Done
+## Tripwires
 
-For each area you touched, that reference file's **Validation Checklist** passes and `pnpm run typecheck` + `pnpm run test` are green. If you cannot name the reference file behind a change, the change is not finished.
+**Query** — array keys that include every dependency; invalidate (or optimistically update with rollback) after mutations; never put non-serializable values in keys.
+
+**Router** — register the router type; validate search with defaults (`.catch()`); use `ensureQueryData` in loaders when pairing with Query; `throw redirect(...)` not `return`.
+
+**Form** — complete `defaultValues` for inference; Zod at form/field level; debounce async validators (≥500ms); `role="alert"` on field errors; `preventDefault` on submit.

@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "required": ["findings"],
+  "properties": {
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "line", "in_diff", "category", "severity", "title", "body", "evidence"],
+        "properties": {
+          "file": { "type": "string" },
+          "line": { "type": "integer" },
+          "end_line": { "type": ["integer", "null"] },
+          "in_diff": { "type": "boolean" },
+          "hunk": { "type": ["string", "null"] },
+          "rule_id": { "type": ["string", "null"] },
+          "category": { "enum": ["potential-issue", "refactor", "nitpick"] },
+          "severity": { "enum": ["critical", "major", "minor", "trivial"] },
+          "quick_win": { "type": "boolean" },
+          "title": { "type": "string", "maxLength": 100 },
+          "body": { "type": "string" },
+          "also_applies": { "type": "array", "items": { "type": "string" } },
+          "guideline": { "type": ["string", "null"] },
+          "suggestion": { "type": ["string", "null"] },
+          "evidence": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

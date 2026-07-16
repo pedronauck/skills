@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **128 agent skills** for Claude Code and compatible AI coding assistants — **34 original** (⭐️), **30 hand-picked** (💎), **18 marketing & business** (📣), plus **46 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **129 agent skills** for Claude Code and compatible AI coding assistants — **35 original** (⭐️), **30 hand-picked** (💎), **18 marketing & business** (📣), plus **46 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -44,7 +44,7 @@ ln -s $(pwd)/skills/mine ~/.claude/skills/mine
 
 Skills are organized into four top-level buckets:
 
-- `skills/mine/` — 34 original skills authored in this repository (⭐️)
+- `skills/mine/` — 35 original skills authored in this repository (⭐️)
 - `skills/curated/` — 30 hand-picked community skills (💎)
 - `skills/marketing/` — 18 marketing, business, and writing skills (📣)
 - `skills/community/` — 46 broader community skills
@@ -70,6 +70,7 @@ Original skills authored in this repository.
 - **[app-renderer-systems](./skills/mine/app-renderer-systems)** — Domain feature systems organized under a `systems/` directory
 - **[architectural-analysis](./skills/mine/architectural-analysis)** — Deep architectural audit for dead code, duplication, anti-patterns, and code smells
 - **[bubbletea](./skills/mine/bubbletea)** — Build terminal UIs with Go and Bubbletea -- Elm architecture, Lipgloss styling, dual-pane layouts, and reusable components
+- **[deep-review](./skills/mine/deep-review)** — CodeRabbit-grade deep review of a branch diff, working tree, or GitHub PR at any size (no file cap) — funnels changed files into cohorts, fans out parallel hunk-level reviewers with checkout-verified evidence discipline, merges findings mechanically, and emits a walkthrough, severity-tagged findings with committable suggestions plus AI-agent fix prompts, and a SHIP/FIX_BEFORE_SHIP/REWORK verdict — with incremental re-reviews, optional PR publishing, cross-LLM `--subagent` runtimes, and `--spec` conformance gating
 - **[deslop](./skills/mine/deslop)** — Remove AI-generated code slop from the branch diff — unnecessary comments, abnormal defensive checks, `any` casts, deep nesting — before claiming a task complete or opening a PR
 - **[drizzle-safe-migrations](./skills/mine/drizzle-safe-migrations)** — Production-safe Drizzle migration workflows for schema changes
 - **[git-rebase](./skills/mine/git-rebase)** — Git rebase operations and merge conflict resolution with clean history
@@ -87,7 +88,7 @@ Original skills authored in this repository.
 - **[spec-peer-review](./skills/mine/spec-peer-review)** — Optional cross-LLM peer review of a spec (TechSpec/design doc/RFC/PRD) via Compozy — an independent model writes one scoped findings file (blockers/nits + READY/BLOCKED/NEEDS_REWORK) for user-directed incorporation. Project-agnostic with configurable `--ide`/`--model`/`--reasoning` runtime, six tech-agnostic quality markers, and auto-discovered project rules
 - **[storybook-stories](./skills/mine/storybook-stories)** — Create, update, or refactor Storybook stories following project patterns
 - **[tailwindcss](./skills/mine/tailwindcss)** — Tailwind CSS v4 patterns, design tokens, and tailwind-variants
-- **[tanstack](./skills/mine/tanstack)** — Comprehensive TanStack ecosystem guide — Query, DB, Form, Router, and Start
+- **[tanstack](./skills/mine/tanstack)** — TanStack Query, Router, and Form patterns for React — query keys, caching, mutations, prefetching, SSR/offline, file-based routes, search params, loaders, and Form validation
 - **[tech-logos](./skills/mine/tech-logos)** — Install official tech brand logos from the Elements registry via shadcn
 - **[testing-boss](./skills/mine/testing-boss)** — Comprehensive testing doctrine — Iron Laws, 12 positive patterns, 25 anti-patterns across five families, 7 mandatory gates for agents writing tests, flaky-test taxonomy with quarantine workflow, contract / property / mutation testing, and an LLM/agent eval primer (oracle ladder, LLM-as-judge calibration, agent trajectory vs outcome)
 - **[to-prompt](./skills/mine/to-prompt)** — Turn code, issues, or context into a handoff brief for another LLM — full context, zero prescribed solution — written from a bundled template to `docs/prompts/<timestamp>_<slug>.md`
