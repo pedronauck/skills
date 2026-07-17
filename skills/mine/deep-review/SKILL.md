@@ -2,7 +2,7 @@
 name: deep-review
 description: Deep, CodeRabbit-grade review of a branch diff, working tree, or GitHub PR at any size — funnels changed files, shards them into cohorts, fans out parallel hunk-level reviewers with evidence discipline, merges findings mechanically, and emits a walkthrough, severity-tagged findings with committable suggestions and AI-agent fix prompts, and a SHIP/FIX_BEFORE_SHIP/REWORK verdict. Use when the user asks for a deep review of a PR or branch, wants CodeRabbit-style output without the 300-file cap, needs an incremental re-review after new pushes, wants findings published to the PR, or needs a peer-review verdict round (the loop skills' Phase D), optionally cross-LLM or judged against a spec's contract artifacts. Don't use for applying fixes to findings, reviewing specs or PRDs as documents, or quick feedback on a single file.
 trigger: explicit
-argument-hint: "[--pr N | --base <ref> | --staged | --worktree] [--files p1,p2] [--spec <path>] [--subagent native|claude-opus|claude-fable|grok|codex] [--profile chill|assertive] [--publish] [--full] [--out <dir>] [--no-workflow]"
+argument-hint: "[--pr N | --base <ref> | --staged | --worktree] [--files p1,p2] [--spec <path>] [--subagent native|claude-opus|grok|codex] [--profile chill|assertive] [--publish] [--full] [--out <dir>] [--no-workflow]"
 ---
 
 # Deep Review
@@ -22,7 +22,7 @@ Steps 1–4 drive an idempotent artifact **pipeline** under `<out>`: every stage
 | `--worktree` | Review uncommitted + untracked work against the base ref (always a full round) | — |
 | `--files <p1,p2>` | Restrict review to these paths | full diff |
 | `--spec <path>` | Spec file or directory; its contract-bearing artifacts become the conformance baseline (spec-parity sweep + verdict gate) | — |
-| `--subagent <runtime>` | Step 3 reviewer runtime: `native` \| `claude-opus` \| `claude-fable` \| `grok` \| `codex` — non-native runs cross-LLM via `compozy exec` (subagent-runtimes.md) | `native` |
+| `--subagent <runtime>` | Step 3 reviewer runtime: `native` \| `claude-opus` \| `grok` \| `codex` — non-native runs cross-LLM via `compozy exec` (subagent-runtimes.md) | `native` |
 | `--profile chill\|assertive` | Noise gate — see taxonomy | repo config, else `chill` |
 | `--publish` | Post walkthrough + review to the PR | off — local report only |
 | `--full` | Ignore prior state; review the whole diff again | incremental when state exists |

@@ -7,7 +7,6 @@ How Step 3 review agents (cohort reviewers, sweeps) execute. `native` — the de
 | Value | Invocation |
 | --- | --- |
 | `claude-opus` | `compozy exec --ide claude --model opus --reasoning-effort max` |
-| `claude-fable` | `compozy exec --ide claude --model fable-5 --reasoning-effort max` |
 | `grok` | `compozy exec --ide cursor-agent --model 'grok-4.5[effort=high,fast=true]'` — effort/fast ride inside the model value (no reasoning flag); requesting `grok-4.5` resolves to the same advertised variant |
 | `codex` | `compozy exec --ide codex --model gpt-5.6-sol --reasoning-effort xhigh` |
 
