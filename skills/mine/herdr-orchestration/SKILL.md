@@ -45,8 +45,8 @@ pane filling with raw JSON event lines is a broken delegation — interrupt it
 - Pass `--no-focus` on every creating verb (`agent start`, `pane split`,
   `tab create`, `workspace create`, `worktree create`); use focus verbs only
   when the user asks.
-- Leave worker panes open; close them only when cleanup is explicitly
-  requested or part of the task contract.
+- Retire every worker you launch: once its report is verified and its
+  disposition recorded, close its pane (see Retire workers).
 
 ## Preflight
 
@@ -186,7 +186,7 @@ stop condition fires. When a reported status looks wrong, debug detection with
 Maintain a compact registry in the task ledger or handoff: controller
 identity; worker name, role, model; workspace/tab/pane ids; objective sent and
 start time; status (starting, planning, plan-review, plan-accepted, running,
-blocked, reported, verified); claimed files or work slice; worker-reported
+blocked, reported, verified, retired); claimed files or work slice; worker-reported
 commands and results; controller verification performed; final disposition
 (accepted, rejected, superseded, or blocked).
 
@@ -211,6 +211,27 @@ changing focus:
 - Review the final diff before accepting any worker patch.
 - If a worker edits outside its claim, pause integration and decide: accept,
   request user-approved cleanup, or supersede with controller edits.
+
+## Retire workers
+
+A delegation ends with the worker retired — pane closed — not just its report
+read. Retire each worker the moment its disposition is recorded and no
+follow-up prompt is planned, as part of handling that worker's completion,
+never deferred to an end-of-run sweep:
+
+```bash
+rtk herdr pane close <pane_id>
+```
+
+Closing the pane ends the TUI session and its scrollback, so record what the
+registry needs first — report text, cited line refs, command output. Files,
+diffs, and worktrees survive on disk.
+
+A worker stays open only while mid-run or blocked, while its screen is
+evidence for an unresolved failure, or when the user asks to inspect it —
+record the reason in the registry. The orchestration is complete only when
+`rtk herdr agent list` shows none of this controller's workers still running:
+every worker retired, or its open pane justified in the registry.
 
 ## Stop conditions
 

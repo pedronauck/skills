@@ -183,4 +183,5 @@ screen and answer only a direct blocking question; on
 a stop condition (errors it cannot resolve, out-of-scope request), stop and
 report. When the worker reports done, verify its claims per the parent skill:
 re-open cited files, re-run the key commands yourself, and review the diff
-before accepting the patch.
+before accepting the patch. Record the disposition, then retire the worker —
+close its pane per the parent skill's Retire workers section.
