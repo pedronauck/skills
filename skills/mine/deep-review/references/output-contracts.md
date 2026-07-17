@@ -56,7 +56,7 @@ symbols and line numbers. State what happens, under which input/state, and why.>
 
 [Also applies to: <path>:<lines>, <path>:<lines>]
 [As per coding guidelines [R<NN>] (`<source path>`): "<verbatim rule>"]
-[Verification: <first evidence[] entry — command or file:line → what it showed>]
+Certificate: <evidence[0] — Premise: observed fact → Path: traced flow → Verdict: failure>
 
 <details>
 <summary>📝 Committable suggestion</summary>
@@ -80,7 +80,7 @@ symbols and the target behavior>. Reference symbols: <sym1>, <sym2>.
 <!-- deep-review:fp:<fingerprint> -->
 ```
 
-Bracketed lines appear only when they apply. The committable `suggestion` block only when the replacement is exact and self-contained; otherwise nothing. The AI-agents prompt only on **Critical and Major** findings.
+Bracketed lines appear only when they apply. Every finding has a Certificate line. The committable `suggestion` block only when the replacement is exact and self-contained; otherwise nothing. The AI-agents prompt only on **Critical and Major** findings.
 
 ## review.md
 
@@ -128,7 +128,7 @@ The human-facing dashboard, emitted by `scripts/render_html.py`: it hydrates `as
 
 ## ReportFindings mapping
 
-When the harness exposes the ReportFindings tool, call it once after review.md is written: one entry per actionable finding, ranked most-severe first — `file`/`line` from the anchor, `summary` = the claim line, `failure_scenario` = the evidence paragraph's failure mode, `category` = kebab-case (`potential-issue`, `refactor`, `nitpick`). Omit `verdict` — no separate verify pass runs; the reviewer's own `evidence[]` is the confidence signal.
+When the harness exposes the ReportFindings tool, call it once after review.md is written: one entry per actionable finding, ranked most-severe first — `file`/`line` from the anchor, `summary` = the claim line, `failure_scenario` = the evidence paragraph's failure mode, `category` = kebab-case (`potential-issue`, `refactor`, `nitpick`). Omit `verdict` — no separate verify pass runs; the checkout-grounded certificate and refutation checks in `evidence[]` are the confidence signal.
 
 ## Verdict rule
 

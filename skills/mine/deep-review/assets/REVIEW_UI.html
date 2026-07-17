@@ -915,7 +915,7 @@
     const rules = (f.rules || []).map((r) =>
       `<p class="kv"><span class="k">Guideline ${esc(r.id)}</span> (<code>${esc(r.source)}</code>): &ldquo;${esc(r.guideline)}&rdquo;</p>`).join("");
     const evidence = (f.evidence || []).length
-      ? `<div><p class="kv"><span class="k">Reviewer verification</span></p><ul class="evidence">${f.evidence.map((e) => `<li class="mono">${esc(e)}</li>`).join("")}</ul></div>` : "";
+      ? `<div><p class="kv"><span class="k">Evidence trail</span></p><ul class="evidence">${f.evidence.map((e) => `<li class="mono">${esc(e)}</li>`).join("")}</ul></div>` : "";
     const also = (f.also_applies || []).length
       ? `<p class="kv"><span class="k">Also applies to</span> <span class="mono">${f.also_applies.map(esc).join(", ")}</span></p>` : "";
     const suggestion = f.suggestion

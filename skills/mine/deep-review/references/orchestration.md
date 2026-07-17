@@ -13,12 +13,12 @@ Every stage materializes **jobs** (`{label, kind, prompt, output}`, repo-relativ
 | Merge | `merge_findings.py` → `findings.json` | — | `merge_findings.py` |
 | Report | `render_review.py` → review.md + state.json; `render_html.py` → review.html | — | `render_review.py` |
 
-Both job kinds (`cohort`, `sweep`) return `findings.schema.json` output. Field semantics the schema relies on: `hunk` = the manifest hunk the finding sits in (`"<side>:<start>-<end>"`), null for outside-diff findings; `rule_id` links a rule-derived finding to the registry; `evidence[]` records the reviewer's own verification, one `"command or file:line → what it showed"` entry per check.
+Both job kinds (`cohort`, `sweep`) return `findings.schema.json` output. Field semantics the schema relies on: `hunk` = the manifest hunk the finding sits in (`"<side>:<start>-<end>"`), null for outside-diff findings; `rule_id` links a rule-derived finding to the registry; `evidence[0]` is the checkout-grounded `Premise → Path → Verdict` certificate, and later entries record one `"command or file:line → what it showed"` check each.
 
 ## Cohort rules (Step 2)
 
 1. Group selected files by package/directory and domain: a source file, its tests, and its types travel together; a file pulled apart from its test loses its reviewer the cheapest evidence.
-2. Size: ≤ 50 files **and** ≤ ~6,000 changed lines per cohort, whichever binds first. A single oversized file becomes its own cohort.
+2. Size: ≤ `--max-cohort-files` files (default `100`) **and** ≤ ~6,000 changed lines per cohort, whichever binds first. Pass the same value to `build_jobs.py`; a single oversized file becomes its own cohort.
 3. **Oversized-file split** — when one file alone exceeds ~6,000 changed lines, divide the search across sibling reviewers: same file, disjoint slices of its manifest hunks (`hunk_scope`), one cohort per slice. Every slice reviewer reads the whole file for context but judges only its slice; build_jobs.py proves the merged slices cover every hunk line exactly once.
 4. Tag each cohort `risk: high|normal|low` — high when it touches storage/migrations, security/auth, public contracts, or concurrency; low for docs/config-only. Risk feeds reviewer emphasis, not selection.
 5. Every selected file in exactly one cohort (or, when sliced, every hunk line in exactly one slice) — build_jobs.py rejects any other shape. `plan.json`:

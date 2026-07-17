@@ -77,7 +77,7 @@ def render_finding(finding: dict, rules_by_id: dict[str, dict]) -> str:
             lines += ["", f"As per coding guidelines [{rule_id}] (`{rule['source']}`): \"{one_line(rule['guideline'])}\""]
     evidence = finding.get("evidence") or []
     if evidence:
-        lines += ["", f"Verification: {one_line(evidence[0])}"]
+        lines += ["", f"Certificate: {one_line(evidence[0])}"]
     suggestion = (finding.get("suggestion") or "").strip()
     if suggestion:
         safe = suggestion.replace("```", "'''")

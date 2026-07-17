@@ -39,7 +39,7 @@ from _common import (
     write_json,
 )
 
-MAX_COHORT_FILES = 50
+DEFAULT_MAX_COHORT_FILES = 100
 MAX_COHORT_CHANGED_LINES = 6000
 
 REVIEWER_PLACEHOLDERS = {
@@ -52,13 +52,39 @@ SWEEP_PLACEHOLDERS = {
 }
 
 DEFAULT_LENSES = {
-    "contracts": "breaking changes, drift between spec/implementation/clients/generated artifacts, missing codegen co-ship",
-    "security": "injection, missing authn/authz, secret leakage, cross-tenant access, unsafe input handling",
-    "migrations": "destructive operations, missing migration for a model change, ordering/identity hazards",
-    "tests": "new behavior without a failing-capable test, tests asserting mocks, weakened assertions",
-    "consistency": "incomplete renames, sibling paths not mirroring a fix, duplicated logic",
-    "config": "unwired or undocumented keys, dead flags, default mismatches",
-    "spec-parity": "field-by-field conformance with every artifact in the context pack's Spec contract section",
+    "contracts": (
+        "MISSION: prove changed contracts co-ship across implementation, clients, and generated artifacts. "
+        "FOCUS: breaking shapes, defaults, requiredness, and version drift. REPORT GATE: trace a changed "
+        "producer contract to a concrete incompatible consumer."
+    ),
+    "security": (
+        "MISSION: trace attacker-controlled input to impact. FOCUS: injection, authn/authz gaps, secret "
+        "leakage, cross-tenant access, and unsafe input handling. REPORT GATE: name the controllable input, "
+        "missing boundary, and reachable impact."
+    ),
+    "migrations": (
+        "MISSION: prove schema and code can roll forward safely. FOCUS: destructive operations, missing model "
+        "migrations, ordering, identity, and compatibility windows. REPORT GATE: name the database state and "
+        "operation that loses data or breaks a deployed version."
+    ),
+    "tests": (
+        "MISSION: find changed behavior with no failing-capable protection. FOCUS: untested branches, mock-only "
+        "assertions, and weakened expectations. REPORT GATE: name the regression the current suite would pass."
+    ),
+    "consistency": (
+        "MISSION: prove a cross-file change is complete. FOCUS: incomplete renames, sibling paths that share an "
+        "invariant, and duplicated fixes. REPORT GATE: connect every missed occurrence to the same changed invariant."
+    ),
+    "config": (
+        "MISSION: trace configuration from declaration through defaulting to consumption. FOCUS: unwired keys, "
+        "dead flags, undocumented public settings, and default mismatches. REPORT GATE: name the runtime path "
+        "where the configured value is ignored or misread."
+    ),
+    "spec-parity": (
+        "MISSION: prove field-by-field conformance with every artifact in the context pack's Spec contract section. "
+        "FOCUS: names, types, defaults, requiredness, shapes, topology, and behavior. REPORT GATE: cite the exact "
+        "artifact field and contradictory implementation path."
+    ),
 }
 
 SPEC_EXTRA = (
@@ -72,6 +98,13 @@ SPEC_EXTRA = (
 )
 
 PLACEHOLDER_RE = re.compile(r"\{\{([a-z_]+)\}\}")
+
+
+def positive_int(value: str) -> int:
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("must be at least 1")
+    return parsed
 
 
 def load_template(name: str) -> str:
@@ -121,7 +154,9 @@ def validate_rules(rules: list[dict]) -> list[str]:
     return errors
 
 
-def validate_cohorts(cohorts: list[dict], selected: dict[str, dict]) -> list[str]:
+def validate_cohorts(
+    cohorts: list[dict], selected: dict[str, dict], max_cohort_files: int
+) -> list[str]:
     errors: list[str] = []
     seen_ids: set[str] = set()
     full_owners: dict[str, list[str]] = defaultdict(list)
@@ -134,8 +169,10 @@ def validate_cohorts(cohorts: list[dict], selected: dict[str, dict]) -> list[str
         if cohort.get("risk") not in {"high", "normal", "low"}:
             errors.append(f"{cohort_id}: risk must be high|normal|low")
         files = cohort.get("files", [])
-        if not files or len(files) > MAX_COHORT_FILES:
-            errors.append(f"{cohort_id}: invalid file count {len(files)} (1..{MAX_COHORT_FILES})")
+        if not files or len(files) > max_cohort_files:
+            errors.append(
+                f"{cohort_id}: invalid file count {len(files)} (1..{max_cohort_files})"
+            )
         scope = cohort.get("hunk_scope") or {}
         extra_scope = set(scope) - set(files)
         if extra_scope:
@@ -260,6 +297,12 @@ def scope_instruction(cohort: dict) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", required=True)
+    parser.add_argument(
+        "--max-cohort-files",
+        type=positive_int,
+        default=DEFAULT_MAX_COHORT_FILES,
+        help=f"maximum files per cohort (default: {DEFAULT_MAX_COHORT_FILES})",
+    )
     args = parser.parse_args()
 
     repo = repo_root()
@@ -273,7 +316,9 @@ def main() -> int:
             raise RuntimeError("manifest.json lacks diff_command — rebuild it with the current build_manifest.py")
 
         selected = manifest_selected(manifest)
-        errors = validate_rules(rules) + validate_cohorts(plan["cohorts"], selected)
+        errors = validate_rules(rules) + validate_cohorts(
+            plan["cohorts"], selected, args.max_cohort_files
+        )
         if errors:
             raise RuntimeError("plan validation failed:\n- " + "\n- ".join(errors))
         sweeps = normalize_sweeps(plan, context_pack)
@@ -334,6 +379,7 @@ def main() -> int:
     with_rules = sum(1 for count in bound_counts if count)
     print(
         f"jobs: {len(plan['cohorts'])} cohorts + {len(sweeps)} sweeps -> {out / 'jobs.json'}\n"
+        f"cohort limit: {args.max_cohort_files} files / {MAX_COHORT_CHANGED_LINES} changed lines\n"
         f"rules: {len(rules)} registered; {with_rules}/{len(plan['cohorts'])} cohorts carry bound rules\n"
         f"every selected file owned exactly once; prompts under {out / 'prompts'}"
     )

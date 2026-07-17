@@ -22,7 +22,7 @@
           "also_applies": { "type": "array", "items": { "type": "string" } },
           "guideline": { "type": ["string", "null"] },
           "suggestion": { "type": ["string", "null"] },
-          "evidence": { "type": "array", "items": { "type": "string" } }
+          "evidence": { "type": "array", "minItems": 1, "items": { "type": "string" } }
         }
       }
     }

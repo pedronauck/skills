@@ -9,3 +9,4 @@ skills/**/**/autoresearch*
 .claude/ledger
 .codex/ledger
 .claude/analysis
+.resources/*

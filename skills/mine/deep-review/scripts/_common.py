@@ -184,11 +184,31 @@ def validate_job_output(repo: Path, out: Path, job: dict) -> None:
         payload = read_json(path)
     except RuntimeError as error:
         raise ValueError(f"{job['label']}: {error}") from error
-    errors = schema_errors(payload, load_schema("findings"))
+    errors = findings_contract_errors(payload)
     if errors:
         head = "; ".join(errors[:6])
         tail = f" (+{len(errors) - 6} more)" if len(errors) > 6 else ""
         raise ValueError(f"{job['label']}: {head}{tail}")
+
+
+CERTIFICATE_RE = re.compile(
+    r"^Premise:\s+.+\s+→\s+Path:\s+.+\s+→\s+Verdict:\s+.+$"
+)
+
+
+def findings_contract_errors(payload: dict) -> list[str]:
+    """Validate the findings schema plus the position-sensitive certificate."""
+    errors = schema_errors(payload, load_schema("findings"))
+    if errors:
+        return errors
+    for index, finding in enumerate(payload["findings"]):
+        certificate = finding["evidence"][0].strip()
+        if not CERTIFICATE_RE.fullmatch(certificate):
+            errors.append(
+                f"$.findings[{index}].evidence[0]: expected "
+                "'Premise: ... → Path: ... → Verdict: ...' certificate"
+            )
+    return errors
 
 
 # ---------- source freeze ----------

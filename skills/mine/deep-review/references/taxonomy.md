@@ -37,6 +37,16 @@ Severity measures **impact if unfixed**, not confidence and not effort. When tor
 
 Every finding names what produced it, one or more of: `guideline` (a rubric rule — cite its registry id and quote it verbatim with its source path), `learning` (an entry from learnings.md), `linter` (folded tool output that needed interpretation), `verification` (a command run against the checkout — include the command and result), `review` (reviewer reasoning over the code itself).
 
+## Evidence certificate
+
+Every finding's first `evidence[]` entry is a checkout-grounded certificate:
+
+```
+Premise: <observed fact at file:line> → Path: <named caller/input/control flow> → Verdict: <resulting failure or measurable improvement>
+```
+
+The premise names code actually read, the path connects the diff to a concrete input or state, and the verdict states the resulting behavior. Later entries record the commands and file reads that tried to refute the certificate. A certificate such as `looks wrong → may fail → bug` is not evidence.
+
 ## Profile gates
 
 | | `chill` (default) | `assertive` |
@@ -60,7 +70,8 @@ Drop the finding before recording it when any of these hold:
 4. **Formatting** — whitespace, import order, or style a formatter owns.
 5. **Speculative** — the claim has no concrete failure mode ("could be fragile", "might be slow"). Either produce the failing scenario or let it go.
 6. **Pre-existing** — outside the diff and matching neither outside-diff clause above.
+7. **Phantom knowledge** — the certificate depends on code that was not inspected, or a true framework fact does not cause the claimed result in this diff. Trace the repository path that connects premise to verdict or drop it (for example: SMTP commonly times out is irrelevant when this caller bounds the operation; environment parsing is risky in general but not when this value is validated before use).
 
 ## Volume discipline
 
-No numeric cap — the gates above are the cap. Each reported finding must survive: concrete failure mode (or concrete improvement), not suppressed, severity honest, evidence attached. One root cause = one finding: when the same defect repeats across files, report the representative instance and list the rest under `also_applies`.
+No numeric cap — the gates above are the cap. **Find broadly, refute, report narrowly:** each reported finding must survive an active attempt to disprove its certificate, carry a concrete failure mode (or measurable improvement), clear every suppression, and receive severity only afterward. One root cause = one finding; search for every occurrence, report the representative instance, and list all others under `also_applies`.

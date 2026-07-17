@@ -1,8 +1,8 @@
 ---
 name: deep-review
-description: Deep, CodeRabbit-grade review of a branch diff, working tree, or GitHub PR at any size — funnels changed files, shards them into cohorts, fans out parallel hunk-level reviewers with evidence discipline, merges findings mechanically, and emits a walkthrough, severity-tagged findings with committable suggestions and AI-agent fix prompts, and a SHIP/FIX_BEFORE_SHIP/REWORK verdict. Use when the user asks for a deep review of a PR or branch, wants CodeRabbit-style output without the 300-file cap, needs an incremental re-review after new pushes, wants findings published to the PR, or needs a peer-review verdict round (the loop skills' Phase D), optionally cross-LLM or judged against a spec's contract artifacts. Don't use for applying fixes to findings, reviewing specs or PRDs as documents, or quick feedback on a single file.
+description: Deep review of branch diffs, working trees, or GitHub PRs at any size. Use when the user asks for CodeRabbit-grade review, an incremental re-review after new pushes, publication of findings to a PR, a cross-LLM peer-review verdict round, or conformance review against spec artifacts. Don't use for applying fixes, reviewing specs or PRDs as documents, or quick single-file feedback.
 trigger: explicit
-argument-hint: "[--pr N | --base <ref> | --staged | --worktree] [--files p1,p2] [--spec <path>] [--subagent native|claude-opus|grok|codex] [--profile chill|assertive] [--publish] [--full] [--out <dir>] [--no-workflow]"
+argument-hint: "[--pr N | --base <ref> | --staged | --worktree] [--files p1,p2] [--spec <path>] [--subagent native|claude-opus|grok|codex] [--profile chill|assertive] [--max-cohort-files N] [--publish] [--full] [--out <dir>] [--no-workflow]"
 ---
 
 # Deep Review
@@ -24,6 +24,7 @@ Steps 1–4 drive an idempotent artifact **pipeline** under `<out>`: every stage
 | `--spec <path>` | Spec file or directory; its contract-bearing artifacts become the conformance baseline (spec-parity sweep + verdict gate) | — |
 | `--subagent <runtime>` | Step 3 reviewer runtime: `native` \| `claude-opus` \| `grok` \| `codex` — non-native runs cross-LLM via `compozy exec` (subagent-runtimes.md) | `native` |
 | `--profile chill\|assertive` | Noise gate — see taxonomy | repo config, else `chill` |
+| `--max-cohort-files <n>` | Maximum files assigned to one cohort; the ~6,000 changed-line cap still applies | `100` |
 | `--publish` | Post walkthrough + review to the PR | off — local report only |
 | `--full` | Ignore prior state; review the whole diff again | incremental when state exists |
 | `--out <dir>` | Artifact directory | `.deep-review/<target>/` |
@@ -46,7 +47,7 @@ The manifest builder resolves `path_filters` + `profile` into manifest.json; the
 
 - Source is read-only and **frozen**: the manifest pins `worktree_snapshot`, and run_jobs.py / render_review.py refuse a drifted checkout. Writes go only to `<out>`, `.deep-review/` state, and — with `--publish` — the target PR.
 - No file-count cap: a large selection means more cohorts, never a skipped or silently truncated review. Every selected file lands in exactly one cohort.
-- Every finding ships with the reviewer's checkout-verified `evidence[]`; the taxonomy suppression rules drop speculative claims before they are recorded.
+- Every finding ships with checkout-verified `evidence[]`: its first entry certifies `Premise → Path → Verdict`, and later entries record the refutation checks; the taxonomy suppression rules drop unsupported claims before they are recorded.
 - Run the repo's linters first and suppress every finding they already catch.
 - Cite rubric rules verbatim with their source path; severity comes from the taxonomy, never inflated.
 - Publishing needs `--publish` or the user's explicit go-ahead in this session; otherwise the review stays local.
@@ -71,12 +72,13 @@ The manifest builder resolves `path_filters` + `profile` into manifest.json; the
 
 **Step 2: Plan — context pack, cohorts, walkthrough**
 
-1. Read `<skill-dir>/references/context-pack.md` and assemble the lean `<out>/context-pack.md` exactly as it specifies, plus the machine-readable registry `<out>/rules.json` (rule id, scope globs, source, verbatim guideline). Run the detected linter lanes and fold their verdicts in.
-2. Read `<skill-dir>/references/orchestration.md` (cohort rules, sweep triggers) and `<skill-dir>/references/output-contracts.md` (walkthrough anatomy, effort scale). Write `<out>/plan.json` — cohorts of up to 50 files / ~6,000 changed lines plus any sweep whose trigger fires — and `<out>/walkthrough.md`.
+1. Read `<skill-dir>/references/context-pack.md` in full and assemble the lean `<out>/context-pack.md` exactly as it specifies, plus the machine-readable registry `<out>/rules.json` (rule id, scope globs, source, verbatim guideline). Run the detected linter lanes and fold their verdicts in.
+2. Read `<skill-dir>/references/orchestration.md` (cohort rules, sweep triggers) and `<skill-dir>/references/output-contracts.md` (walkthrough anatomy, effort scale) in full. Write `<out>/plan.json` — cohorts of up to `<max-cohort-files>` files (default 100) / ~6,000 changed lines plus any sweep whose trigger fires — and `<out>/walkthrough.md`.
 3. Run the plan gate:
 
    ```bash
-   python3 <skill-dir>/scripts/build_jobs.py --out <out>
+   python3 <skill-dir>/scripts/build_jobs.py --out <out> \
+     [--max-cohort-files N]
    ```
 
    It proves every selected file is owned exactly once (line-exact for hunk slices), renders every reviewer/sweep prompt from `assets/PROMPT.md` with that cohort's bound rules injected, and materializes `<out>/jobs.json` — the work contract every engine executes.
@@ -85,7 +87,7 @@ The manifest builder resolves `path_filters` + `profile` into manifest.json; the
 
 **Step 3: Fan-out — parallel review**
 
-Execute `<out>/jobs.json` with this run's engine (orchestration.md § Engines: Workflow default, Agent fallback with `--no-workflow`, external runtime with `--subagent`). Completion is engine-independent — re-dispatch whatever is listed as pending/invalid until exit 0:
+Execute `<out>/jobs.json` with this run's engine (orchestration.md § Engines: Workflow default, Agent fallback with `--no-workflow`, external runtime with `--subagent`). When `--subagent` is not `native`, read `<skill-dir>/references/subagent-runtimes.md` in full before execution. Completion is engine-independent — re-dispatch whatever is listed as pending/invalid until exit 0:
 
 ```bash
 python3 <skill-dir>/scripts/run_jobs.py --out <out> --validate-only
@@ -109,13 +111,13 @@ Then: when the ReportFindings tool is available, report the confirmed findings t
 
 **Step 5: Publish (only with `--publish`)**
 
-1. Read `<skill-dir>/references/publish-github.md` and execute its recipes: upsert the walkthrough comment, post one review submission (inline comments for in-diff findings; outside-diff, duplicates, and nitpicks collapsed in the body), and edit prior-round comments this round resolved (`✅ Addressed in commit <sha>`).
+1. Read `<skill-dir>/references/publish-github.md` in full and execute its recipes: upsert the walkthrough comment, post one review submission (inline comments for in-diff findings; outside-diff, duplicates, and nitpicks collapsed in the body), and edit prior-round comments this round resolved (`✅ Addressed in commit <sha>`).
 
 *Done when:* the PR shows the updated walkthrough and the new review, and both URLs are cited in the final message.
 
 **Step 6: Learnings**
 
-1. state.json was already written at Step 4. When the user — or a PR reply — rebuts or dismisses a finding, distill the correction into `.deep-review/learnings.md` per state-and-learnings.md and mark that fingerprint `dismissed` in the state ledger (never re-raised).
+1. state.json was already written at Step 4. When the user — or a PR reply — rebuts or dismisses a finding, read `<skill-dir>/references/state-and-learnings.md` in full, distill the correction into `.deep-review/learnings.md`, and mark that fingerprint `dismissed` in the state ledger (never re-raised).
 
 *Done when:* every user correction from the session is captured as a learning or explicitly declined.
 
@@ -139,13 +141,13 @@ With prior state (or fingerprints recovered from the PR thread), Step 1 scopes t
 
 References:
 
-- `references/taxonomy.md` — category/severity/effort grammar, profile gates, suppression rules. Bound into every materialized prompt; read before Step 2 planning.
-- `references/output-contracts.md` — walkthrough, review.md, and inline-comment templates; effort scale; verdict rule; ReportFindings mapping. Read at Steps 2 and 4.
-- `references/context-pack.md` — rubric sources and precedence, rules.json contract, linter detection, the lean-pack budget. Read at Step 2.
-- `references/orchestration.md` — pipeline stage map, cohort rules, sweep triggers, execution engines. Read at Steps 2–4.
-- `references/subagent-runtimes.md` — `--subagent` runtime map, runner invocation, failure handling. Read at Step 3 when `--subagent` ≠ `native`.
-- `references/publish-github.md` — gh recipes, comment anchoring, batching, reviewer-identity limits. Read only for Step 5.
-- `references/state-and-learnings.md` — fingerprint definition, state.json schema, reconciliation rules, learnings capture. Read at Steps 4 and 6.
+- `references/taxonomy.md` — category/severity/effort grammar, profile gates, suppression rules. Bound into every materialized prompt; read in full before Step 2 planning.
+- `references/output-contracts.md` — walkthrough, review.md, and inline-comment templates; effort scale; verdict rule; ReportFindings mapping. Read in full at Steps 2 and 4.
+- `references/context-pack.md` — rubric sources and precedence, rules.json contract, linter detection, the lean-pack budget. Read in full at Step 2.
+- `references/orchestration.md` — pipeline stage map, cohort rules, sweep triggers, execution engines. Read in full at Steps 2–4.
+- `references/subagent-runtimes.md` — `--subagent` runtime map, runner invocation, failure handling. Read in full at Step 3 when `--subagent` ≠ `native`.
+- `references/publish-github.md` — gh recipes, comment anchoring, batching, reviewer-identity limits. Read in full only for Step 5.
+- `references/state-and-learnings.md` — fingerprint definition, state.json schema, reconciliation rules, learnings capture. Read in full at Steps 4 and 6.
 
 Assets: `assets/PROMPT.md` — the reviewer and sweep prompt templates build_jobs.py renders (edit wording there, nowhere else); `assets/findings.schema.json` — the JSON contract embedded in prompts and enforced on outputs; `assets/REVIEW_UI.html` — the fixed report UI render_html.py hydrates (edit the UI there, nowhere else).
 
@@ -153,3 +155,4 @@ Scripts are invoked at their step above and print usage with `--help`:
 
 - Bootstrap: `build_manifest.py`, `build_jobs.py`, `merge_findings.py`, `render_html.py` (review.html — the human-facing dashboard).
 - Mutating: `run_jobs.py` (execute/validate jobs), `render_review.py` (review.md + state.json — the final gate before the verdict is stated).
+- Library: `_common.py` — shared schema, finding-identity, and source-freeze contracts imported by the CLIs; never invoke it directly.
