@@ -122,6 +122,10 @@ Bracketed lines appear only when they apply. The committable `suggestion` block 
 
 `review.md` orders files by max severity, then path.
 
+## review.html
+
+The human-facing dashboard, emitted by `scripts/render_html.py`: it hydrates `assets/REVIEW_UI.html` — the fixed, self-contained UI template (inline CSS/JS, no network, opens via `file://`) — with findings.json + manifest.json, plus state.json / walkthrough.md / rules.json / review.md / archived rounds when present. The UI is never model-authored and review.html is never hand-edited; change the template, nowhere else. Before render_review.py has written the round's state entry the verdict renders as a neutral "round in progress" state, so the script can run after merge and again after render. The page auto-reloads while open, which is what keeps a human's view current across rounds.
+
 ## ReportFindings mapping
 
 When the harness exposes the ReportFindings tool, call it once after review.md is written: one entry per actionable finding, ranked most-severe first — `file`/`line` from the anchor, `summary` = the claim line, `failure_scenario` = the evidence paragraph's failure mode, `category` = kebab-case (`potential-issue`, `refactor`, `nitpick`). Omit `verdict` — no separate verify pass runs; the reviewer's own `evidence[]` is the confidence signal.

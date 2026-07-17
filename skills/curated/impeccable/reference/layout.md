@@ -1,4 +1,4 @@
-Space is the most underused design tool. Find the layout's actual problem (monotone spacing, weak hierarchy, identical card grids, the centered-stack default) and fix the structure, not the surface.
+Space is the most underused design tool. Find the layout's actual problem (monotone spacing, weak hierarchy, identical card grids) and fix the structure, not the surface.
 
 ---
 
@@ -8,11 +8,33 @@ Brand: asymmetric compositions, fluid spacing with `clamp()`, intentional grid-b
 
 Product: predictable grids, consistent densities, familiar navigation patterns. Responsive behavior is structural (collapse sidebar, responsive table), not fluid typography. Consistency IS an affordance.
 
+Native (`ios` / `android` / `adaptive`): structure follows the Layout section of [ios.md](ios.md) / [android.md](android.md) (read it first if Setup hasn't already): platform navigation, insets, and touch targets, never the CSS tooling below.
+
+---
+
+## Two isolated assessments (required)
+
+Spawn two parallel sub-agents whenever a sub-agent/Task tool is exposed: one for the layout assessment, one for the mechanical pre-scan. If the harness needs explicit user permission for sub-agents, stop and ask before proceeding. Isolation is the point: detector output anchors visual judgment toward what the scan can see, so neither sub-agent gets the other's output. Each assessment runs in its own sub-agent; running either one in this context when a sub-agent tool exists is not permitted, even when it is faster; the fallback below is only for sessions with no sub-agent tool. Give each a self-contained prompt (target files, register, documented spacing scale when present, and its instructions below); do not assume it can read this file.
+
+**Sub-agent A (layout assessment)**: give it the full [Assess Current Layout](#assess-current-layout) checklist below, verbatim, in its prompt. It works through every item and returns per-item findings citing file, selector, or value.
+
+**Sub-agent B (mechanical pre-scan)**: run the bundled detector scoped to layout:
+
+```bash
+node .agents/skills/impeccable/scripts/detect.mjs --json --scope layout [target files or dirs]
+```
+
+A missing `node` on PATH is not permission to skip: hunt for a runtime (`command -v node`, nvm or Homebrew paths, the harness's own bundled node) and run it by full path. If none exists, halt the scan and report that Node must be installed (the parent relays this to the user); do **not** substitute grep for the detector or proceed unscanned. The detector abstains on arbitrary Tailwind spacing (`gap-[13px]`, `p-[7px]`) and ad-hoc `z-index` stacks, so when the project documents a spacing scale, also grep `gap-\[`, `p[trblxy]?-\[`, `m[trblxy]?-\[`, `z-\[` and judge those hits against it. Return the findings JSON plus the grep verdicts.
+
+**If no sub-agent tool is exposed (or the user declined)**: run both yourself, assessment first, pre-scan second, so the deterministic findings can't anchor the visual judgment. Keep that order even when the scan feels quicker to start with.
+
+**Synthesize** once both are done: merge into a single findings list, noting where they agree and what each caught alone. Fix every finding, or list it as a deliberate exception for the user to accept. A clean scan is a floor, not a verdict: a monotone grid with uniform spacing passes every detector rule, which is exactly what the assessment exists to catch. State in your final summary which path ran (parallel sub-agents or single-context fallback).
+
 ---
 
 ## Assess Current Layout
 
-Analyze what's weak about the current spatial design:
+This checklist is sub-agent A's brief (on the fallback path, work through it yourself before the pre-scan). Analyze what's weak about the current spatial design:
 
 1. **Spacing**:
    - Is spacing consistent or arbitrary? (Random padding/margin values)
@@ -27,7 +49,6 @@ Analyze what's weak about the current spatial design:
 3. **Grid & structure**:
    - Is there a clear underlying structure, or does the layout feel random?
    - Are identical card grids used everywhere? (Icon + heading + text, repeated endlessly)
-   - Is everything centered? (Left-aligned with asymmetric layouts feels more designed, but not a hard and fast rule)
 
 4. **Rhythm & variety**:
    - Does the layout have visual rhythm? (Alternating tight/generous spacing)
@@ -43,8 +64,6 @@ Analyze what's weak about the current spatial design:
 
 ## Plan Layout Improvements
 
-Consult the [spatial design reference](spatial-design.md) for detailed guidance on grids, rhythm, and container queries.
-
 Create a systematic plan:
 
 - **Spacing system**: Use a consistent scale (a framework's built-in scale like Tailwind's, rem-based tokens, or a custom system). The specific values matter less than consistency.
@@ -57,6 +76,7 @@ Create a systematic plan:
 ### Establish a Spacing System
 
 - Use a consistent spacing scale (framework scales like Tailwind, rem-based tokens, or a custom scale all work). What matters is that values come from a defined set, not arbitrary numbers.
+- Prefer a 4pt base scale (4, 8, 12, 16, 24, 32, 48, 64, 96px) over 8pt; 8pt is too coarse and you'll frequently need 12px between 8 and 16.
 - Name tokens semantically if using custom properties: `--space-xs` through `--space-xl`, not `--spacing-8`
 - Use `gap` for sibling spacing instead of margins; eliminates margin collapse hacks
 - Apply `clamp()` for fluid spacing that breathes on larger screens
@@ -66,15 +86,22 @@ Create a systematic plan:
 - **Tight grouping** for related elements (8-12px between siblings)
 - **Generous separation** between distinct sections (48-96px)
 - **Varied spacing** within sections (not every row needs the same gap)
-- **Asymmetric compositions**: break the predictable centered-content pattern when it makes sense
+- **Asymmetric compositions**: a deliberate choice when the content invites it (not a default to chase).
 
 ### Choose the Right Layout Tool
 
-- **Use Flexbox for 1D layouts**: Rows of items, nav bars, button groups, card contents, most component internals. Flex is simpler and more appropriate for the majority of layout tasks.
+- **Use Flexbox for 1D layouts**: Rows of items, nav bars, button groups, card contents, most component internals.
 - **Use Grid for 2D layouts**: Page-level structure, dashboards, data-dense interfaces, anything where rows AND columns need coordinated control.
-- **Don't default to Grid** when Flexbox with `flex-wrap` would be simpler and more flexible.
-- Use `repeat(auto-fit, minmax(280px, 1fr))` for responsive grids without breakpoints.
 - Use named grid areas (`grid-template-areas`) for complex page layouts; redefine at breakpoints.
+- Use **container queries** for components, viewport queries for page layouts. A card in a narrow sidebar can stay compact while the same card in a main content area expands automatically:
+
+```css
+.card-container { container-type: inline-size; }
+.card { display: grid; gap: var(--space-md); }
+@container (min-width: 400px) {
+  .card { grid-template-columns: 120px 1fr; }
+}
+```
 
 ### Break Card Grid Monotony
 
@@ -85,18 +112,36 @@ Create a systematic plan:
 ### Strengthen Visual Hierarchy
 
 - Use the fewest dimensions needed for clear hierarchy. Space alone can be enough; generous whitespace around an element draws the eye. Some of the most polished designs achieve rhythm with just space and weight. Add color or size contrast only when simpler means aren't sufficient.
+- The best hierarchy combines 2–3 dimensions at once. A heading that's larger, bolder, AND has more space above it reads as primary without trying:
+
+| Tool | Strong Hierarchy | Weak Hierarchy |
+|------|------------------|----------------|
+| **Size** | 3:1 ratio or more | <2:1 ratio |
+| **Weight** | Bold vs Regular | Medium vs Regular |
+| **Color** | High contrast | Similar tones |
+| **Position** | Top/left (primary) | Bottom/right |
+| **Space** | Surrounded by white space | Crowded |
+
 - Be aware of reading flow: in LTR languages, the eye naturally scans top-left to bottom-right, but primary action placement depends on context (e.g., bottom-right in dialogs, top in navigation).
 - Create clear content groupings through proximity and separation.
 
 ### Manage Depth & Elevation
 
-- Create a semantic z-index scale (dropdown → sticky → modal-backdrop → modal → toast → tooltip)
 - Build a consistent shadow scale (sm → md → lg → xl); shadows should be subtle
 - Use elevation to reinforce hierarchy, not as decoration
 
 ### Optical Adjustments
 
 - If an icon looks visually off-center despite being geometrically centered, nudge it. But only if you're confident it actually looks wrong. Don't adjust speculatively.
+- Text at `margin-left: 0` looks slightly indented because of letterform whitespace; a negative margin (`-0.05em`) optically aligns it. Geometrically centered glyphs often look off-center (play icons need to shift right, arrows shift toward their direction).
+- Touch targets must be 44×44px minimum even when the visual element is smaller. Expand the hit area with padding or a pseudo-element:
+
+```css
+.icon-button { width: 24px; height: 24px; position: relative; }
+.icon-button::before {
+  content: ''; position: absolute; inset: -10px;
+}
+```
 
 **NEVER**:
 - Use arbitrary spacing values outside your scale
@@ -104,10 +149,7 @@ Create a systematic plan:
 - Wrap everything in cards (not everything needs a container)
 - Nest cards inside cards (use spacing and dividers for hierarchy within)
 - Use identical card grids everywhere (icon + heading + text, repeated)
-- Center everything (left-aligned with asymmetry feels more designed)
 - Default to the hero metric layout (big number, small label, stats, gradient) as a template. If showing real user data, a prominent metric can work, but it should display actual data, not decorative numbers.
-- Default to CSS Grid when Flexbox would be simpler; use the simplest tool for the job
-- Use arbitrary z-index values (999, 9999); build a semantic scale
 
 ## Verify Layout Improvements
 
@@ -118,7 +160,9 @@ Create a systematic plan:
 - **Consistency**: Is the spacing system applied uniformly?
 - **Responsiveness**: Does the layout adapt gracefully across screen sizes?
 
-When the rhythm and hierarchy land, hand off to `{{command_prefix}}impeccable polish` for the final pass.
+Answer each item above by citing the file, selector, or value that satisfies it; never a bare yes. Then re-run the pre-scan and fix until the count of unresolved items and unaccepted findings is zero.
+
+When the rhythm and hierarchy land, hand off to `$impeccable polish` for the final pass.
 
 ## Live-mode signature params
 

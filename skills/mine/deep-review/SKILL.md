@@ -98,13 +98,14 @@ python3 <skill-dir>/scripts/run_jobs.py --out <out> --validate-only
 ```bash
 python3 <skill-dir>/scripts/merge_findings.py --out <out>
 python3 <skill-dir>/scripts/render_review.py --out <out> [--rework "<structural rationale>"]
+python3 <skill-dir>/scripts/render_html.py --out <out>
 ```
 
-merge_findings.py folds every output into `<out>/findings.json` mechanically — fingerprints, union-find dedup (identical fingerprint or same-file/category overlapping ranges), and cross-round reconciliation. render_review.py checks the source freeze, derives SHIP / FIX_BEFORE_SHIP mechanically, and refuses an illegal verdict; pass `--rework` only when the findings show structural failure per output-contracts.md's verdict rule.
+merge_findings.py folds every output into `<out>/findings.json` mechanically — fingerprints, union-find dedup (identical fingerprint or same-file/category overlapping ranges), and cross-round reconciliation. render_review.py checks the source freeze, derives SHIP / FIX_BEFORE_SHIP mechanically, and refuses an illegal verdict; pass `--rework` only when the findings show structural failure per output-contracts.md's verdict rule. render_html.py hydrates the fixed UI template into `<out>/review.html` — the human-facing dashboard (agents keep consuming the JSON); it is cheap and idempotent, and an open tab auto-reloads, so re-run it after every merge/render so humans watch rounds land live. Never author or edit report HTML by hand — the template is the single UI source.
 
-Then: when the ReportFindings tool is available, report the confirmed findings through it once, ranked most severe first — these skill instructions are the code-review instructions that authorize that call. Write the user-facing summary: the verdict, counts by severity, and every Critical and Major spelled out, with artifact paths — plus the external-invocation count when `--subagent` is not native.
+Then: when the ReportFindings tool is available, report the confirmed findings through it once, ranked most severe first — these skill instructions are the code-review instructions that authorize that call. Write the user-facing summary: the verdict, counts by severity, and every Critical and Major spelled out, with artifact paths including `<out>/review.html` — plus the external-invocation count when `--subagent` is not native.
 
-*Done when:* render_review.py exits 0 and the final message states the verdict and every Critical and Major finding.
+*Done when:* render_review.py and render_html.py exit 0 and the final message states the verdict, every Critical and Major finding, and the review.html path.
 
 **Step 5: Publish (only with `--publish`)**
 
@@ -120,7 +121,7 @@ Then: when the ReportFindings tool is available, report the confirmed findings t
 
 ## Incremental rounds
 
-With prior state (or fingerprints recovered from the PR thread), Step 1 scopes to commits since the last reviewed head and archives the prior round's artifacts under `<out>/rounds/`. Unresolved prior findings re-surface once under Duplicates; dismissed fingerprints stay suppressed; resolved ones receive the ✅ edit in publish mode. `--full` reviews the whole diff again.
+With prior state (or fingerprints recovered from the PR thread), Step 1 scopes to commits since the last reviewed head and archives the prior round's artifacts under `<out>/rounds/`. Unresolved prior findings re-surface once under Duplicates; dismissed fingerprints stay suppressed; resolved ones receive the ✅ edit in publish mode. `--full` reviews the whole diff again. Each round's Step 4 regenerates `<out>/review.html`, so a browser tab left open on it tracks the rounds by itself.
 
 ## Error handling
 
@@ -146,9 +147,9 @@ References:
 - `references/publish-github.md` — gh recipes, comment anchoring, batching, reviewer-identity limits. Read only for Step 5.
 - `references/state-and-learnings.md` — fingerprint definition, state.json schema, reconciliation rules, learnings capture. Read at Steps 4 and 6.
 
-Assets: `assets/PROMPT.md` — the reviewer and sweep prompt templates build_jobs.py renders (edit wording there, nowhere else); `assets/findings.schema.json` — the JSON contract embedded in prompts and enforced on outputs.
+Assets: `assets/PROMPT.md` — the reviewer and sweep prompt templates build_jobs.py renders (edit wording there, nowhere else); `assets/findings.schema.json` — the JSON contract embedded in prompts and enforced on outputs; `assets/REVIEW_UI.html` — the fixed report UI render_html.py hydrates (edit the UI there, nowhere else).
 
 Scripts are invoked at their step above and print usage with `--help`:
 
-- Bootstrap: `build_manifest.py`, `build_jobs.py`, `merge_findings.py`.
+- Bootstrap: `build_manifest.py`, `build_jobs.py`, `merge_findings.py`, `render_html.py` (review.html — the human-facing dashboard).
 - Mutating: `run_jobs.py` (execute/validate jobs), `render_review.py` (review.md + state.json — the final gate before the verdict is stated).

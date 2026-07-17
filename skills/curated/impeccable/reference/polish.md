@@ -2,6 +2,8 @@
 
 Perform a meticulous final pass to catch all the small details that separate good work from great work. The difference between shipped and polished.
 
+Detector and automated QA output are defect evidence only. A clean script result is never proof that the design is strong; gather browser evidence and inspect the real interaction path.
+
 ## Design System Discovery
 
 Aligning the feature to the design system is **not optional**. Polish without alignment is decoration on top of drift, and it makes the next person's job harder. Discovery comes before any other polish work.
@@ -33,7 +35,14 @@ Understand the current state and goals before touching anything:
    - Loading and transition smoothness
    - Information architecture and flow drift (does this feature reveal complexity the way neighboring features do?)
 
-4. **Triage cosmetic vs functional**: Classify each issue as **cosmetic** (looks off, doesn't impede the user) or **functional** (breaks, blocks, or confuses the experience). When polish time is tight, functional issues ship first; cosmetic ones can land in a follow-up. Quality should be consistent; never perfect one corner while leaving another rough.
+4. **Pull in any prior critique** (optional signal): If `$impeccable critique` has been run on the same target, its priority issues are a useful prior for what to address first. Resolve the target to a file path or URL, then:
+   ```bash
+   slug=$(node .agents/skills/impeccable/scripts/critique-storage.mjs slug "<resolved>")
+   node .agents/skills/impeccable/scripts/critique-storage.mjs latest "$slug"
+   ```
+   Exit 0 with body = found; fold the P0/P1 items into your polish list and mention the snapshot path so the user sees what you read. Exit 2 = no snapshot, continue without it. The critique is one input among many. Do your own pass either way.
+
+5. **Triage cosmetic vs functional**: Classify each issue as **cosmetic** (looks off, doesn't impede the user) or **functional** (breaks, blocks, or confuses the experience). When polish time is tight, functional issues ship first; cosmetic ones can land in a follow-up. Quality should be consistent; never perfect one corner while leaving another rough.
 
 **CRITICAL**: Polish is the last step, not the first. Don't polish work that's not functionally complete.
 
@@ -82,7 +91,6 @@ Visual polish on a misshapen flow is wasted work. Match the *shape* of the exper
 - **Theme consistency**: Works in all theme variants
 - **Color meaning**: Same colors mean same things throughout
 - **Accessible focus**: Focus indicators visible with sufficient contrast
-- **Tinted neutrals**: No pure gray or pure black; add subtle color tint (0.01 chroma)
 - **Gray on color**: Never put gray text on colored backgrounds; use a shade of that color or transparency
 
 ### Interaction States
@@ -216,11 +224,12 @@ Sweat the details. Zoom in until the alignment is right and the spacing reads as
 
 Before marking as done:
 
-- **Use it yourself**: Actually interact with the feature
-- **Test on real devices**: Not just browser DevTools
-- **Ask someone else to review**: Fresh eyes catch things
-- **Compare to design**: Match intended design
-- **Check all states**: Don't just test happy path
+- **Use it yourself**: Actually interact with the feature.
+- **Test on real devices**: Not just browser DevTools.
+- **Ask someone else to review**: Fresh eyes catch things.
+- **Compare to design**: Match intended design.
+- **Check all states**: Don't just test happy path.
+- **Treat automation carefully**: Run detector or QA commands when they are available and relevant, fix their defects, but never cite a clean result as proof that the work is polished.
 
 ## Clean Up
 
@@ -230,4 +239,3 @@ After polishing, ensure code quality:
 - **Remove orphaned code**: Delete unused styles, components, or files made obsolete by polish.
 - **Consolidate tokens**: If you introduced new values, check whether they should be tokens.
 - **Verify DRYness**: Look for duplication introduced during polishing and consolidate.
-

@@ -11,7 +11,7 @@ Every stage materializes **jobs** (`{label, kind, prompt, output}`, repo-relativ
 | Plan | `build_jobs.py` → prompts + `jobs.json` | — | `build_jobs.py` |
 | Review | — | `jobs.json` (cohorts + sweeps) | `run_jobs.py --validate-only` |
 | Merge | `merge_findings.py` → `findings.json` | — | `merge_findings.py` |
-| Report | `render_review.py` → review.md + state.json | — | `render_review.py` |
+| Report | `render_review.py` → review.md + state.json; `render_html.py` → review.html | — | `render_review.py` |
 
 Both job kinds (`cohort`, `sweep`) return `findings.schema.json` output. Field semantics the schema relies on: `hunk` = the manifest hunk the finding sits in (`"<side>:<start>-<end>"`), null for outside-diff findings; `rule_id` links a rule-derived finding to the registry; `evidence[]` records the reviewer's own verification, one `"command or file:line → what it showed"` entry per check.
 
