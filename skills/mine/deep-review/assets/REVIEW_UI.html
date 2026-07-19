@@ -773,10 +773,6 @@
     const end = f.end_line && f.end_line !== f.line ? `-${f.end_line}` : "";
     return `${f.file}:${f.line}${end}`;
   };
-  const isActionable = (f) =>
-    f.severity === "critical" || f.severity === "major" ||
-    (f.severity === "minor" && f.category === "potential-issue");
-
   /* ---------- tiny markdown renderer (escape-first) ---------- */
   function inlineMd(s) {
     let out = esc(s);
@@ -847,7 +843,7 @@
 
   /* ---------- persisted UI state ---------- */
   const LS_KEY = `deep-review:${DATA.target}`;
-  const defaults = { q: "", sev: [], cat: [], status: [], scope: [], qw: false, sort: "severity", theme: "system", refresh: true, open: {}, closed: {} };
+  const defaults = { q: "", sev: [], cat: [], kind: [], status: [], scope: [], qw: false, sort: "severity", theme: "system", refresh: true, open: {}, closed: {} };
   let ui = { ...defaults };
   try { ui = { ...defaults, ...JSON.parse(localStorage.getItem(LS_KEY) || "{}") }; } catch (_) {}
   const save = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(ui)); } catch (_) {} };
@@ -865,7 +861,7 @@
   /* ---------- derived data ---------- */
   const open = (DATA.findings || []).filter((f) => f.round_status === "new" || f.round_status === "duplicate");
   const openBySev = Object.fromEntries(SEV.map((s) => [s, open.filter((f) => f.severity === s).length]));
-  const nitpicks = open.filter((f) => !isActionable(f));
+  const advisories = open.filter((f) => f.result_kind === "advisory");
   const aiPrompts = open.filter((f) => f.ai_prompt);
   document.title = `Deep Review — ${DATA.target} · round ${DATA.round}`;
 
@@ -875,6 +871,7 @@
     return open.filter((f) => {
       if (ui.sev.length && !ui.sev.includes(f.severity)) return false;
       if (ui.cat.length && !ui.cat.includes(f.category)) return false;
+      if (ui.kind.length && !ui.kind.includes(f.result_kind)) return false;
       if (ui.status.length) {
         const st = f.round_status === "duplicate" ? "recurring" : "new";
         if (!ui.status.includes(st)) return false;
@@ -892,7 +889,7 @@
     });
   }
   const filtersActive = () =>
-    ui.q.trim() !== "" || ui.sev.length || ui.cat.length || ui.status.length || ui.scope.length || ui.qw;
+    ui.q.trim() !== "" || ui.sev.length || ui.cat.length || ui.kind.length || ui.status.length || ui.scope.length || ui.qw;
 
   /* ---------- render helpers ---------- */
   const sevDot = (s) => `<span class="dot" style="--d: var(--sev-${s})"></span>`;
@@ -910,7 +907,7 @@
       f.quick_win ? '<span class="flag qw">&#9889; quick win</span>' : "",
       f.round_status === "duplicate" ? `<span class="flag">recurring &middot; R${f.first_round ?? "?"}</span>` : "",
       !f.in_diff ? '<span class="flag">outside diff</span>' : "",
-      !isActionable(f) ? '<span class="flag">nitpick-level</span>' : "",
+      f.result_kind === "advisory" ? '<span class="flag">advisory · no verdict impact</span>' : "",
     ].join("");
     const rules = (f.rules || []).map((r) =>
       `<p class="kv"><span class="k">Guideline ${esc(r.id)}</span> (<code>${esc(r.source)}</code>): &ldquo;${esc(r.guideline)}&rdquo;</p>`).join("");
@@ -924,6 +921,7 @@
       ? `<div class="codebox"><div class="codebox-head"><span>&#129302; Prompt for AI agents</span>${copyBtn(f.ai_prompt, "Copy prompt")}</div><pre><code>${esc(f.ai_prompt)}</code></pre></div>` : "";
     const meta = [
       `<span>${esc(CAT_LABEL[f.category] || f.category)}</span>`,
+      `<span>${esc(f.result_kind || "defect")}</span>`,
       `<span>fingerprint <span class="mono">${esc(fp)}</span></span>`,
       f.source_jobs?.length ? `<span>reported by ${f.source_jobs.map(esc).join(", ")}</span>` : "",
       f.hunk ? `<span>hunk <span class="mono">${esc(f.hunk)}</span></span>` : "",
@@ -989,7 +987,7 @@
           ${pr}
           <span><span class="mono">${esc(shortSha(DATA.base))}&hellip;${esc(shortSha(DATA.head))}</span></span>
           <span>${c.selected ?? 0} files reviewed &middot; ${c.ignored ?? 0} ignored &middot; ${c.skipped ?? 0} skipped</span>
-          <span>profile ${esc(DATA.profile || "chill")}</span>
+          <span>assertive review</span>
         </div>
       </div>
     </section>`;
@@ -1009,9 +1007,9 @@
         <span class="t-value">${res}</span>
         <span class="t-sub">since last round</span>
       </div>
-      <div class="tile static ${nitpicks.length ? "" : "is-zero"}">
-        <span class="t-label"><span class="dot"></span>Nitpick-level</span>
-        <span class="t-value">${nitpicks.length}</span>
+      <div class="tile static ${advisories.length ? "" : "is-zero"}">
+        <span class="t-label"><span class="dot"></span>Advisories</span>
+        <span class="t-value">${advisories.length}</span>
         <span class="t-sub">of ${open.length} open</span>
       </div>
     </div>`;
@@ -1023,6 +1021,7 @@
 
   function toolbarHtml() {
     const catCounts = Object.fromEntries(["potential-issue", "refactor", "nitpick"].map((c) => [c, open.filter((f) => f.category === c).length]));
+    const kindCounts = Object.fromEntries(["defect", "advisory"].map((kind) => [kind, open.filter((f) => f.result_kind === kind).length]));
     const recurring = open.filter((f) => f.round_status === "duplicate").length;
     const outside = open.filter((f) => !f.in_diff).length;
     const qwCount = open.filter((f) => f.quick_win).length;
@@ -1032,6 +1031,9 @@
         <input id="q" type="search" placeholder="Filter findings… ( / )" value="${esc(ui.q)}" aria-label="Filter findings">
         <button type="button" class="clear-q" aria-label="Clear search">${ICONS.x}</button>
       </div>
+      ${chip("kind", "defect", "Defects", kindCounts.defect, ui.kind.includes("defect"))}
+      ${chip("kind", "advisory", "Advisories", kindCounts.advisory, ui.kind.includes("advisory"))}
+      <span class="sep"></span>
       ${chip("cat", "potential-issue", "Issues", catCounts["potential-issue"], ui.cat.includes("potential-issue"))}
       ${chip("cat", "refactor", "Refactors", catCounts.refactor, ui.cat.includes("refactor"))}
       ${chip("cat", "nitpick", "Nitpicks", catCounts.nitpick, ui.cat.includes("nitpick"))}
@@ -1063,7 +1065,10 @@
     } else if (!vis.length) {
       body = `<div class="empty"><span class="e-icon">${ICONS.search}</span><h3>No findings match</h3><p><button type="button" class="link-btn" id="clear-filters-empty">Clear filters</button> to see all ${open.length} open findings.</p></div>`;
     } else {
-      body = fileGroups(vis);
+      const defects = vis.filter((f) => f.result_kind === "defect");
+      const advice = vis.filter((f) => f.result_kind === "advisory");
+      body = `${defects.length ? `<section class="section"><h3>Defects <span class="n">${defects.length}</span></h3>${fileGroups(defects)}</section>` : ""}
+        ${advice.length ? `<section class="section"><h3>Advisories <span class="n">${advice.length}</span></h3><p class="hint">Actionable polish and project-rule guidance; excluded from the verdict.</p>${fileGroups(advice)}</section>` : ""}`;
     }
     const line = open.length
       ? `<div class="result-line"><span>Showing ${vis.length} of ${open.length} open findings</span>${active ? `<button type="button" class="link-btn" id="clear-filters">Clear filters</button>` : ""}
@@ -1083,6 +1088,18 @@
 
   function secondaryHtml() {
     const parts = [];
+    const stats = DATA.review_stats || {};
+    const coverage = stats.coverage || {};
+    const laneCoverage = coverage.lanes || {};
+    parts.push(`<section class="section"><h3>Review observability</h3>
+      <p class="hint">${stats.candidates ?? 0} candidates investigated · ${stats.reported ?? 0} reported before deduplication · ${stats.suppressed ?? 0} suppressions recorded.</p>
+      <p class="hint">${coverage.selected_hunk_lines ?? 0} selected hunk lines · defect coverage ${laneCoverage.defect?.complete ? "complete" : "incomplete"} · polish coverage ${laneCoverage.polish?.complete ? "complete" : "incomplete"}.</p>
+    </section>`);
+    const suppressions = DATA.suppressions || [];
+    if (suppressions.length) {
+      parts.push(`<section class="section"><details class="muted-details"><summary><span class="chev">${ICONS.chev}</span>Suppressed candidates <span class="n">${suppressions.length}</span></summary>
+        <ul class="plain-list" style="margin-top:8px">${suppressions.map((row) => listItem(ICONS.dismiss, "var(--ink-3)", `${row.candidate} — ${row.reason}`, row.file, row.line, row.source_job)).join("")}</ul></details></section>`);
+    }
     const unrev = DATA.unreviewed_open || [];
     if (unrev.length) {
       parts.push(`<section class="section"><h3>Still open — not re-reviewed <span class="n">${unrev.length}</span></h3>
@@ -1108,7 +1125,7 @@
     const nodes = rounds.map((r, i) => {
       const v = VERDICT[r.verdict] || VERDICT.PENDING;
       const stats = r.stats
-        ? `<div class="r-stats">${r.stats.open ?? "?"} open &middot; ${r.stats.critical ?? 0}&#8202;C ${r.stats.major ?? 0}&#8202;M</div>` : "";
+        ? `<div class="r-stats">${r.stats.open ?? "?"} open &middot; ${r.stats.critical ?? 0}&#8202;C ${r.stats.major ?? 0}&#8202;M &middot; ${r.stats.advisories ?? 0} advisories</div>` : "";
       return `${i ? '<span class="round-link" aria-hidden="true"></span>' : ""}
         <div class="round-node ${r.current ? "current" : ""}">
           <div class="round-card" style="--rv-text:${v.text}">
@@ -1228,7 +1245,7 @@
       save(); render(); return;
     }
     if (e.target.closest("#clear-filters") || e.target.closest("#clear-filters-empty")) {
-      Object.assign(ui, { q: "", sev: [], cat: [], status: [], scope: [], qw: false });
+      Object.assign(ui, { q: "", sev: [], cat: [], kind: [], status: [], scope: [], qw: false });
       save(); render(); return;
     }
     const tog = e.target.closest("[data-toggle-all]");

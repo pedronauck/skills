@@ -1,77 +1,70 @@
-# Finding Taxonomy
+# Review Taxonomy
 
-The grammar every finding carries, the gates that decide what gets reported, and the suppression rules that keep the review high-signal. Reviewer and sweep prompts embed this file.
+The grammar for defects, advisories, evidence, and objective suppressions. Every review uses one assertive posture: report every specific, actionable survivor regardless of size.
 
-## Badge grammar
+## Result classes
 
-Every finding renders a badge line of italic, pipe-separated segments — category, severity, then the optional effort modifier:
+| Class | Categories | Verdict impact | Decision rule |
+| --- | --- | --- | --- |
+| **Defect** | `⚠️ Potential issue` | Critical/Major block SHIP | The change can produce a wrong result, crash, leak, vulnerability, broken contract, or failing-capable test gap under a concrete input/state. |
+| **Advisory** | `🛠️ Refactor suggestion`, `🧹 Nitpick` | Never | The code can remain functional, but a bounded change measurably improves maintainability, simplicity, clarity, naming, documentation, idiom, or conformance with a project rule/skill. |
 
-```
-_⚠️ Potential issue_ | _🟠 Major_ | _⚡ Quick win_
-```
-
-## Categories
-
-| Badge | Meaning | Decision rule |
-| --- | --- | --- |
-| `⚠️ Potential issue` | Correctness, security, data loss, races, resource leaks, broken contracts | The code can produce a wrong result, crash, leak, or vulnerability under a concrete input/state. Name that failure mode. |
-| `🛠️ Refactor suggestion` | Design or maintainability improvement, not a bug | The code works but a specific structural change measurably improves it (dedup, decompose, correct layer). |
-| `🧹 Nitpick` | Clarity, naming, docs, small idiom | Cheap to fix, low stakes. Never rendered inline — collapsed in the report/review body. |
+There is no advisory quota. A small advisory is valid when the premise is observed, the benefit is specific, and the fix is bounded. Formatter-owned style and vague preferences are suppressions, not advisories.
 
 ## Severity
 
-| Badge | Bar | Examples |
+| Badge | Class | Bar |
 | --- | --- | --- |
-| `🔴 Critical` | Production incident or data/security compromise on a plausible path | auth bypass, injection, cross-tenant leak, data loss, crash on hot path, unbounded resource growth |
-| `🟠 Major` | Wrong behavior, user-visible degradation, or a bug awaiting its trigger | logic error, swallowed error on a critical path, missing rollback, race under concurrency, O(n²) on unbounded input, API contract drift |
-| `🟡 Minor` | Real defect with narrow blast radius, or a gap that erodes safety | unhandled edge case, missing validation on an internal boundary, test that cannot fail, misleading error message |
-| `🔵 Trivial` | Correct but improvable | naming, small dedup, doc gap, idiom |
+| `🔴 Critical` | defect | Plausible production incident, data loss, or security compromise. |
+| `🟠 Major` | defect | Wrong behavior, user-visible degradation, unsafe rollout, or a bug awaiting a realistic trigger. |
+| `🟡 Minor` | defect or advisory | Narrow real defect, safety erosion, or a meaningful non-local maintainability improvement. |
+| `🔵 Trivial` | advisory | Cheap clarity, naming, documentation, small deduplication, or idiom improvement. |
 
-Severity measures **impact if unfixed**, not confidence and not effort. When torn between two levels, pick the lower one — inflated severity is how reviews lose trust.
+Severity measures impact if unfixed, not confidence or effort. Choose the lower level when between two levels.
 
 ## Effort modifier
 
-`⚡ Quick win` — the suggested fix is local and mechanical (≤ ~15 lines, one site). `🏗️ Heavy lift` — the fix spans files or needs design. Omit when neither clearly applies.
+`⚡ Quick win` means the fix is local and mechanical (roughly ≤15 lines at one site). A larger advisory remains reportable; effort never suppresses it.
 
 ## Source attribution
 
-Every finding names what produced it, one or more of: `guideline` (a rubric rule — cite its registry id and quote it verbatim with its source path), `learning` (an entry from learnings.md), `linter` (folded tool output that needed interpretation), `verification` (a command run against the checkout — include the command and result), `review` (reviewer reasoning over the code itself).
+Every result names what produced it through evidence and optional rule ids: repository rule/skill, learning, linter interpretation, verification command, or direct code review. Quote bound rules verbatim through their registry ids and source paths.
 
-## Evidence certificate
+## Evidence certificates
 
-Every finding's first `evidence[]` entry is a checkout-grounded certificate:
+Defects start with a causal certificate:
 
+```text
+Premise: <observed fact at file:line> → Path: <named caller/input/control flow> → Verdict: <resulting failure>
 ```
-Premise: <observed fact at file:line> → Path: <named caller/input/control flow> → Verdict: <resulting failure or measurable improvement>
+
+Advisories start with an improvement certificate:
+
+```text
+Premise: <observed fact at file:line> → Improvement: <specific measurable benefit> → Fix: <bounded change>
 ```
 
-The premise names code actually read, the path connects the diff to a concrete input or state, and the verdict states the resulting behavior. Later entries record the commands and file reads that tried to refute the certificate. A certificate such as `looks wrong → may fail → bug` is not evidence.
+Later evidence entries record one `command or file:line → what it showed` check each. Advisories do not invent a runtime failure to clear the defect evidence bar.
 
-## Profile gates
+## Outside-diff results
 
-| | `chill` (default) | `assertive` |
-| --- | --- | --- |
-| Critical / Major | reported | reported |
-| Minor | reported when category is `⚠️ Potential issue`; otherwise folded into nitpicks | reported |
-| Trivial | dropped | reported as nitpick |
-| Nitpicks | only ⚡ Quick wins, collapsed | all, collapsed |
+A result on untouched lines is allowed only when the diff breaks that code or when a sibling path must mirror the changed invariant. Mark it `in_diff: false` and `hunk: null`; it belongs in the summary rather than an inline comment.
 
-## Outside-diff findings
+## Objective suppressions
 
-A finding on lines the diff did not touch is allowed only when: (a) the diff breaks that code (changed contract, renamed symbol, altered invariant), or (b) the code is a sibling path that should mirror a fix the diff makes elsewhere. Anything else on untouched code is pre-existing debt — out of scope. Mark these findings `in_diff: false`; they render in their own section, never as inline PR comments.
+When an investigated candidate is rejected, record it in `suppressions` with one of these reasons and a concrete note:
 
-## Suppression rules
+1. `linter-overlap` — a linter/typechecker lane already reports it.
+2. `intentional` — an adjacent justified disable, ADR, comment, or behavior-locking test proves intent.
+3. `generated-vendored` — the manifest excludes ownership of generated/vendor code.
+4. `formatting` — a configured formatter owns the proposed change.
+5. `speculative` — a defect claim has no concrete failure path and no valid advisory premise.
+6. `pre-existing` — untouched debt satisfies neither outside-diff clause.
+7. `phantom-knowledge` — the claim depends on uninspected code or an irrelevant framework generality.
+8. `duplicate-within-job` — the candidate is represented by another result and its anchor appears under `also_applies`.
 
-Drop the finding before recording it when any of these hold:
-
-1. **Linter overlap** — a linter/typechecker lane that ran in the context pack already reports it.
-2. **Intentional** — an adjacent comment, `nolint`/`eslint-disable` with justification, ADR, or a test asserting the behavior shows the pattern is deliberate.
-3. **Generated or vendored** — the manifest ignored the file; findings there are void.
-4. **Formatting** — whitespace, import order, or style a formatter owns.
-5. **Speculative** — the claim has no concrete failure mode ("could be fragile", "might be slow"). Either produce the failing scenario or let it go.
-6. **Pre-existing** — outside the diff and matching neither outside-diff clause above.
-7. **Phantom knowledge** — the certificate depends on code that was not inspected, or a true framework fact does not cause the claimed result in this diff. Trace the repository path that connects premise to verdict or drop it (for example: SMTP commonly times out is irrelevant when this caller bounds the operation; environment parsing is risky in general but not when this value is validated before use).
+Profile, volume, low severity, and personal taste are not suppression reasons.
 
 ## Volume discipline
 
-No numeric cap — the gates above are the cap. **Find broadly, refute, report narrowly:** each reported finding must survive an active attempt to disprove its certificate, carry a concrete failure mode (or measurable improvement), clear every suppression, and receive severity only afterward. One root cause = one finding; search for every occurrence, report the representative instance, and list all others under `also_applies`.
+There is no numeric cap. Find broadly, refute actively, report every survivor, and account for every investigated rejection. One root cause becomes one result; search every occurrence and list the rest under `also_applies`.

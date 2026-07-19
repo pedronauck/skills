@@ -5,7 +5,7 @@ Reads the repo (and gh for --pr), writes only under --out. Produces
 manifest.json accounting for EVERY changed file as selected / ignored / skipped
 / carried, applying the funnel: path filters -> binary -> generated ->
 pure-rename -> whitespace-only -> incremental delta scoping. Also resolves the
-repo review profile (.deep-review.yaml, else .coderabbit.yaml), records the
+repo path filters (.deep-review.yaml, else .coderabbit.yaml), records the
 per-round diff_command, and pins the source-freeze baseline
 (worktree_snapshot) that run_jobs.py / render_review.py enforce.
 
@@ -102,27 +102,6 @@ def load_filters(repo_root: Path):
         if parsed is not None:
             return parsed + DEFAULT_FILTERS, name
     return list(DEFAULT_FILTERS), "built-ins"
-
-
-def parse_profile(config_path: Path):
-    """YAML-lite: `profile:` scalar at indent <= 2 (skips text embedded in literal blocks)."""
-    if not config_path.is_file():
-        return None
-    for line in config_path.read_text(encoding="utf-8", errors="replace").splitlines():
-        if len(line) - len(line.lstrip()) > 2:
-            continue
-        m = re.match(r"^profile\s*:\s*[\"']?(chill|assertive)[\"']?\s*$", line.strip())
-        if m:
-            return m.group(1)
-    return None
-
-
-def resolve_profile(repo_root: Path):
-    for name in CONFIG_NAMES:
-        profile = parse_profile(repo_root / name)
-        if profile:
-            return profile, name
-    return None, None
 
 
 def resolve_default_base(repo_root: Path) -> str:
@@ -308,7 +287,6 @@ def main():
             diff_command = f"git diff {base[:12]}..{head[:12]} -- <file>"
 
     filters, filter_source = load_filters(repo_root)
-    profile, profile_source = resolve_profile(repo_root)
     excludes = [(p, glob_to_regex(p[1:])) for p in filters if p.startswith("!")]
     includes = [(p, glob_to_regex(p)) for p in filters if not p.startswith("!")]
 
@@ -383,7 +361,7 @@ def main():
         "target": target, "mode": "staged" if args.staged else mode, "round": round_n,
         "base": base, "effective_base": effective_base, "head": head,
         "diff_command": diff_command, "worktree_snapshot": snapshot,
-        "filter_source": filter_source, "profile": profile, "counts": counts, "files": files,
+        "filter_source": filter_source, "counts": counts, "files": files,
     }
     if pr_meta:
         manifest["pr"] = {"number": args.pr, "title": pr_meta["title"], "url": pr_meta["url"]}
@@ -396,8 +374,7 @@ def main():
     print(f"files: {total} changed -> {counts['selected']} selected, {counts['ignored']} ignored, "
           f"{counts['skipped']} skipped, {counts['carried']} carried (filters: {filter_source})")
     print(f"freeze: worktree_snapshot={snapshot[:12]} (run_jobs.py and render_review.py enforce it)")
-    print(f"profile: {profile} (from {profile_source})" if profile
-          else "profile: unset (skill defaults to chill)")
+    print("review posture: assertive (single mode)")
     if counts["selected"] == 0:
         print("nothing selected — review has no reviewable surface")
 

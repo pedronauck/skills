@@ -2,8 +2,9 @@
 """Deep-review HTML report generator (bootstrap helper; writes only under --out).
 
 Hydrates assets/REVIEW_UI.html — the fixed, self-contained report UI — with the
-round's artifacts: findings.json + manifest.json (required), plus state.json,
-walkthrough.md, rules.json, review.md and archived rounds when present. Emits
+round's artifacts: defects/advisories/suppressions/coverage from findings.json
+and manifest.json (required), plus state.json, walkthrough.md, rules.json,
+review.md and archived rounds when present. Emits
 <out>/review.html, the human-facing view of the review; agents keep consuming
 the JSON artifacts. Cheap and idempotent — re-run it after merge_findings.py
 and after render_review.py so the open dashboard (which auto-reloads) always
@@ -42,7 +43,7 @@ def read_optional_text(path: Path) -> str | None:
 
 def ai_prompt(finding: dict) -> str | None:
     """The same prompt render_review.py embeds in review.md, as copyable text."""
-    if finding["severity"] not in {"critical", "major"}:
+    if finding.get("result_kind") != "defect" or finding["severity"] not in {"critical", "major"}:
         return None
     suggestion = one_line(finding.get("suggestion") or "")
     remediation = suggestion or (
@@ -75,13 +76,15 @@ def round_stats(ledger: dict | None) -> dict | None:
     if not ledger:
         return None
     open_findings = [
-        f for f in ledger.get("findings", [])
+        f for f in [*ledger.get("findings", []), *ledger.get("advisories", [])]
         if f.get("round_status") in {"new", "duplicate"}
     ]
+    defects = [f for f in open_findings if f.get("result_kind") == "defect"]
     return {
         "open": len(open_findings),
-        "critical": sum(1 for f in open_findings if f["severity"] == "critical"),
-        "major": sum(1 for f in open_findings if f["severity"] == "major"),
+        "critical": sum(1 for f in defects if f["severity"] == "critical"),
+        "major": sum(1 for f in defects if f["severity"] == "major"),
+        "advisories": sum(1 for f in open_findings if f.get("result_kind") == "advisory"),
     }
 
 
@@ -144,7 +147,7 @@ def build_payload(repo: Path, out: Path) -> dict:
     verdict, rationale = verdict_for(state, manifest["round"], review_md)
 
     findings = []
-    for finding in ledger.get("findings", []):
+    for finding in [*ledger.get("findings", []), *ledger.get("advisories", [])]:
         resolved_rules = [
             {"id": rid, "source": rules_by_id[rid]["source"],
              "guideline": rules_by_id[rid]["guideline"]}
@@ -154,12 +157,11 @@ def build_payload(repo: Path, out: Path) -> dict:
 
     reconciliation = ledger.get("reconciliation", {})
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "target": manifest["target"],
         "pr": manifest.get("pr"),
         "mode": manifest.get("mode"),
-        "profile": manifest.get("profile"),
         "round": manifest["round"],
         "base": manifest.get("base"),
         "head": manifest.get("head"),
@@ -169,6 +171,9 @@ def build_payload(repo: Path, out: Path) -> dict:
         "verdict_rationale": rationale,
         "summary": ledger.get("summary", {}),
         "findings": findings,
+        "suppressions": ledger.get("suppressions", []),
+        "coverage": ledger.get("coverage", {}),
+        "review_stats": ledger.get("review_stats", {}),
         "resolved": ledger_rows(state, reconciliation.get("resolved", [])),
         "unreviewed_open": ledger_rows(state, reconciliation.get("still_open_unreviewed", [])),
         "dismissed": dismissed_rows(state),
@@ -212,10 +217,12 @@ def main() -> int:
 
     open_findings = [f for f in payload["findings"]
                      if f.get("round_status") in {"new", "duplicate"}]
+    defects = [f for f in open_findings if f.get("result_kind") == "defect"]
+    advisories = [f for f in open_findings if f.get("result_kind") == "advisory"]
     severities = {s: sum(1 for f in open_findings if f["severity"] == s)
                   for s in ("critical", "major", "minor", "trivial")}
     print(f"report -> {out / 'review.html'}")
-    print(f"verdict={payload['verdict']} open={len(open_findings)} "
+    print(f"verdict={payload['verdict']} defects={len(defects)} advisories={len(advisories)} "
           f"(critical={severities['critical']} major={severities['major']} "
           f"minor={severities['minor']} trivial={severities['trivial']}) "
           f"resolved={len(payload['resolved'])} rounds={len(payload['rounds'])}")

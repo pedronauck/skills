@@ -10,8 +10,8 @@ contract every execution engine runs.
 Prompt consistency is enforced here: the build fails when a template lost a
 mandatory placeholder or a rendered prompt still carries an unfilled one.
 
-Requires in <out>: manifest.json (build_manifest.py), context-pack.md and
-rules.json (orchestrator-authored), plan.json (orchestrator-authored).
+Requires in <out>: manifest.json and knowledge.json (bootstrap-authored),
+context-pack.md, rules.json, and plan.json (orchestrator-authored).
 Exit codes: 0 ok, 1 validation failure or missing artifact.
 """
 
@@ -41,14 +41,18 @@ from _common import (
 
 DEFAULT_MAX_COHORT_FILES = 100
 MAX_COHORT_CHANGED_LINES = 6000
+DEFAULT_MAX_POLISH_FILES = 20
+MAX_POLISH_CHANGED_LINES = 1200
 
 REVIEWER_PLACEHOLDERS = {
     "cohort_name", "risk", "target", "file_list", "scope_instruction", "context",
     "taxonomy", "rules_block", "diff_command", "base", "output", "schema",
+    "lane_instruction", "coverage_contract",
 }
 SWEEP_PLACEHOLDERS = {
     "sweep_key", "lens", "target", "context", "manifest", "taxonomy",
-    "diff_command", "spec_extra", "output", "schema",
+    "diff_command", "spec_extra", "output", "schema", "rules_block",
+    "coverage_contract",
 }
 
 DEFAULT_LENSES = {
@@ -140,8 +144,34 @@ def canonical_hunk(hunk: dict) -> tuple[int, int, str]:
     return int(hunk["start"]), int(hunk["lines"]), str(hunk.get("side", "new"))
 
 
-def validate_rules(rules: list[dict]) -> list[str]:
+def validate_registry(registry: dict, knowledge: dict, selected: dict[str, dict]) -> list[str]:
     errors = []
+    rules = registry.get("rules", [])
+    if sorted(knowledge.get("selected_paths", [])) != sorted(selected):
+        errors.append("knowledge.json: selected paths are stale; rerun build_knowledge.py")
+    expected_sources = {source["path"]: source for source in knowledge.get("sources", [])}
+    rows = registry.get("sources")
+    if not isinstance(rows, list):
+        return ["rules.json: sources must account for every knowledge.json source"]
+    actual_sources = [row.get("source") for row in rows]
+    if len(actual_sources) != len(set(actual_sources)):
+        errors.append("rules.json: duplicate source accounting rows")
+    missing = set(expected_sources) - set(actual_sources)
+    extra = set(actual_sources) - set(expected_sources)
+    if missing or extra:
+        errors.append(
+            f"rules.json: source accounting mismatch missing={sorted(missing)[:8]} "
+            f"extra={sorted(extra)[:8]}"
+        )
+    applied_sources = set()
+    for row in rows:
+        source, status = row.get("source"), row.get("status")
+        if status not in {"applied", "not-applicable"}:
+            errors.append(f"rules.json: source {source!r} status must be applied|not-applicable")
+        if not str(row.get("reason", "")).strip():
+            errors.append(f"rules.json: source {source!r} needs a concrete reason")
+        if status == "applied":
+            applied_sources.add(source)
     ids = [rule.get("id") for rule in rules]
     if len(ids) != len(set(ids)):
         errors.append("rules.json: duplicate rule ids")
@@ -151,6 +181,17 @@ def validate_rules(rules: list[dict]) -> list[str]:
         scope = rule.get("scope")
         if not isinstance(scope, list) or not scope:
             errors.append(f"rules.json: rule {rule.get('id')!r} needs a scope glob list")
+            continue
+        if rule.get("source") not in applied_sources:
+            errors.append(
+                f"rules.json: rule {rule.get('id')!r} cites source {rule.get('source')!r} "
+                "that is not marked applied"
+            )
+        regexes = [glob_to_regex(str(glob)) for glob in scope]
+        if not any(rx.match(path) for rx in regexes for path in selected):
+            errors.append(
+                f"rules.json: rule {rule.get('id')!r} scope matches no selected path"
+            )
     return errors
 
 
@@ -279,7 +320,10 @@ def rules_block(rules: list[dict], files: list[str]) -> tuple[str, int]:
 def file_list_block(cohort: dict, selected: dict[str, dict]) -> str:
     return "\n".join(
         f"- `{path}` status={selected[path]['status']} hunks="
-        + ", ".join(hunk_text(h) for h in selected[path]["hunks"])
+        + ", ".join(
+            hunk_text(h)
+            for h in (cohort.get("hunk_scope", {}).get(path) or selected[path]["hunks"])
+        )
         for path in cohort["files"]
     )
 
@@ -292,6 +336,91 @@ def scope_instruction(cohort: dict) -> str:
             f"freely, report inside them: `{json.dumps(scope, separators=(',', ':'))}`."
         )
     return "Judge every manifest hunk of every listed file."
+
+
+def owned_hunks(cohort: dict, selected: dict[str, dict]) -> list[dict]:
+    scope = cohort.get("hunk_scope") or {}
+    return [
+        {"file": path, "hunk": hunk_text(hunk)}
+        for path in cohort["files"]
+        for hunk in (scope.get(path) or selected[path]["hunks"])
+    ]
+
+
+def split_hunk(hunk: dict, limit: int) -> list[dict]:
+    start, remaining = int(hunk["start"]), int(hunk["lines"])
+    side, chunks = str(hunk.get("side", "new")), []
+    while remaining:
+        size = min(limit, remaining)
+        chunks.append({"start": start, "lines": size, "side": side})
+        start += size
+        remaining -= size
+    return chunks
+
+
+def polish_cohorts(
+    cohorts: list[dict], selected: dict[str, dict], max_files: int, max_lines: int
+) -> list[dict]:
+    """Create a second, smaller ownership partition for the polish lane."""
+    result: list[dict] = []
+    for cohort in cohorts:
+        units: list[tuple[str, list[dict]]] = []
+        source_scope = cohort.get("hunk_scope") or {}
+        for path in cohort["files"]:
+            hunks = source_scope.get(path) or selected[path]["hunks"]
+            expanded = [piece for hunk in hunks for piece in split_hunk(hunk, max_lines)]
+            current: list[dict] = []
+            current_lines = 0
+            for hunk in expanded:
+                lines = int(hunk["lines"])
+                if current and current_lines + lines > max_lines:
+                    units.append((path, current))
+                    current, current_lines = [], 0
+                current.append(hunk)
+                current_lines += lines
+            if current or not expanded:
+                units.append((path, current))
+
+        batch: dict[str, list[dict]] = {}
+        batch_lines = 0
+
+        def flush() -> None:
+            nonlocal batch, batch_lines
+            if not batch:
+                return
+            index = len([item for item in result if item["parent_id"] == cohort["id"]]) + 1
+            result.append({
+                "id": f"{cohort['id']}-p{index:02d}",
+                "parent_id": cohort["id"],
+                "name": f"{cohort['name']} — polish {index}",
+                "risk": cohort["risk"],
+                "files": list(batch),
+                "hunk_scope": {path: hunks for path, hunks in batch.items()},
+            })
+            batch, batch_lines = {}, 0
+
+        for path, hunks in units:
+            unit_lines = sum(int(hunk["lines"]) for hunk in hunks)
+            adds_file = path not in batch
+            if batch and (
+                batch_lines + unit_lines > max_lines
+                or (adds_file and len(batch) >= max_files)
+                or path in batch
+            ):
+                flush()
+            batch[path] = hunks
+            batch_lines += unit_lines
+        flush()
+    return result
+
+
+def coverage_contract(required_hunks: list[dict], rule_ids: list[str], check: str) -> str:
+    return (
+        "HUNK COVERAGE (one exact row per assignment; include check "
+        f"`{check}`): `{json.dumps(required_hunks, separators=(',', ':'))}`\n"
+        "RULE COVERAGE (one exact row per id, even when compliant or not applicable): "
+        f"`{json.dumps(rule_ids, separators=(',', ':'))}`"
+    )
 
 
 def main() -> int:
@@ -310,13 +439,17 @@ def main() -> int:
     try:
         manifest = read_json(out / "manifest.json")
         plan = read_json(out / "plan.json")
-        rules = read_json(out / "rules.json")["rules"]
+        registry = read_json(out / "rules.json")
+        knowledge = read_json(out / "knowledge.json")
+        rules = registry.get("rules")
+        if not isinstance(rules, list):
+            raise RuntimeError("rules.json: rules must be an array")
         context_pack = (out / "context-pack.md").read_text(encoding="utf-8")
         if "diff_command" not in manifest:
             raise RuntimeError("manifest.json lacks diff_command — rebuild it with the current build_manifest.py")
 
         selected = manifest_selected(manifest)
-        errors = validate_rules(rules) + validate_cohorts(
+        errors = validate_registry(registry, knowledge, selected) + validate_cohorts(
             plan["cohorts"], selected, args.max_cohort_files
         )
         if errors:
@@ -342,7 +475,10 @@ def main() -> int:
         for cohort in plan["cohorts"]:
             label = f"cohort-{cohort['id'].lower()}"
             output = out / "agents" / f"{label}.json"
+            bound_rules = cohort_rules(rules, cohort["files"])
             block, bound = rules_block(rules, cohort["files"])
+            rule_ids = [rule["id"] for rule in bound_rules]
+            required_hunks = owned_hunks(cohort, selected)
             bound_counts.append(bound)
             prompt = render_template("reviewer", reviewer_template, REVIEWER_PLACEHOLDERS, {
                 **shared,
@@ -353,13 +489,63 @@ def main() -> int:
                 "rules_block": block,
                 "base": manifest["base"],
                 "output": rel(output, repo),
+                "lane_instruction": (
+                    "DEFECT LANE: report only concrete correctness, security, data, contract, "
+                    "reliability, or failing-capable test defects. Put survivors in `defects`; "
+                    "leave `advisories` empty."
+                ),
+                "coverage_contract": coverage_contract(required_hunks, rule_ids, "defect"),
             })
             (prompts_dir / f"{label}.md").write_text(prompt, encoding="utf-8")
-            jobs.append({"label": label, "kind": "cohort",
-                         "prompt": rel(prompts_dir / f"{label}.md", repo), "output": rel(output, repo)})
+            jobs.append({
+                "label": label, "kind": "cohort", "lane": "defect",
+                "coverage_check": "defect", "required_hunks": required_hunks,
+                "rule_ids": rule_ids,
+                "prompt": rel(prompts_dir / f"{label}.md", repo),
+                "output": rel(output, repo),
+            })
+
+        polish = polish_cohorts(
+            plan["cohorts"], selected, DEFAULT_MAX_POLISH_FILES, MAX_POLISH_CHANGED_LINES
+        )
+        for cohort in polish:
+            label = f"polish-{cohort['id'].lower()}"
+            output = out / "agents" / f"{label}.json"
+            bound_rules = cohort_rules(rules, cohort["files"])
+            block, bound = rules_block(rules, cohort["files"])
+            rule_ids = [rule["id"] for rule in bound_rules]
+            required_hunks = owned_hunks(cohort, selected)
+            bound_counts.append(bound)
+            prompt = render_template("reviewer", reviewer_template, REVIEWER_PLACEHOLDERS, {
+                **shared,
+                "cohort_name": cohort["name"],
+                "risk": cohort["risk"],
+                "file_list": file_list_block(cohort, selected),
+                "scope_instruction": scope_instruction(cohort),
+                "rules_block": block,
+                "base": manifest["base"],
+                "output": rel(output, repo),
+                "lane_instruction": (
+                    "POLISH LANE: report every specific, actionable maintainability, simplification, "
+                    "clarity, naming, documentation, idiom, and project-rule improvement. A runtime "
+                    "failure is not required. Put survivors in `advisories`; leave `defects` empty."
+                ),
+                "coverage_contract": coverage_contract(required_hunks, rule_ids, "polish"),
+            })
+            (prompts_dir / f"{label}.md").write_text(prompt, encoding="utf-8")
+            jobs.append({
+                "label": label, "kind": "polish", "lane": "polish",
+                "coverage_check": "polish", "required_hunks": required_hunks,
+                "rule_ids": rule_ids,
+                "prompt": rel(prompts_dir / f"{label}.md", repo),
+                "output": rel(output, repo),
+            })
         for sweep in sweeps:
             label = f"sweep-{sweep['key']}"
             output = out / "agents" / f"{label}.json"
+            bound_rules = cohort_rules(rules, list(selected))
+            block, _ = rules_block(rules, list(selected))
+            rule_ids = [rule["id"] for rule in bound_rules]
             prompt = render_template("sweep", sweep_template, SWEEP_PLACEHOLDERS, {
                 **shared,
                 "sweep_key": sweep["key"],
@@ -367,10 +553,17 @@ def main() -> int:
                 "manifest": rel(out / "manifest.json", repo),
                 "spec_extra": SPEC_EXTRA if sweep["key"] == "spec-parity" else "",
                 "output": rel(output, repo),
+                "rules_block": block,
+                "coverage_contract": coverage_contract([], rule_ids, f"sweep:{sweep['key']}"),
             })
             (prompts_dir / f"{label}.md").write_text(prompt, encoding="utf-8")
-            jobs.append({"label": label, "kind": "sweep",
-                         "prompt": rel(prompts_dir / f"{label}.md", repo), "output": rel(output, repo)})
+            jobs.append({
+                "label": label, "kind": "sweep", "lane": "sweep",
+                "coverage_check": f"sweep:{sweep['key']}", "required_hunks": [],
+                "rule_ids": rule_ids,
+                "prompt": rel(prompts_dir / f"{label}.md", repo),
+                "output": rel(output, repo),
+            })
         write_json(out / "jobs.json", {"jobs": jobs})
     except RuntimeError as error:
         sys.stderr.write(f"{error}\n")
@@ -378,10 +571,12 @@ def main() -> int:
 
     with_rules = sum(1 for count in bound_counts if count)
     print(
-        f"jobs: {len(plan['cohorts'])} cohorts + {len(sweeps)} sweeps -> {out / 'jobs.json'}\n"
+        f"jobs: {len(plan['cohorts'])} defect cohorts + {len(polish)} polish cohorts + "
+        f"{len(sweeps)} sweeps -> {out / 'jobs.json'}\n"
         f"cohort limit: {args.max_cohort_files} files / {MAX_COHORT_CHANGED_LINES} changed lines\n"
-        f"rules: {len(rules)} registered; {with_rules}/{len(plan['cohorts'])} cohorts carry bound rules\n"
-        f"every selected file owned exactly once; prompts under {out / 'prompts'}"
+        f"polish limit: {DEFAULT_MAX_POLISH_FILES} files / {MAX_POLISH_CHANGED_LINES} changed lines\n"
+        f"rules: {len(rules)} registered; {with_rules}/{len(bound_counts)} review lanes carry bound rules\n"
+        f"every selected hunk has defect + polish ownership; prompts under {out / 'prompts'}"
     )
     return 0
 

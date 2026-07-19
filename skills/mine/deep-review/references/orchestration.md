@@ -4,16 +4,17 @@ The pipeline stage map, cohort planning rules, sweep triggers, and the execution
 
 ## Pipeline — stages, gates, artifacts
 
-Every stage materializes **jobs** (`{label, kind, prompt, output}`, repo-relative paths), executes them on any engine, and passes a script gate. Stages are idempotent: valid outputs are preserved, so re-running a gate or an engine only touches what is missing or invalid.
+Every stage materializes jobs with lane ownership (`{label, kind, lane, prompt, output, required_hunks, rule_ids}`), executes them on any engine, and passes a script gate. Valid outputs are preserved, so re-running touches only missing or invalid work.
 
 | Stage | Produce | Execute | Gate (exit 0) |
 | --- | --- | --- | --- |
-| Plan | `build_jobs.py` → prompts + `jobs.json` | — | `build_jobs.py` |
-| Review | — | `jobs.json` (cohorts + sweeps) | `run_jobs.py --validate-only` |
-| Merge | `merge_findings.py` → `findings.json` | — | `merge_findings.py` |
+| Knowledge | `build_knowledge.py` → knowledge.json + rules.template.json | — | source discovery |
+| Plan | `build_jobs.py` → prompts + jobs.json | — | source accounting + ownership |
+| Review | — | jobs.json (defect + polish + sweeps) | `run_jobs.py --validate-only` |
+| Merge | `merge_findings.py` → findings.json + review-stats.json | — | complete two-lane coverage |
 | Report | `render_review.py` → review.md + state.json; `render_html.py` → review.html | — | `render_review.py` |
 
-Both job kinds (`cohort`, `sweep`) return `findings.schema.json` output. Field semantics the schema relies on: `hunk` = the manifest hunk the finding sits in (`"<side>:<start>-<end>"`), null for outside-diff findings; `rule_id` links a rule-derived finding to the registry; `evidence[0]` is the checkout-grounded `Premise → Path → Verdict` certificate, and later entries record one `"command or file:line → what it showed"` check each.
+All job kinds (`cohort`, `polish`, `sweep`) return the same schema: defects, advisories, objective suppressions, hunk coverage, and rule coverage. `hunk` is the assigned canonical range (`<side>:<start>-<end>`), null outside the diff. Defects use the causal certificate; advisories use the improvement certificate.
 
 ## Cohort rules (Step 2)
 
@@ -36,6 +37,8 @@ Both job kinds (`cohort`, `sweep`) return `findings.schema.json` output. Field s
 
 Sweeps are bare keys from the table below (built-in lens text) or `{key, lens}` objects for a custom lens.
 
+`build_jobs.py` derives a second polish partition automatically: ≤20 files and ≤1,200 changed lines, splitting oversized hunks when needed. Every selected hunk line therefore has one defect owner and one polish owner without complicating plan.json.
+
 ## Sweep triggers
 
 Sweeps are **opt-in and rare** — default to none. Each sweep is one extra agent that sees the manifest, not one cohort; include it only when its trigger clearly fires, and prefer at most one or two per round:
@@ -52,7 +55,7 @@ Sweeps are **opt-in and rare** — default to none. Each sweep is one extra agen
 
 ## Engines
 
-The jobs contract makes engines interchangeable — pick one per run, record it in walkthrough.md's Review details (`Mode: workflow | agent-fallback | subagent:<runtime>`), and always close the loop with `run_jobs.py --validate-only`.
+The jobs contract makes engines interchangeable — pick one per run, record it in walkthrough.md's Review details (`Mode: workflow | agent-fallback | subagent:<runtime>`), and always close the loop with `run_jobs.py --validate-only`. Validation rejects missing coverage rows, unaccounted rules, wrong-lane results, and silent suppressions.
 
 **Workflow (default).** One generic script executes any stage's pending jobs — pass the pending list from the validate-only status file as `args.jobs`:
 

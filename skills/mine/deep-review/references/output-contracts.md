@@ -2,6 +2,15 @@
 
 Exact templates for every artifact. Placeholders in `<angle brackets>`; keep section order and marker strings byte-stable — fingerprints and upserts depend on them. walkthrough.md is orchestrator-authored; review.md and state.json are rendered from findings.json by `scripts/render_review.py`, which implements these templates and the verdict rule — this file is the contract it must keep.
 
+## Contents
+
+- walkthrough.md
+- Finding block
+- review.md
+- review.html
+- ReportFindings mapping
+- Verdict rule
+
 ## walkthrough.md
 
 ```markdown
@@ -29,7 +38,7 @@ one mermaid sequenceDiagram per flow, actors = real components>
 
 - **Scope**: <base sha short> → <head sha short> (<incremental round N | full review>)
 - **Files**: <n> selected · <n> ignored by filters · <n> skipped (trivial/similar)
-- **Profile**: <chill|assertive> · **Mode**: <workflow|agent-fallback|subagent:runtime>
+- **Posture**: assertive · **Mode**: <workflow|agent-fallback|subagent:runtime>
 - **Rubric**: <sources consulted, comma-separated paths>
 - **Linters**: <lane: ran/unavailable, ...>
 ```
@@ -56,7 +65,7 @@ symbols and line numbers. State what happens, under which input/state, and why.>
 
 [Also applies to: <path>:<lines>, <path>:<lines>]
 [As per coding guidelines [R<NN>] (`<source path>`): "<verbatim rule>"]
-Certificate: <evidence[0] — Premise: observed fact → Path: traced flow → Verdict: failure>
+Certificate: <defect: Premise → Path → Verdict | advisory: Premise → Improvement → Fix>
 
 <details>
 <summary>📝 Committable suggestion</summary>
@@ -80,7 +89,7 @@ symbols and the target behavior>. Reference symbols: <sym1>, <sym2>.
 <!-- deep-review:fp:<fingerprint> -->
 ```
 
-Bracketed lines appear only when they apply. Every finding has a Certificate line. The committable `suggestion` block only when the replacement is exact and self-contained; otherwise nothing. The AI-agents prompt only on **Critical and Major** findings.
+Bracketed lines appear only when they apply. Every result has the certificate for its class. The committable `suggestion` block appears only when the replacement is exact and self-contained; the AI-agents prompt appears only on **Critical and Major defects**.
 
 ## review.md
 
@@ -88,7 +97,7 @@ Bracketed lines appear only when they apply. Every finding has a Certificate lin
 # Deep Review — <target> (round <N>)
 
 **Verdict: <SHIP | FIX_BEFORE_SHIP | REWORK>** — <one-line rationale>
-**Actionable findings: <n>** (🔴 <n> · 🟠 <n> · 🟡 <n>) · nitpicks: <n> · duplicates: <n> · resolved since last round: <n> · merged duplicate reports: <n>
+**Defects: <n>** (🔴 <n> · 🟠 <n> · 🟡 <n>) · advisories: <n> · duplicates: <n> · resolved since last round: <n> · merged duplicate reports: <n>
 
 <walkthrough.md content, inlined>
 
@@ -113,29 +122,31 @@ Bracketed lines appear only when they apply. Every finding has a Certificate lin
 
 <one-line entries: badge · claim · original round; "None.">
 
-## Nitpicks
+## Advisories
 
-<details><summary>🧹 <n> nitpicks</summary>
-<compact one-liners: `path:line` — claim [— suggestion]>
-</details>
+<full advisory blocks grouped per file; "None.">
+
+## Review observability
+
+<candidate, suppression, and complete defect/polish hunk coverage counts>
 ```
 
 `review.md` orders files by max severity, then path.
 
 ## review.html
 
-The human-facing dashboard, emitted by `scripts/render_html.py`: it hydrates `assets/REVIEW_UI.html` — the fixed, self-contained UI template (inline CSS/JS, no network, opens via `file://`) — with findings.json + manifest.json, plus state.json / walkthrough.md / rules.json / review.md / archived rounds when present. The UI is never model-authored and review.html is never hand-edited; change the template, nowhere else. Before render_review.py has written the round's state entry the verdict renders as a neutral "round in progress" state, so the script can run after merge and again after render. The page auto-reloads while open, which is what keeps a human's view current across rounds.
+The human-facing dashboard, emitted by `scripts/render_html.py`, hydrates `assets/REVIEW_UI.html` with defects and advisories in separate sections plus suppression and coverage observability. The fixed template is self-contained (inline CSS/JS, no network) and `review.html` is never hand-edited. Before render_review.py writes the state entry, the verdict remains a neutral "round in progress" state.
 
 ## ReportFindings mapping
 
-When the harness exposes the ReportFindings tool, call it once after review.md is written: one entry per actionable finding, ranked most-severe first — `file`/`line` from the anchor, `summary` = the claim line, `failure_scenario` = the evidence paragraph's failure mode, `category` = kebab-case (`potential-issue`, `refactor`, `nitpick`). Omit `verdict` — no separate verify pass runs; the checkout-grounded certificate and refutation checks in `evidence[]` are the confidence signal.
+When the harness exposes the ReportFindings tool, call it once after review.md is written: one entry per defect and advisory, defects first by severity and then advisories by file. Use `file`/`line` from the anchor, `summary` from the claim, and the matching evidence certificate. Omit `verdict`; the certificate and refutation checks are the confidence signal.
 
 ## Verdict rule
 
-Derive after Step 4's merge from the open findings:
+Derive after Step 4's merge from open **defects only**; advisories never change the verdict:
 
-- **SHIP** — no Critical or Major open; Minors and nitpicks ship as follow-ups. With `--spec`: additionally requires the Spec conformance section complete (every artifact assessed) with zero open parity violations — a review that never assessed conformance cannot SHIP.
-- **FIX_BEFORE_SHIP** — at least one open Critical/Major, and remediation is local: the change's shape is right and each finding names a bounded fix.
-- **REWORK** — the findings show structural failure needing redesign (often a new TechSpec): a parity violation the implementation approach cannot express, the same root cause reported across ≥ 3 cohorts, or a Critical whose fix rewrites the change's core. REWORK always carries a named rationale in the verdict line; when no structural trigger holds, FIX_BEFORE_SHIP is the ceiling.
+- **SHIP** — no Critical or Major defect is open; Minor defects and every advisory ship as follow-ups. With `--spec`, the Spec conformance section must also be complete with zero open parity violations.
+- **FIX_BEFORE_SHIP** — at least one Critical/Major defect is open, and remediation is local: the change's shape is right and each defect names a bounded fix.
+- **REWORK** — defects show structural failure needing redesign: a parity violation the implementation approach cannot express, one root cause across ≥3 cohorts, or a Critical whose fix rewrites the change's core. REWORK always carries a named rationale; otherwise FIX_BEFORE_SHIP is the ceiling.
 
-The verdict lands in review.md's header line, the round's state.json entry, and the final message. render_review.py derives SHIP / FIX_BEFORE_SHIP mechanically (open = findings with round status new or duplicate) and only accepts REWORK through `--rework "<rationale>"`; it rejects a report whose verdict contradicts the open findings.
+The verdict lands in review.md, state.json, and the final message. render_review.py derives SHIP / FIX_BEFORE_SHIP from defects with round status new or duplicate and accepts REWORK only through `--rework "<rationale>"` backed by structural defects.

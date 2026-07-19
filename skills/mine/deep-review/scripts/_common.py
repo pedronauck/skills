@@ -17,7 +17,7 @@ from pathlib import Path
 SKILL_DIR = Path(__file__).resolve().parent.parent
 ASSETS_DIR = SKILL_DIR / "assets"
 SEVERITY_RANK = {"trivial": 0, "minor": 1, "major": 2, "critical": 3}
-KNOWN_KINDS = {"cohort", "sweep"}
+KNOWN_KINDS = {"cohort", "polish", "sweep"}
 
 
 # ---------- paths / IO ----------
@@ -145,7 +145,12 @@ def normalize_title(title: str) -> str:
 
 def fingerprint(finding: dict) -> str:
     identity = "|".join(
-        [finding["file"], finding["category"], normalize_title(finding["title"])]
+        [
+            finding.get("result_kind", "defect"),
+            finding["file"],
+            finding["category"],
+            normalize_title(finding["title"]),
+        ]
     )
     return hashlib.sha256(identity.encode()).hexdigest()[:16]
 
@@ -185,6 +190,8 @@ def validate_job_output(repo: Path, out: Path, job: dict) -> None:
     except RuntimeError as error:
         raise ValueError(f"{job['label']}: {error}") from error
     errors = findings_contract_errors(payload)
+    if not errors:
+        errors.extend(job_contract_errors(payload, job))
     if errors:
         head = "; ".join(errors[:6])
         tail = f" (+{len(errors) - 6} more)" if len(errors) > 6 else ""
@@ -194,20 +201,89 @@ def validate_job_output(repo: Path, out: Path, job: dict) -> None:
 CERTIFICATE_RE = re.compile(
     r"^Premise:\s+.+\s+→\s+Path:\s+.+\s+→\s+Verdict:\s+.+$"
 )
+ADVISORY_CERTIFICATE_RE = re.compile(
+    r"^Premise:\s+.+\s+→\s+Improvement:\s+.+\s+→\s+Fix:\s+.+$"
+)
 
 
 def findings_contract_errors(payload: dict) -> list[str]:
-    """Validate the findings schema plus the position-sensitive certificate."""
+    """Validate the review-output schema plus class-specific certificates."""
     errors = schema_errors(payload, load_schema("findings"))
     if errors:
         return errors
-    for index, finding in enumerate(payload["findings"]):
+    for index, finding in enumerate(payload["defects"]):
         certificate = finding["evidence"][0].strip()
         if not CERTIFICATE_RE.fullmatch(certificate):
             errors.append(
-                f"$.findings[{index}].evidence[0]: expected "
+                f"$.defects[{index}].evidence[0]: expected "
                 "'Premise: ... → Path: ... → Verdict: ...' certificate"
             )
+    for index, advisory in enumerate(payload["advisories"]):
+        certificate = advisory["evidence"][0].strip()
+        if not ADVISORY_CERTIFICATE_RE.fullmatch(certificate):
+            errors.append(
+                f"$.advisories[{index}].evidence[0]: expected "
+                "'Premise: ... → Improvement: ... → Fix: ...' certificate"
+            )
+    return errors
+
+
+def job_contract_errors(payload: dict, job: dict) -> list[str]:
+    """Validate lane ownership, hunk coverage, and rule accountability."""
+    errors: list[str] = []
+    lane = str(job.get("lane", ""))
+    expected_hunks = {
+        (str(row["file"]), str(row["hunk"])) for row in job.get("required_hunks", [])
+    }
+    rows = payload.get("coverage", {}).get("hunks", [])
+    actual_hunks = [(str(row.get("file")), str(row.get("hunk"))) for row in rows]
+    if len(actual_hunks) != len(set(actual_hunks)):
+        errors.append("$.coverage.hunks: duplicate file/hunk rows")
+    actual_set = set(actual_hunks)
+    if actual_set != expected_hunks:
+        errors.append(
+            "$.coverage.hunks: ownership mismatch "
+            f"missing={sorted(expected_hunks - actual_set)[:6]} "
+            f"extra={sorted(actual_set - expected_hunks)[:6]}"
+        )
+    coverage_check = str(job.get("coverage_check", lane))
+    for index, row in enumerate(rows):
+        if coverage_check and coverage_check not in row.get("checks", []):
+            errors.append(
+                f"$.coverage.hunks[{index}].checks: missing required check {coverage_check!r}"
+            )
+
+    expected_rules = set(job.get("rule_ids", []))
+    rule_rows = payload.get("coverage", {}).get("rules", [])
+    actual_rules = [str(row.get("rule_id")) for row in rule_rows]
+    if len(actual_rules) != len(set(actual_rules)):
+        errors.append("$.coverage.rules: duplicate rule_id rows")
+    if set(actual_rules) != expected_rules:
+        errors.append(
+            "$.coverage.rules: assignment mismatch "
+            f"missing={sorted(expected_rules - set(actual_rules))[:6]} "
+            f"extra={sorted(set(actual_rules) - expected_rules)[:6]}"
+        )
+
+    if lane == "defect" and payload.get("advisories"):
+        errors.append("$.advisories: defect jobs must leave advisory discovery to the polish lane")
+    if lane == "polish" and payload.get("defects"):
+        errors.append("$.defects: polish jobs must leave defect discovery to the defect lane")
+    if lane in {"defect", "polish"}:
+        for result_kind in ("defects", "advisories"):
+            for index, item in enumerate(payload.get(result_kind, [])):
+                if item.get("in_diff") and (item.get("file"), item.get("hunk")) not in expected_hunks:
+                    errors.append(
+                        f"$.{result_kind}[{index}]: in-diff anchor is outside job ownership"
+                    )
+    assigned_rules = expected_rules
+    for result_kind in ("defects", "advisories", "suppressions"):
+        for index, item in enumerate(payload.get(result_kind, [])):
+            unknown = set(item.get("rule_ids", [])) - assigned_rules
+            if unknown:
+                errors.append(
+                    f"$.{result_kind}[{index}].rule_ids: unassigned ids {sorted(unknown)}"
+                )
     return errors
 
 

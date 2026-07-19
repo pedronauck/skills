@@ -5,7 +5,7 @@ Renders review.md from findings.json per references/output-contracts.md and
 appends the round to state.json (fingerprint ledger: open/resolved/dismissed).
 Refuses to render on a drifted checkout (--no-freeze-check to skip). The
 verdict is derived, never asserted: SHIP requires zero open Critical/Major
-(new or still-open duplicate) and, when a Spec contract section exists, a
+defects (advisories never affect it) and, when a Spec contract section exists, a
 completed spec-parity assessment; otherwise FIX_BEFORE_SHIP. REWORK is the
 orchestrator's structural judgment — pass --rework "<rationale>"; the script
 refuses REWORK without open Critical/Major and refuses SHIP with them.
@@ -50,13 +50,6 @@ def one_line(value: str) -> str:
 def claim(title: str) -> str:
     value = one_line(title)
     return value if value.endswith((".", "!", "?")) else f"{value}."
-
-
-def is_actionable(finding: dict) -> bool:
-    severity = finding["severity"]
-    return severity in {"critical", "major"} or (
-        severity == "minor" and finding["category"] == "potential-issue"
-    )
 
 
 def line_range(finding: dict) -> str:
@@ -171,8 +164,11 @@ def main() -> int:
         context_pack = (out / "context-pack.md").read_text(encoding="utf-8")
 
         findings = ledger["findings"]
+        advisories = ledger.get("advisories", [])
         new = [f for f in findings if f["round_status"] == "new"]
         duplicates = [f for f in findings if f["round_status"] == "duplicate"]
+        new_advisories = [f for f in advisories if f["round_status"] == "new"]
+        duplicate_advisories = [f for f in advisories if f["round_status"] == "duplicate"]
         open_findings = new + duplicates
         open_cm = [f for f in open_findings if f["severity"] in {"critical", "major"}]
         artifacts = spec_artifacts(context_pack)
@@ -209,10 +205,8 @@ def main() -> int:
         sys.stderr.write(f"{error}\n")
         return 1
 
-    actionable = [f for f in new if is_actionable(f)]
-    nitpicks = [f for f in new if not is_actionable(f)]
     sev_counts = defaultdict(int)
-    for finding in actionable:
+    for finding in new:
         sev_counts[finding["severity"]] += 1
     reconciliation = ledger.get("reconciliation", {})
     resolved = reconciliation.get("resolved", [])
@@ -223,19 +217,19 @@ def main() -> int:
         f"# Deep Review — {manifest['target']} (round {round_n})",
         "",
         f"**Verdict: {verdict}** — {rationale}",
-        f"**Actionable findings: {len(actionable)}** (🔴 {sev_counts['critical']} · 🟠 {sev_counts['major']} · 🟡 {sev_counts['minor']}) · "
-        f"nitpicks: {len(nitpicks)} · duplicates: {len(duplicates) + len(reconciliation.get('still_open_unreviewed', []))} · "
+        f"**Defects: {len(new)}** (🔴 {sev_counts['critical']} · 🟠 {sev_counts['major']} · 🟡 {sev_counts['minor']}) · "
+        f"advisories: {len(new_advisories)} · duplicates: {len(duplicates) + len(duplicate_advisories) + len(reconciliation.get('still_open_unreviewed', []))} · "
         f"resolved since last round: {len(resolved)} · merged duplicate reports: {ledger['summary']['merged_raw']}",
         "",
         walkthrough.rstrip(),
         "",
         "## Findings",
         "",
-        *by_file_sections([f for f in actionable if f["in_diff"]], rules_by_id),
+        *by_file_sections([f for f in new if f["in_diff"]], rules_by_id),
         "## Outside diff range",
         "",
     ]
-    outside = [f for f in actionable if not f["in_diff"]]
+    outside = [f for f in new if not f["in_diff"]]
     review += by_file_sections(outside, rules_by_id) if outside else ["None.", ""]
 
     if artifacts:
@@ -254,7 +248,7 @@ def main() -> int:
     duplicate_lines = [
         f"- _{SEVERITY_BADGE[f['severity']]}_ · {claim(f['title'])} — first raised round "
         f"{f.get('first_round', '?')} <!-- deep-review:fp:{f['fingerprint']} -->"
-        for f in sorted(duplicates, key=lambda f: -SEVERITY_RANK[f["severity"]])
+        for f in sorted([*duplicates, *duplicate_advisories], key=lambda f: -SEVERITY_RANK[f["severity"]])
     ] + [
         f"- _{SEVERITY_BADGE[row['severity']]}_ · {claim(row['title'])} — round {row['round']}, file unchanged"
         for fp, row in sorted(prior_ledger.items())
@@ -262,27 +256,32 @@ def main() -> int:
     ]
     review += duplicate_lines + [""] if duplicate_lines else ["None.", ""]
 
-    review += ["## Nitpicks", "", f"<details><summary>🧹 {len(nitpicks)} nitpicks</summary>", ""]
-    for finding in sorted(nitpicks, key=lambda f: (f["file"], f["line"], f["title"])):
-        suggestion = one_line(finding.get("suggestion") or "")
-        suffix = f" — {suggestion}" if suggestion else ""
-        review.append(
-            f"- `{finding['file']}:{finding['line']}` — {claim(finding['title'])}{suffix} "
-            f"<!-- deep-review:fp:{finding['fingerprint']} -->"
-        )
-    review += ["", "</details>", ""]
+    review += ["## Advisories", ""]
+    review += by_file_sections(new_advisories, rules_by_id) if new_advisories else ["None.", ""]
+
+    stats = ledger.get("review_stats", {})
+    coverage = stats.get("coverage", {})
+    review += [
+        "## Review observability", "",
+        f"- Candidates investigated: {stats.get('candidates', 0)}",
+        f"- Reported before deduplication: {stats.get('reported', 0)}",
+        f"- Suppressed with recorded reason: {stats.get('suppressed', 0)}",
+        f"- Selected hunk lines covered by both lanes: {coverage.get('selected_hunk_lines', 0)}",
+        "",
+    ]
     (out / "review.md").write_text("\n".join(review), encoding="utf-8")
 
     state_ledger = dict(prior_ledger)
     head = manifest["head"]
     for fp in resolved:
         state_ledger[fp] = {**state_ledger[fp], "status": "resolved", "resolved_in": head}
-    for finding in findings:
+    for finding in [*findings, *advisories]:
         if finding["round_status"] == "new":
             state_ledger[finding["fingerprint"]] = {
                 "file": finding["file"], "title": finding["title"],
                 "severity": finding["severity"], "status": "open",
-                "round": round_n, "comment_id": None, "resolved_in": None,
+                "round": round_n, "result_kind": finding["result_kind"],
+                "comment_id": None, "resolved_in": None,
             }
     rounds = [r for r in prior_state.get("rounds", []) if r["n"] != round_n]
     rounds.append({"n": round_n, "base": manifest["base"], "head": head, "verdict": verdict,
@@ -294,9 +293,9 @@ def main() -> int:
         if len([j for j in (f.get("source_jobs") or []) if j.startswith("cohort-")]) >= 3
     ]
     print(f"review -> {out / 'review.md'}; state -> {out / 'state.json'}")
-    print(f"verdict={verdict} actionable={len(actionable)} "
+    print(f"verdict={verdict} defects={len(new)} "
           f"(critical={sev_counts['critical']} major={sev_counts['major']} minor={sev_counts['minor']}) "
-          f"nitpicks={len(nitpicks)} duplicates={len(duplicates)} resolved={len(resolved)} "
+          f"advisories={len(new_advisories)} duplicates={len(duplicates) + len(duplicate_advisories)} resolved={len(resolved)} "
           f"merged={ledger['summary']['merged_raw']}")
     if structural and verdict != "REWORK":
         print(f"hint: {len(structural)} open Critical/Major span ≥3 cohorts — weigh --rework per the verdict rule")

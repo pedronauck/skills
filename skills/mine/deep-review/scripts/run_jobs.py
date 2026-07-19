@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Deep-review job runner/validator (mutating helper; writes only under --out).
 
-One resumable engine for every job kind (cohort, sweep). Two modes:
+One resumable engine for every job kind (defect cohort, polish, sweep). Two modes:
 
   --validate-only            Report each job as VALID / PENDING / INVALID and
                              refresh the status file. This is how Workflow- and

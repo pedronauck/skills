@@ -2,8 +2,8 @@
 """Deep-review finding merger (bootstrap helper; writes only under --out).
 
 Mechanically folds every reviewer/sweep output into the canonical ledger —
-no agents involved. Collects findings from jobs.json outputs (validating each
-against the findings schema), assigns stable fingerprints, merges duplicates
+no agents involved. Collects defects, advisories, suppressions, and coverage
+from jobs.json outputs (validating each against the schema), merges duplicates
 by union-find (identical fingerprint, or same file + category + overlapping
 line range), and reconciles against any prior state.json ledger: new /
 duplicate (still open from a prior round) / suppressed (dismissed before;
@@ -17,8 +17,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 sys.dont_write_bytecode = True  # keep the tracked skill tree free of __pycache__
@@ -26,6 +27,7 @@ sys.dont_write_bytecode = True  # keep the tracked skill tree free of __pycache_
 from _common import (
     SEVERITY_RANK,
     fingerprint,
+    hunk_text,
     load_jobs,
     read_json,
     repo_root,
@@ -70,22 +72,41 @@ def line_span(finding: dict) -> tuple[int, int]:
     return (min(finding["line"], end), max(finding["line"], end))
 
 
-def collect(repo: Path, out: Path) -> list[dict]:
-    findings: list[dict] = []
+def collect(repo: Path, out: Path) -> dict[str, list[dict]]:
+    results: dict[str, list[dict]] = {
+        "defects": [], "advisories": [], "suppressions": [],
+        "hunk_coverage": [], "rule_coverage": [],
+    }
     for job in load_jobs(out / "jobs.json"):
         try:
             validate_job_output(repo, out, job)
         except ValueError as error:
             raise RuntimeError(f"reviewer output invalid — {error}") from error
         payload = read_json(repo / job["output"])
-        for item in payload["findings"]:
-            findings.append({
-                "raw_id": f"RF{len(findings) + 1:04d}",
-                "source_job": job["label"],
-                "fingerprint": fingerprint(item),
-                **item,
+        for key, result_kind, prefix in (
+            ("defects", "defect", "RD"), ("advisories", "advisory", "RA")
+        ):
+            for item in payload[key]:
+                decorated = {"result_kind": result_kind, **item}
+                results[key].append({
+                    "raw_id": f"{prefix}{len(results[key]) + 1:04d}",
+                    "source_job": job["label"],
+                    "fingerprint": fingerprint(decorated),
+                    **decorated,
+                })
+        for item in payload["suppressions"]:
+            results["suppressions"].append({
+                "source_job": job["label"], "lane": job["lane"], **item,
             })
-    return findings
+        for item in payload["coverage"]["hunks"]:
+            results["hunk_coverage"].append({
+                "source_job": job["label"], "lane": job["lane"], **item,
+            })
+        for item in payload["coverage"]["rules"]:
+            results["rule_coverage"].append({
+                "source_job": job["label"], "lane": job["lane"], **item,
+            })
+    return results
 
 
 def group_duplicates(findings: list[dict]) -> list[list[dict]]:
@@ -122,7 +143,7 @@ def merge_group(members: list[dict]) -> dict:
         **canonical,
         "raw_ids": [m["raw_id"] for m in ordered],
         "source_jobs": unique([m["source_job"] for m in ordered]),
-        "rule_ids": unique([m.get("rule_id") for m in ordered if m.get("rule_id")]),
+        "rule_ids": unique([rule_id for m in ordered for rule_id in (m.get("rule_ids") or [])]),
         "also_applies": unique([
             *(canonical.get("also_applies") or []),
             *[anchor(m) for m in ordered[1:]],
@@ -139,7 +160,7 @@ def raw_ledger_entries(members: list[dict], merged: dict) -> list[dict]:
             "raw_id": member["raw_id"], "source_job": member["source_job"],
             "fingerprint": member["fingerprint"], "file": member["file"],
             "line": member["line"], "severity": member["severity"],
-            "title": member["title"],
+            "title": member["title"], "result_kind": member["result_kind"],
         }
         if member["raw_id"] != merged["raw_ids"][0]:
             entry["status"] = "merged"
@@ -181,6 +202,57 @@ def reconcile(canonical: list[dict], found_fps: set[str], prior_state: dict | No
     }
 
 
+HUNK_RE = re.compile(r"^(new|old):(\d+)-(\d+)$")
+
+
+def hunk_lines(file: str, hunk: str) -> Counter:
+    match = HUNK_RE.fullmatch(hunk)
+    if match is None:
+        raise RuntimeError(f"invalid canonical hunk {file}:{hunk}")
+    side, start, end = match.group(1), int(match.group(2)), int(match.group(3))
+    if end < start:
+        raise RuntimeError(f"invalid descending hunk {file}:{hunk}")
+    return Counter((file, side, line) for line in range(start, end + 1))
+
+
+def coverage_ledger(manifest: dict, collected: dict[str, list[dict]]) -> dict:
+    expected = Counter()
+    for file in manifest["files"]:
+        if file["disposition"] != "selected":
+            continue
+        for hunk in file["hunks"]:
+            expected += hunk_lines(file["path"], hunk_text(hunk))
+
+    lane_stats = {}
+    for lane in ("defect", "polish"):
+        actual = Counter()
+        rows = [row for row in collected["hunk_coverage"] if row["lane"] == lane]
+        for row in rows:
+            actual += hunk_lines(row["file"], row["hunk"])
+        missing, extra = expected - actual, actual - expected
+        if missing or extra:
+            raise RuntimeError(
+                f"{lane} coverage incomplete: missing_lines={sum(missing.values())} "
+                f"duplicated_or_extra_lines={sum(extra.values())}"
+            )
+        lane_stats[lane] = {
+            "rows": len(rows), "covered_lines": sum(actual.values()), "complete": True,
+        }
+
+    rule_status = defaultdict(Counter)
+    for row in collected["rule_coverage"]:
+        rule_status[row["rule_id"]][row["status"]] += 1
+    return {
+        "hunks": collected["hunk_coverage"],
+        "rules": collected["rule_coverage"],
+        "summary": {
+            "selected_hunk_lines": sum(expected.values()),
+            "lanes": lane_stats,
+            "rules": {rule: dict(sorted(counts.items())) for rule, counts in sorted(rule_status.items())},
+        },
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", required=True)
@@ -189,43 +261,69 @@ def main() -> int:
     out = Path(args.out).resolve()
     try:
         manifest = read_json(out / "manifest.json")
-        raw = collect(repo, out)
+        collected = collect(repo, out)
+        coverage = coverage_ledger(manifest, collected)
     except RuntimeError as error:
         sys.stderr.write(f"{error}\n")
         return 1
 
-    canonical_findings, raw_ledger = [], []
-    for members in group_duplicates(raw):
-        merged = merge_group(members)
-        canonical_findings.append(merged)
-        raw_ledger.extend(raw_ledger_entries(members, merged))
-    canonical_findings.sort(key=lambda f: (f["file"], f["line"], f["raw_ids"][0]))
+    canonical_by_kind: dict[str, list[dict]] = {"defects": [], "advisories": []}
+    raw_ledger = []
+    for key in ("defects", "advisories"):
+        for members in group_duplicates(collected[key]):
+            merged = merge_group(members)
+            canonical_by_kind[key].append(merged)
+            raw_ledger.extend(raw_ledger_entries(members, merged))
+        canonical_by_kind[key].sort(key=lambda f: (f["file"], f["line"], f["raw_ids"][0]))
     raw_ledger.sort(key=lambda item: item["raw_id"])
+
+    canonical_results = [*canonical_by_kind["defects"], *canonical_by_kind["advisories"]]
 
     prior_state = read_json(out / "state.json") if (out / "state.json").is_file() else None
     selected_paths = {f["path"] for f in manifest["files"] if f["disposition"] == "selected"}
     manifest_paths = {f["path"] for f in manifest["files"]}
-    found_fps = {finding["fingerprint"] for finding in canonical_findings}
+    found_fps = {finding["fingerprint"] for finding in canonical_results}
     reconciliation = reconcile(
-        canonical_findings, found_fps, prior_state, selected_paths, manifest_paths
+        canonical_results, found_fps, prior_state, selected_paths, manifest_paths
     )
+
+    raw_count = len(collected["defects"]) + len(collected["advisories"])
+    canonical_count = len(canonical_results)
+    suppression_reasons = Counter(item["reason"] for item in collected["suppressions"])
+    review_stats = {
+        "candidates": raw_count + len(collected["suppressions"]),
+        "reported": raw_count,
+        "suppressed": len(collected["suppressions"]),
+        "suppression_reasons": dict(sorted(suppression_reasons.items())),
+        "raw_defects": len(collected["defects"]),
+        "raw_advisories": len(collected["advisories"]),
+        "canonical_defects": len(canonical_by_kind["defects"]),
+        "canonical_advisories": len(canonical_by_kind["advisories"]),
+        "coverage": coverage["summary"],
+    }
 
     payload = {
         "source_snapshot": manifest.get("worktree_snapshot"),
         "summary": {
-            "raw": len(raw),
-            "canonical": len(canonical_findings),
-            "merged_raw": len(raw) - len(canonical_findings),
-            "round_status": dict(sorted(Counter(f["round_status"] for f in canonical_findings).items())),
-            "severity": dict(sorted(Counter(f["severity"] for f in canonical_findings).items())),
-            "category": dict(sorted(Counter(f["category"] for f in canonical_findings).items())),
+            "raw": raw_count,
+            "canonical": canonical_count,
+            "merged_raw": raw_count - canonical_count,
+            "round_status": dict(sorted(Counter(f["round_status"] for f in canonical_results).items())),
+            "defect_severity": dict(sorted(Counter(f["severity"] for f in canonical_by_kind["defects"]).items())),
+            "advisory_category": dict(sorted(Counter(f["category"] for f in canonical_by_kind["advisories"]).items())),
         },
-        "findings": canonical_findings,
+        "findings": canonical_by_kind["defects"],
+        "advisories": canonical_by_kind["advisories"],
+        "suppressions": collected["suppressions"],
+        "coverage": coverage,
+        "review_stats": review_stats,
         "raw_ledger": raw_ledger,
         "reconciliation": reconciliation,
     }
     write_json(out / "findings.json", payload)
+    write_json(out / "review-stats.json", review_stats)
     print(f"findings ledger -> {out / 'findings.json'}")
+    print(f"review stats -> {out / 'review-stats.json'}")
     print(json.dumps(payload["summary"], sort_keys=True))
     print(json.dumps(reconciliation, sort_keys=True))
     return 0
