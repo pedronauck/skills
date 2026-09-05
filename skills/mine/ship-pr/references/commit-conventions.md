@@ -49,7 +49,7 @@ If the config only `extends` a preset (e.g., `["@commitlint/config-conventional"
 
 ## 4. Compose the commit message
 
-Use a HEREDOC to preserve formatting and avoid shell-quoting issues. Mandatory shape:
+Use a HEREDOC to preserve formatting and avoid shell-quoting issues. Typical shape; repository configuration takes precedence:
 
 ```
 <type>(<scope>): <subject>          # ≤ 72 chars, imperative ("add", not "added")
@@ -68,7 +68,6 @@ feat(auth): allow multiple active workspaces per session
 Adds a workspace-switcher in the navbar and a new
 GET /v1/accounts endpoint listing accessible workspaces.
 
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 EOF
 )"
 ```
@@ -77,7 +76,7 @@ Rules:
 
 - Imperative subject. "add", "fix", "remove" — not "added", "fixes", "removes".
 - Lower-case the type. `feat:`, never `Feat:`.
-- Scope only when the repo uses scopes consistently. Inspect the last 20 commits with `git log --oneline -20` to learn the convention.
+- Scope only when the repo uses scopes consistently. Inspect enough recent commits with `git log --oneline -20` to learn the convention.
 - For breaking changes, add a `BREAKING CHANGE:` footer with a migration paragraph. Prefer the footer over `feat!:` syntax unless the repo's existing log already favors the bang.
 
 ## 5. Stage files safely

@@ -1,16 +1,18 @@
 # Narrative Playbook — value proposition and fundraising story
 
+Use only the requested narrative format. A full memo and timed oral test are optional for a full narrative exercise, not prerequisites for a one-liner.
+
 The narrative is strategy, not decoration: "The story is the strategy. If you make your story better, you make the strategy better" (Ben Horowitz). It precedes and outranks the deck — vc-pitch-deck renders what this file constructs.
 
 ## Memo before deck
 
-Write the narrative as prose in investor-memo form before any slide exists — "writing the prose forces you to fill in the gaps that can remain if you just put bullets on a slide" (Lily Lyman, Underscore VC). Two published templates:
+For a requested full narrative exercise, an investor memo can expose gaps before slide design — "writing the prose forces you to fill in the gaps that can remain if you just put bullets on a slide" (Lily Lyman, Underscore VC). Two published templates:
 
 - **Seed memo** (Underscore): problem (Four U's), solution (Three D's), market, why-now, team, evidence.
 - **Series A memo** (Underscore — use when the ask is >$5M or the round is priced): adds *Investment Opportunity* (target ownership %, round size, valuation, syndicate, option pool), *Investment Judgement* ("why is this a big opportunity to return the fund **for this firm**" + key challenges), *Key Risks + mitigations*, *Milestones for the round* — split into **value-creating vs de-risking**, and *Vector Financing* (forward cap table including next-round ownership and pool increases).
 
 Qualifier frameworks to run inside the memo:
-- **Four U's** (problem): Unworkable (will someone get fired?) · Unavoidable (mandate/regulation) · Urgent (top-3 buyer priority) · Underserved (visible whitespace). The problem must pass at least two.
+- **Four U's** (problem): Unworkable (will someone get fired?) · Unavoidable (mandate/regulation) · Urgent (top-3 buyer priority) · Underserved (visible whitespace). Use these as diagnostic lenses, not a minimum-score requirement.
 - **Three D's** (solution): Different · Defensible · Disruptive — plus the sharpest question for technical founders: *is there specific expertise required to build this that only this team has?*
 
 ## Choose the claim and the point of view — two orthogonal taxonomies

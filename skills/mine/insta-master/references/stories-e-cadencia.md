@@ -1,5 +1,7 @@
 # Stories, cadência e multiplataforma
 
+Applicability: adapt only the parts needed for the requested Instagram artifact. Output counts, timing, checklists, and performance benchmarks are examples to validate against the account and current platform, not approval gates.
+
 ## Contents
 
 - Stories: a retenção é da SEQUÊNCIA
@@ -46,7 +48,7 @@ A retenção dos Stories é medida na **sequência inteira**, não no story isol
 3. Misture formatos; vídeos curtos (≤30s) > 60s.
 4. Interação ativa **só no MEIO** da sequência.
 5. Priorize **resposta em texto** e **compartilhamento** acima de votos de enquete.
-6. **Link externo / post do feed = SEMPRE o último** story (se a pessoa sair, a retenção já foi calculada).
+6. Consider placing an external link later when sequence completion matters; place it where the intended next action is clearest for the actual journey.
 7. Deixe a sequência expirar (24h) antes de começar nova, ou faça blocos por horário (manhã/tarde/noite).
 8. Construa afinidade FORA dos stories: ~20-30 min/dia respondendo inbox e comentando de volta.
 9. Views gradativas; nada de táticas de pico.

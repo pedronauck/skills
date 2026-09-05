@@ -1,5 +1,7 @@
 # Interview Playbook
 
+Use the exercises requested or needed for a weak answer. Timers, drill counts, posture cues, and rehearsal scripts are optional; never invent an invitation or coach fabricated accomplishments.
+
 For Phase 8, unlocked only after the founder confirms an interview invite. The 10-minute interview signals, drills, and behavioral checks. Sourced from `yc-interview-guide-y-combinator.md`, Dalton's two talks, Jessica Livingston, Enzo (June), and accepted-founder transcripts.
 
 ## Contents

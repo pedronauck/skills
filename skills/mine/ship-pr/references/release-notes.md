@@ -10,16 +10,11 @@
 
 ## 1. Decide the flow
 
-The pre-flight detector reports `pr_release: true|false`.
-
-- `true` → **Flow A**: the repo uses the `pr-release` CLI, so individual notes are written to `.release-notes/` and aggregated automatically when the release PR is cut.
-- `false` → **Flow B**: there is no release tooling available, so generate an inline changelog block and embed it in the PR description's **Release Notes** section.
-
-Never run both flows. Picking one keeps the source of truth singular.
+Follow the repository's release-note policy. A detected `pr-release` binary establishes availability only; confirm repository configuration or existing use before invoking it. Choose Flow A for an adopted integration, Flow B only when an inline changelog is requested or required, and neither when the normal PR summary suffices. Reuse existing notes for this change.
 
 ## 2. Flow A — `pr-release add-note`
 
-For each user-visible bullet produced by the impact exploration (`references/explore-impact.md`), create one note:
+Create or update notes for material user-facing changes required by project policy; group related changes:
 
 ```bash
 pr-release add-note \

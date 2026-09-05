@@ -43,7 +43,7 @@ if let Ok(json) = serde_json::from_str(&input) {
 
 Use `unwrap_or`, `unwrap_or_else`, or `unwrap_or_default` for fallback values.
 
-Use `assert!` at function entry for invariant checking (panics in debug, can be optimized away in release).
+`assert!` checks run in debug and release builds; `debug_assert!` is normally disabled in release. Use assertions for programmer invariants, and `Result` for invalid external input. See [Rust assert documentation](https://doc.rust-lang.org/std/macro.assert.html).
 
 ## The `?` Operator
 

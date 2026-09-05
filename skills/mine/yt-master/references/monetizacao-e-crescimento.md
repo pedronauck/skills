@@ -1,5 +1,7 @@
 # Monetização & Crescimento
 
+Applicability: use the parts relevant to the requested video, format, or diagnosis. Formula counts, timing targets, production mixes, checklists, and corpus benchmarks are adaptable examples, not prerequisite gates. Current platform rules and the creator's actual evidence take precedence.
+
 ## Conteúdo
 
 - Mentalidade: negócio, não hobby (Mito do Empreendedor)
@@ -108,7 +110,7 @@ Canais dark **não têm algoritmo diferente** — concepção idêntica (ideia, 
 
 Solução: construir uma **persona/alma** mesmo sem mostrar rosto — estilo de escrita, música, ritmo de edição e principalmente **narração com personalidade/entonação**.
 
-**Gate anti-desmonetização (rodar antes de aprovar qualquer produção, não só dark):** há transformação significativa? a estrutura é repetitiva? é AI slop? Se sim, bloquear e recomendar persona + narração com entonação.
+For a requested monetization review or an observed reused/repetitive-content concern, check current platform policy and the actual artifact. Explain the specific mismatch and improve it; do not add a monetization approval gate to every production task or infer eligibility from a style label.
 
 ## Copyright: 3 mitos + "Conteúdo Original Infinito"
 

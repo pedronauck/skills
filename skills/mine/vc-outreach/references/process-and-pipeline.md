@@ -1,5 +1,7 @@
 # Process & Pipeline — momentum, telemetry, updates
 
+The full readiness and cadence checklist applies to an active raise. A message, list, or meeting task needs only its relevant facts and next step; no CRM/data-room/bootstrap prerequisite.
+
 The raise is a designed process: "fundraising is driven by momentum… it's very hard to get momentum going if you're running a sloppy fundraise" (Foundersuite). Timeline reality: 6–10 weeks first meeting → term sheet, 12–16 weeks → wired (2026 seed); median seed close stretched 68 → 142 days from 2021 to 2025 — and that median already sits past CRV's "raising 4+ months signals issues" line, which is exactly why the process below is engineered rather than drifted. Seasons are real (NFX, 2025): January→spring break and Labor Day→Thanksgiving are the hot windows; summer is the hidden season — fewer competitors, vacation-broken momentum (Casado calls the summer rule an anachronism; hedge by how many partners you need in one room); holidays are dead. Plan ~12 months before cash-out, prep seriously at 9, and **fundraise inside one season** — a raise spanning two reads as a market verdict: skip a season, fix metrics and story, return ("investors remember who was out in spring when they see you again in the fall").
 
 ## Pre-kickoff readiness (all checked before the first intro request)

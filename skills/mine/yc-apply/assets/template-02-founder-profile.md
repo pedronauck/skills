@@ -1,6 +1,6 @@
 # Founder Profile
 
-One section per founder. The grill loop in Phase 1 fills these. Reject adjectives; demand verifiable artifacts. Version each founder's section (`v1`, `v2`, …) as it sharpens.
+Optional founder-research aid. Reuse verified founder facts; investigate only missing claims relevant to the application. Descriptive adjectives need not be banned when accurate and useful.
 
 ---
 

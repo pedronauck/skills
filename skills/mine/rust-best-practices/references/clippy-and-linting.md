@@ -8,9 +8,9 @@
 - Redundant code
 - Potential bugs
 
-## Always Run Clippy
+## Run the owning Clippy gate
 
-Add to daily workflow and CI:
+Use the repository command and affected packages/features for local work. A CI configuration may use the following only if all feature combinations are supported:
 
 ```bash
 cargo clippy --all-targets --all-features --locked -- -D warnings

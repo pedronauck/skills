@@ -1,6 +1,8 @@
 # Prompts "Pergunte ao Studio"
 
-> ⚠️ Recurso do YouTube Studio de 2026, dependente da UI atual. Use a **intenção** (extrair padrões dos top-vídeos do próprio canal cruzando CTR × views), mesmo que o nome/tela mude. Requer **≥5 vídeos com ~90 dias de histórico**. Cole no ícone "Pergunte ao Studio" (ou ferramenta equivalente de analytics do canal).
+Applicability: use the parts relevant to the requested video, format, or diagnosis. Formula counts, timing targets, production mixes, checklists, and corpus benchmarks are adaptable examples, not prerequisite gates. Current platform rules and the creator's actual evidence take precedence.
+
+> ⚠️ Recurso do YouTube Studio de 2026, dependente da UI atual. Use a **intenção** (extrair padrões dos top-vídeos do próprio canal cruzando CTR × views), mesmo que o nome/tela mude. A comparação fica mais útil com histórico comparável; cinco vídeos e 90 dias são referências, não requisitos universais. Cole no ícone "Pergunte ao Studio" (ou ferramenta equivalente de analytics do canal).
 
 ## 1. Padrão de TEMA (o que dá views)
 

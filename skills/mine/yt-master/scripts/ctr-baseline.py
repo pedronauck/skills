@@ -15,7 +15,7 @@ Saída: diagnóstico em stdout (exit 0); erro de entrada em stderr (exit 1).
 import argparse
 import sys
 
-# Amostragem mínima abaixo da qual o CTR é considerado irreal (canal pequeno).
+# Limiar editorial para lembrar incerteza; não é um teste de significância.
 MIN_IMPRESSOES_CONFIAVEL = 1000
 
 
@@ -44,8 +44,8 @@ def main() -> int:
     if args.impressoes < MIN_IMPRESSOES_CONFIAVEL:
         print(
             f"⚠️  AMOSTRAGEM BAIXA (< {MIN_IMPRESSOES_CONFIAVEL} impressões): este CTR é "
-            "estatisticamente irreal e tende a estar inflado. Não use como sinal de "
-            "qualidade da thumbnail/título — espere a amostragem crescer."
+            "uma observação com amostra pequena. Isso não prova inflação nem "
+            "significância; compare público, origem do tráfego e janela de observação."
         )
 
     if args.baseline is not None:
@@ -59,11 +59,11 @@ def main() -> int:
             f"{abs(delta):.2f} ponto(s) {sinal} da sua média."
         )
         if delta >= 0:
-            print("✅ Acima da média do canal: o embrulho (título+thumbnail) está performando bem.")
+            print("CTR observado igual ou acima da baseline; isoladamente isso não prova a qualidade do título/thumbnail.")
         else:
             print(
-                "🔎 Abaixo da média do canal: investigue o embrulho — MAS lembre que o CTR cai "
-                "naturalmente quando o vídeo escala para público frio (inversamente proporcional)."
+                "CTR observado abaixo da baseline. Compare público, origem do tráfego, "
+                "formato e janela antes de atribuir a diferença ao título/thumbnail."
             )
     else:
         print(

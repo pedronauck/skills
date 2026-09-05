@@ -1,6 +1,8 @@
 # Anti-Patterns
 
-The forbidden-phrase list, the 10-item "never say" list, and behavioral red flags. Used by `scripts/buzzword-scan.sh` and by every grill loop in Phase 4 and Phase 6. Each entry pairs a bad pattern with the accepted-example rewrite to show the founder.
+Treat lexical patterns as advisory signals; judge meaning and evidence. Current live-form requirements and truthful claims are binding, while research/interview/score/word-choice rituals are optional under SKILL.md.
+
+The forbidden-phrase list, the 10-item "never say" list, and behavioral red flags. Used as optional diagnostics with `scripts/buzzword-scan.sh`. Examples illustrate clearer answers; they do not add interview phases.
 
 ## Contents
 
@@ -16,7 +18,7 @@ The forbidden-phrase list, the 10-item "never say" list, and behavioral red flag
 
 ## Buzzword / marketing-speak seed list
 
-The buzzword scanner flags these. Each hit must produce a bad → good rewrite or a journaled rationale. Drawn from Graham, Garry Tan, Kevin Hale, Dalton.
+The buzzword scanner flags these. Review hits in context and rewrite only when meaning or clarity improves; no per-hit journal is required. Drawn from Graham, Garry Tan, Kevin Hale, Dalton.
 
 ```
 transform the relationship    revolutioniz(e|ing)    disrupt(ive|ing)
@@ -30,7 +32,7 @@ end-to-end (as buzz)          lifeblood              democratiz(e|ing) (vague)
 platform (without specifics)  passionate/dedicated/driven (as founder claim)
 ```
 
-Note: some of these are legitimate in context (e.g. "AI" describing a real model, "platform" with concrete specifics). The scanner flags; it does not auto-reject. The founder either rewrites or journals why the term is load-bearing.
+Note: some of these are legitimate in context (e.g. "AI" describing a real model, "platform" with concrete specifics). The scanner flags; it does not auto-reject. Keep a term when it is concrete and accurate; do not require a rationale entry for every legitimate use.
 
 ## The 10-item "never say" list (Catherine Cross, cross-confirmed by Dalton + Hale)
 

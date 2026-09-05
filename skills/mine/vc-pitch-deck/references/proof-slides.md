@@ -1,5 +1,7 @@
 # Proof Slides — traction, market sizing, projections, the ask
 
+Use for relevant metrics, market, financials, and ask slides. Numeric presentation/market thresholds below are corpus heuristics, not eligibility gates; verify dated market claims and disclose assumptions.
+
 The proof layer of the deck: every number dated, sourced, with time context. Stage bars and round-size norms are vc-strategy territory (see `../../vc-strategy/references/stage-benchmarks.md` when installed; otherwise the calibration table below) — this file governs how proof is *rendered*.
 
 ## Declare the stage before the numbers

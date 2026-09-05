@@ -1,5 +1,7 @@
 # Testing
 
+Applicability: use existing suites and project policy for the changed contract. Frameworks, snapshot tools, property tests, fuzzing, benchmarks, and documentation coverage settings below are options, not a checklist of mandatory additions.
+
 ## Test Naming and Organization
 
 Use descriptive names that read like sentences:
@@ -365,7 +367,7 @@ cargo llvm-cov --html
 
 - Write tests alongside production code in `#[cfg(test)]` modules
 - Use integration tests in `tests/` for end-to-end testing
-- Include doctests for public API examples
+- Use doctests for runnable public examples when their behavior is part of the API contract
 - Use descriptive test names explaining what is being tested
 - Test edge cases (empty inputs, max values, boundaries)
 - Use property-based testing for algorithmic code

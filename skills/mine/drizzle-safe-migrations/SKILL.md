@@ -1,6 +1,6 @@
 ---
 name: drizzle-safe-migrations
-description: Production-safe Drizzle migration workflow for schema changes that require data backfills or constraint tightening. Use when changing enums/check constraints/defaults, removing status values, or sequencing custom and generated migrations in Drizzle. Trigger on requests about Drizzle migration safety, deployment-safe backfills, migration ordering, and rollback planning. Don't use for ORMs other than Drizzle, app-layer query optimization, or greenfield schema design.
+description: "Plan safe Drizzle backfills, enum/check/default changes, constraint tightening, migration ordering, and rollback. Excludes other ORMs, query optimization, and new-schema design."
 metadata:
   author: Pedro Nauck
   github: https://github.com/pedronauck
@@ -14,7 +14,7 @@ Use this skill to run database migrations in a way that is auditable, deployment
 
 ## Core Rules
 
-- Always generate schema migrations with the project script (`bun run db:generate`).
+- Generate schema migrations with the existing project script and package manager; `bun run db:generate` below is an example, not a required script name.
 - Never hand-edit generated schema migration files.
 - Generate data backfills as custom migrations (`bun run db:generate -- --custom --name <name>`) and edit only that custom SQL file.
 - Apply data normalization before tightening constraints.
@@ -35,9 +35,8 @@ Use this skill to run database migrations in a way that is auditable, deployment
 5. Verify generated SQL and snapshots:
    - backfill migration contains only intended data change.
    - schema migration contains constraint/default/type changes.
-6. Run full backend verification:
-   - `bun run lint && bun run typecheck && bun run test`
-7. Document deployment notes:
+6. Run the owning migration suite against existing-data and fresh-install cases, plus required project gates. Reuse current evidence; unrelated backend suites are not an additional skill gate.
+7. Record material rollout risks and recovery steps when applicable:
    - expected data transformations,
    - lock-risk areas,
    - rollback strategy.
@@ -57,7 +56,7 @@ When removing allowed values (enum/check):
 2. Update default to new value.
 3. Tighten check/enum constraint.
 
-For large tables or strict uptime targets, use staged PostgreSQL patterns (`NOT VALID` + `VALIDATE CONSTRAINT`) where applicable.
+For large tables or strict uptime targets, evaluate staged constraint validation supported by the actual database and driver. PostgreSQL `NOT VALID` / `VALIDATE CONSTRAINT` applies only to supported constraint kinds.
 
 ## Anti-Patterns
 

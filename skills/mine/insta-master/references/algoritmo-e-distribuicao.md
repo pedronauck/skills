@@ -1,5 +1,7 @@
 # Algoritmo e distribuição
 
+Applicability: adapt only the parts needed for the requested Instagram artifact. Output counts, timing, checklists, and performance benchmarks are examples to validate against the account and current platform, not approval gates.
+
 ## Contents
 
 - O motor: retenção + sinais sociais (modelo de anúncios)
@@ -92,7 +94,7 @@ O botão cria uma campanha automática de objetivo "tráfego para o perfil" (nã
 
 ## Funil de diagnóstico (a ordem para achar a falha)
 
-Quando o desempenho cai, diagnostique **nesta ordem** e atribua a falha à etapa certa antes de mudar qualquer coisa:
+When performance drops, use this funnel to locate a plausible failure. Start with the account evidence already available; the order is a diagnostic option, not a required full audit before a focused repair:
 
 ```
 Distribuição inicial → Retenção → Sinais sociais → Recomendação (não-seguidores) → Satisfação/Conexão

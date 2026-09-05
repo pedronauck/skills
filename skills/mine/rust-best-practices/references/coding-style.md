@@ -151,7 +151,7 @@ imports_granularity = "Crate"
 group_imports = "StdExternalCrate"
 ```
 
-As of Rust 1.88, execute `cargo +nightly fmt` for correct reordering.
+Use the repository's pinned formatter (`cargo fmt`); use nightly only when that toolchain is explicitly part of the project.
 
 ## Comments: Context, Not Clutter
 

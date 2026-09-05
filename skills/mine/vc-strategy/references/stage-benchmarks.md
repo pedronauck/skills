@@ -1,5 +1,7 @@
 # Stage Benchmarks — the numbers, with vintages and conflicts
 
+Historical benchmarks retain their stated vintage. Verify current primary sources before using a number for present financial guidance; no benchmark is a permanent eligibility rule.
+
 Single source of truth for current-market bars (vc-pitch-deck points here). Every figure carries source + year; **treat anything pre-2024 as historical**. Conflicts are stated, not averaged — quote the population behind a number, or don't quote it.
 
 ## Pre-seed (2025–26)

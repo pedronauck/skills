@@ -1,13 +1,6 @@
 # Spec Quality Markers
 
-When the user opts into peer review, a spec (TechSpec, design doc, RFC, or detailed PRD) is
-"ready for cross-LLM review" only when all six markers below are present. These markers are
-tech-stack agnostic — they describe what any reviewable design must state, regardless of
-language, framework, or datastore.
-
-If a marker is missing, do not silently abort. Report the missing markers and ask the user
-whether to amend the spec first or proceed anyway. External review on an incomplete spec
-wastes credit and produces shallow noise — but the call is the user's.
+Use these markers to assess the requested review, not to add an approval stage. Scope and affected boundaries always apply. Interface definitions, persistent-data rationale, ownership decisions, and safety invariants apply only where the design changes them. A missing applicable contract is a review finding; an explicit request to review the saved draft is sufficient to proceed. Ask first only when missing scope makes a useful review impossible.
 
 ## Marker 1: Scope / MVP Boundary Statement
 
@@ -48,5 +41,4 @@ concurrency-sensitive behavior is spelled out as a numbered invariant list rathe
 prose. The spec also names the verification surface that proves those invariants (unit /
 integration / end-to-end / contract / lint / build).
 
-If any of these markers is missing, surface the gap to the user before spending external
-review credit.
+Record material gaps and their consequence in the findings. Do not abort for inapplicable headings.

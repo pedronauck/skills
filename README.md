@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **131 agent skills** for Claude Code and compatible AI coding assistants — **38 original** (⭐️), **29 hand-picked** (💎), **18 marketing & business** (📣), plus **46 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **127 agent skills** for Claude Code and compatible AI coding assistants — **39 original** (⭐️), **24 hand-picked** (💎), **18 marketing & business** (📣), plus **46 community** skills. Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -44,8 +44,8 @@ ln -s $(pwd)/skills/mine ~/.claude/skills/mine
 
 Skills are organized into four top-level buckets:
 
-- `skills/mine/` — 38 original skills authored in this repository (⭐️)
-- `skills/curated/` — 29 hand-picked community skills (💎)
+- `skills/mine/` — 39 original skills authored in this repository (⭐️)
+- `skills/curated/` — 24 hand-picked community skills (💎)
 - `skills/marketing/` — 18 marketing, business, and writing skills (📣)
 - `skills/community/` — 46 broader community skills
 
@@ -69,6 +69,7 @@ Original skills authored in this repository.
 - **[app-renderer-systems](./skills/mine/app-renderer-systems)** — Domain feature systems organized under a `systems/` directory
 - **[architectural-analysis](./skills/mine/architectural-analysis)** — Deep architectural audit for dead code, duplication, anti-patterns, and code smells
 - **[bubbletea](./skills/mine/bubbletea)** — Build terminal UIs with Go and Bubbletea -- Elm architecture, Lipgloss styling, dual-pane layouts, and reusable components
+- **[ddd-master](./skills/mine/ddd-master)** — Domain-Driven Design process for a coding agent: verdict first (refuse slogan DDD / pick transaction script), grasp the domain (EventStorming timeline), lock ubiquitous language and bounded contexts, then design one aggregate at a time — with disclosed catalogs for strategic relationships, tactical building blocks, Branas/Elemar practitioner checks, and empirical pitfalls
 - **[deep-review](./skills/mine/deep-review)** — CodeRabbit-grade deep review of a branch diff, working tree, or GitHub PR at any size (no file cap) — funnels changed files into cohorts, fans out parallel hunk-level reviewers with checkout-verified evidence discipline, merges findings mechanically, and emits a walkthrough, severity-tagged findings with committable suggestions plus AI-agent fix prompts, and a SHIP/FIX_BEFORE_SHIP/REWORK verdict — with incremental re-reviews, optional PR publishing, cross-LLM `--subagent` runtimes, and `--spec` conformance gating
 - **[deslop](./skills/mine/deslop)** — Remove AI-generated code slop from the branch diff — unnecessary comments, abnormal defensive checks, `any` casts, deep nesting — before claiming a task complete or opening a PR
 - **[drizzle-safe-migrations](./skills/mine/drizzle-safe-migrations)** — Production-safe Drizzle migration workflows for schema changes
@@ -109,23 +110,18 @@ Original skills authored in this repository.
 Hand-picked community skills maintained in this repository.
 
 - **[agent-browser](./skills/curated/agent-browser)** — Automate browser interactions for testing, form filling, and data extraction
-- **[architecture-diagram](./skills/curated/architecture-diagram)** — Professional dark-themed system architecture diagrams as standalone HTML/SVG files
 - **[autoresearch](./skills/curated/autoresearch)** — Autonomously optimize any skill by running evals, mutating prompts, and keeping improvements
-- **[brainstorming](./skills/curated/brainstorming)** — Explore intent, requirements, and design through collaborative dialogue
 - **[context7](./skills/curated/context7)** — Retrieve up-to-date technical documentation, API references, and code examples for any library via Context7 CLI
 - **[documentation-writer](./skills/curated/documentation-writer)** — Diátaxis-guided technical writing across tutorials, how-to guides, reference, and explanation quadrants
 - **[effect-ts](./skills/curated/effect-ts)** — Effect-TS code including setup, data modeling, error handling, and `Context.Tag`
 - **[exa-web-search-free](./skills/curated/exa-web-search-free)** — Free AI-powered web, code, and company search via Exa MCP
 - **[extreme-software-optimization](./skills/curated/extreme-software-optimization)** — Profile-driven performance optimization with behavior proofs, opportunity scoring, and isomorphism guarantees
 - **[firecrawl](./skills/curated/firecrawl)** — Web scraping, search, crawling, and browser automation via the Firecrawl CLI
-- **[game-changing-features](./skills/curated/game-changing-features)** — Find 10x product opportunities and high-leverage improvements
 - **[hono](./skills/curated/hono)** — Hono framework development with documentation search and API reference
-- **[impeccable](./skills/curated/impeccable)** — Production-grade frontend design and iteration — bold or quiet redesigns, live UI iteration, visual hierarchy, accessibility, motion, and design-token discipline backed by real working code
 - **[lesson-learned](./skills/curated/lesson-learned)** — Extract software engineering lessons from git history and recent code changes
 - **[mastra](./skills/curated/mastra)** — Mastra framework for building AI agents and workflows
 - **[next-best-practices](./skills/curated/next-best-practices)** — Next.js best practices -- file conventions, RSC boundaries, data patterns, async APIs, metadata, error handling, and optimization
 - **[qmd](./skills/curated/qmd)** — Search markdown knowledge bases, notes, and documentation using QMD
-- **[ratatui-tui](./skills/curated/ratatui-tui)** — Terminal UIs with ratatui v0.30.0+ -- Elm Architecture, StatefulWidget, async events
 - **[sentry-cli](./skills/curated/sentry-cli)** — Sentry CLI for interacting with Sentry from the command line
 - **[shadcn](./skills/curated/shadcn)** — Building UI components with shadcn/ui, Radix UI primitives, and design tokens
 - **[systematic-debugging](./skills/curated/systematic-debugging)** — Root-cause investigation before proposing fixes for bugs or test failures

@@ -41,7 +41,7 @@ If the partner cannot tell that story from the answers alone, the application fa
 4. What they've accomplished so far.
 5. Why this will work.
 
-The skill's Phase 6 gate runs a **story compile** check: write the Dalton-style story using only the drafted answers. Any blank that can't be filled → rewrite the relevant draft.
+For a requested full-application review, an optional story sketch can reveal gaps in the drafted answers. It does not create a Phase 6 gate or block editing an individual answer.
 
 ## Sam Altman's four evaluation questions
 
@@ -54,7 +54,7 @@ The skill's Phase 6 gate runs a **story compile** check: write the Dalton-style 
 
 Plus a fifth filter: suspicion of "tracked resumes" — *"startups are not a resume item, and we don't like founders who view YC as a stop on the way to B-school."*
 
-The skill runs all four as a self-grading gate in Phase 6.
+Use these four questions as optional review lenses; they are not acceptance scores or submission gates.
 
 ## The founders question — most important on the form
 

@@ -1,5 +1,7 @@
 # Decisões de Canal
 
+Applicability: use the parts relevant to the requested video, format, or diagnosis. Formula counts, timing targets, production mixes, checklists, and corpus benchmarks are adaptable examples, not prerequisite gates. Current platform rules and the creator's actual evidence take precedence.
+
 > Eixo Camilo Coutinho. Cobre as decisões estruturais que a base Caique (focada em embrulho/algoritmo) não trata: **como nomear, recomeçar, reorganizar ou migrar** um canal — e os erros estruturais ao começar.
 
 ## Conteúdo

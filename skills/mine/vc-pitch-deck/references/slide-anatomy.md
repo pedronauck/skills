@@ -1,5 +1,7 @@
 # Slide Anatomy — craft rules and per-slide requirements
 
+Apply the affected slide type. Word/visual/number counts guide legibility; they are not universal failures. Preserve clear, verifiable meaning when the content needs a different shape.
+
 Universal craft rules first; then every standard slide. Attributions dated where the claim is time-sensitive.
 
 ## Craft rules (every slide)

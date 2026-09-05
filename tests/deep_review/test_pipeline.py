@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 SKILL_DIR = Path(__file__).resolve().parents[2] / "skills" / "mine" / "deep-review"
@@ -14,6 +15,7 @@ SCRIPTS_DIR = SKILL_DIR / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 import _common  # noqa: E402
+import build_manifest  # noqa: E402
 
 
 class DeepReviewPipelineTest(unittest.TestCase):
@@ -159,6 +161,51 @@ class DeepReviewPipelineTest(unittest.TestCase):
                 ],
             },
         }
+
+    def test_pr_manifest_excludes_changes_only_on_the_base_branch(self) -> None:
+        def git(*args: str) -> str:
+            return subprocess.run(
+                ["git", "-c", "user.name=Test", "-c", "user.email=test@example.com",
+                 "-c", "commit.gpgsign=false", *args],
+                cwd=self.repo, check=True, text=True, capture_output=True,
+            ).stdout.strip()
+
+        git("add", "src/app.py", "src/nested/module.py")
+        git("commit", "-m", "initial")
+        ancestor = git("rev-parse", "HEAD")
+        base_branch = git("branch", "--show-current")
+        git("switch", "-c", "pr-feature")
+        self._write("src/app.py", "def run():\n    return 3\n")
+        git("commit", "-am", "feature")
+        head = git("rev-parse", "HEAD")
+        git("switch", base_branch)
+        self._write("src/nested/module.py", "def nested():\n    return 4\n")
+        self._write("src/base_only.py", "BASE_ONLY = True\n")
+        git("add", "src/nested/module.py", "src/base_only.py")
+        git("commit", "-m", "advance base")
+        base_tip = git("rev-parse", "HEAD")
+        git("switch", "pr-feature")
+        metadata = {"baseRefOid": base_tip, "headRefOid": head,
+                    "title": "Feature", "url": "https://github.com/example/repo/pull/1"}
+        real_run = build_manifest.run
+
+        def run_with_github_metadata(cmd, cwd, check=True):
+            if cmd[:3] == ["gh", "auth", "status"]:
+                return subprocess.CompletedProcess(cmd, 0, "", "")
+            if cmd[:3] == ["gh", "pr", "view"]:
+                return subprocess.CompletedProcess(cmd, 0, json.dumps(metadata), "")
+            return real_run(cmd, cwd, check=check)
+
+        with patch.object(build_manifest, "run", side_effect=run_with_github_metadata):
+            base, resolved_head, pr = build_manifest.resolve_pr(self.repo, 1)
+            entries = build_manifest.diff_name_status(
+                self.repo, build_manifest.diff_spec(base, resolved_head, False, False),
+            )
+
+        self.assertEqual({entry["path"] for entry in entries}, {"src/app.py"})
+        self.assertEqual(base, ancestor)
+        self.assertEqual(resolved_head, head)
+        self.assertEqual(pr["baseRefOid"], base_tip)
 
     def test_knowledge_discovers_nested_instructions_and_project_skills(self) -> None:
         knowledge, template = self._discover()

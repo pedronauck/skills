@@ -302,46 +302,7 @@ impl Cache {
 
 ### Connection Pool with Semaphore
 
-```rust
-use tokio::sync::{Mutex, Semaphore, SemaphorePermit};
-
-struct Pool {
-    semaphore: Semaphore,
-    connections: Mutex<Vec<Connection>>,
-}
-
-impl Pool {
-    fn new(size: usize) -> Self {
-        Self {
-            semaphore: Semaphore::new(size),
-            connections: Mutex::new((0..size).map(|_| Connection::new()).collect()),
-        }
-    }
-
-    async fn acquire(&self) -> PooledConnection<'_> {
-        let permit = self.semaphore.acquire().await.unwrap();
-        let conn = self.connections.lock().await.pop().unwrap();
-        PooledConnection { pool: self, conn: Some(conn), _permit: permit }
-    }
-}
-
-struct PooledConnection<'a> {
-    pool: &'a Pool,
-    conn: Option<Connection>,
-    _permit: SemaphorePermit<'a>,
-}
-
-impl Drop for PooledConnection<'_> {
-    fn drop(&mut self) {
-        if let Some(conn) = self.conn.take() {
-            let pool = self.pool;
-            tokio::spawn(async move {
-                pool.connections.lock().await.push(conn);
-            });
-        }
-    }
-}
-```
+Prefer the database driver's tested pool. A custom pool must return a connection to the available set before releasing its corresponding permit, including cancellation and shutdown paths. Spawning an asynchronous return from `Drop` can release the permit first, exposes an empty pool to the next acquirer, and may outlive the pool. Use an ownership design that can return resources synchronously or an explicit awaited release protocol with a defined cancellation path; test that invariant in the pool's owning suite.
 
 ## Manual Future Implementation
 

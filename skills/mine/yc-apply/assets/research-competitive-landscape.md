@@ -1,6 +1,8 @@
 # Research Slice 02 — Competitive Landscape
 
-Compose this into an Agent (general-purpose) call in Phase 3. Substitute `{{...}}` from the workspace. Dispatch in parallel with the other four slices in a single message.
+Use only when this slice addresses an unresolved application claim. `N/A — <reason>` is valid for an inapplicable slice; no URL or quotation is required for an explicit evidence gap. Never fabricate evidence to fill the schema.
+
+Use this as a focused research brief only when its question is unresolved. Substitute `{{...}}` from existing context; local research is sufficient for a narrow question. Delegate independent slices only when their scope warrants it.
 
 ---
 

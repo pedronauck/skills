@@ -1,5 +1,7 @@
 # Targeting — who to pitch, who to cut
 
+Size and research the list for the actual raise and founder capacity. Counts, tier percentages, research times, and funnel rates below are historical heuristics; no quota or target must be reached before a useful list can be delivered.
+
 List construction is 80% of the raise's outcome variance — "80% of fundraising work happens before the first call" (Techstars × Metal, 2025). Target partners, not firms; qualify hard; the list should *shrink* as learning accumulates ("if it only grows, your qualification standard is too weak" — Metal, 2026).
 
 ## Self-qualification gate (before building any list)

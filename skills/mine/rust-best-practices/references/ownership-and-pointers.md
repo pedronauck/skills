@@ -39,22 +39,21 @@ const GREETING: &'static str = "Hello, world!";
 
 ## Pointer Type Reference
 
-| Pointer | Send+Sync? | Primary Use |
-|---------|-----------|-------------|
-| `&T` | Yes | Shared immutable access |
-| `&mut T` | Not Send | Exclusive mutable access |
-| `Box<T>` | Yes (if T: Send+Sync) | Heap allocation, single owner, recursive types |
-| `Rc<T>` | Neither | Shared ownership, single-threaded |
-| `Arc<T>` | Yes | Shared ownership, multi-threaded |
-| `Cell<T>` | Not Sync | Interior mutability, Copy types only |
-| `RefCell<T>` | Not Sync | Interior mutability, runtime borrow checking |
-| `Mutex<T>` | Yes | Thread-safe exclusive access |
-| `RwLock<T>` | Yes | Thread-safe shared read OR exclusive write |
-| `OnceCell<T>` | Not Sync | Single-thread one-time initialization |
-| `LazyCell<T>` | Not Sync | Lazy version of OnceCell with closure init |
-| `OnceLock<T>` | Yes | Thread-safe one-time initialization |
-| `LazyLock<T>` | Yes | Thread-safe lazy initialization with closure |
-| `*const T / *mut T` | No | Raw pointers, FFI (inherently unsafe) |
+For the standard allocator, the common bounds are:
+
+| Pointer | `Send` requires | `Sync` requires |
+| --- | --- | --- |
+| `&T` | `T: Sync` | `T: Sync` |
+| `&mut T` | `T: Send` | `T: Sync` |
+| `Box<T>` | `T: Send` | `T: Sync` |
+| `Rc<T>` | Never | Never |
+| `Arc<T>` | `T: Send + Sync` | `T: Send + Sync` |
+| `Cell<T>` / `RefCell<T>` | `T: Send` | Never |
+| `Mutex<T>` | `T: Send` | `T: Send` |
+| `RwLock<T>` | `T: Send` | `T: Send + Sync` |
+| Raw pointers | No automatic `Send` | No automatic `Sync` |
+
+For initialization cells, custom allocators, and guards, inspect their actual trait implementations. Wrapping a type in `Arc` does not make its contents thread-safe. See the standard [Send](https://doc.rust-lang.org/std/marker/trait.Send.html), [Sync](https://doc.rust-lang.org/std/marker/trait.Sync.html), and [Mutex](https://doc.rust-lang.org/std/sync/struct.Mutex.html) contracts.
 
 ## Smart Pointers
 

@@ -1,5 +1,7 @@
 # Sequences & Variants — which deck, in which order, how long
 
+Build only the requested artifact/variant. Slide counts and compression sequences below are optional starting points, not a requirement to produce five artifacts.
+
 Reference for choosing the artifact, its slide order, and its length. There is no universal slide count: the number depends on the artifact (reading vs presented vs demo day) and the stage — the corpus openly disagrees (5–7 Hale · <10 Northflank · 10–12 preuve 2026 · 10–15 YC A · 15 NFX · ~19 pages average in *funded* decks per DocSend · 22–24 Jarvis's "sweet spot" · 9–43 observed in real funded decks, Waveup 2026). Pick by artifact, not by dogma.
 
 ## Variant matrix

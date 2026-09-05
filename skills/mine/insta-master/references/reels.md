@@ -1,5 +1,7 @@
 # Reels — gancho, retenção e produção
 
+Applicability: adapt only the parts needed for the requested Instagram artifact. Output counts, timing, checklists, and performance benchmarks are examples to validate against the account and current platform, not approval gates.
+
 ## Contents
 
 - A tese central: retenção > gancho ("é o começo, não os 3 segundos")
@@ -32,12 +34,12 @@ A métrica-rainha do Reels é o **tempo de tela / tempo médio assistido**, não
 
 ## Estrutura de roteiro do Reel
 
-Estrutura mínima de 3 partes: **GANCHO (começo forte) → DESENVOLVIMENTO → FINALIZAÇÃO (loop/plot twist + CTA).**
+One adaptable three-part structure: **GANCHO (começo forte) → DESENVOLVIMENTO → FINALIZAÇÃO (loop/plot twist + CTA).**
 
 Regras de ouro:
 - A **primeira frase** > os "3 segundos". Se for ler roteiro, leia em VOZ ALTA e troque o que "arranha" / o que você não falaria.
 - *"Quem disse que o começo do vídeo precisa ser o começo?"* — grave em flow (2-3 min), depois **mova a melhor frase/parte para o início** e corte o resto.
-- Coloque a **informação mais importante no FINAL** e/ou um plot twist → gera comentário + re-watch.
+- Place the main information where it best serves the promise. A reveal or plot twist is optional; do not delay a direct answer merely to manufacture suspense.
 - **1 CTA por vídeo.** O melhor CTA costuma ser "seguir" (no topo do funil) ou uma **pergunta** que gera comentário. Nunca peça tudo de uma vez.
 - O vídeo deve funcionar **SEM som** (legenda + contexto visual coerente com a fala).
 

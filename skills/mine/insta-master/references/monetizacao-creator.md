@@ -1,5 +1,7 @@
 # Monetização do creator e venda
 
+Applicability: adapt only the parts needed for the requested Instagram artifact. Output counts, timing, checklists, and performance benchmarks are examples to validate against the account and current platform, not approval gates.
+
 ## Contents
 
 - O guarda-corpo: vender sem parecer propaganda (80/20)

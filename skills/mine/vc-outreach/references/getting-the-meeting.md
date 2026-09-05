@@ -1,5 +1,7 @@
 # Getting the Meeting — warm machinery, cold spec, follow-up rules
 
+Use the requested channel and existing authorization. Length, timing, batch-size, warm-up, and cadence recipes below are experiments, not mandatory stages. Prepare messages; do not send or contact people without explicit authorization.
+
 Four access channels (OpenVC's Fundraising Wheel): warm intros, cold outreach, inbound, existing network. Ranked paths to a first meeting (NFX): warm intro from someone the partner trusts → competitive momentum → KPIs/proof → the X factor. An intro buys ~5 minutes of attention; a cold email buys ~2 seconds.
 
 ## Warm-intro machinery

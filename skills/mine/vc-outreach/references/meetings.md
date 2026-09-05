@@ -1,5 +1,7 @@
 # Meetings — first call through partner meeting, objections, rejection
 
+Adapt preparation and follow-up to the actual meeting. Timers, rehearsal counts, demo lengths, and arrival/response targets below are optional operating heuristics.
+
 The meeting ladder at institutional seed firms: first meeting with the point partner (or associate) → one or two dig-ins → partner meeting. First-to-decision runs 1–2 days to 3–4 weeks. Odds: ~5% after a first 1:1; **25–60% offer rate out of the partner meeting** (First Round, 2024) — the PM is the biggest odds jump in the process. Every meeting where the answer will be no (90%+) still pays out in objections and free consulting — "9 out of 10 VCs won't invest; that means 9 of them end up being free consultants" (NFX).
 
 ## First-call prep

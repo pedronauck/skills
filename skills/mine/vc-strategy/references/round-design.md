@@ -1,5 +1,7 @@
 # Round Design — when to raise, how much, at what price
 
+Use the worksheet when round sizing is in scope. Milestone/scenario counts and percentage convergence are heuristics; explain divergent assumptions rather than forcing estimates to agree.
+
 Sizing, timing, and valuation methods. Current-market numbers live in `stage-benchmarks.md`; this file carries the methods.
 
 ## Raise-now-or-wait readiness test

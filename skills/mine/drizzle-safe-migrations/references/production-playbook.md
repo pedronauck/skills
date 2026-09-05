@@ -5,6 +5,8 @@
 - If no existing data can violate new constraints: use generated schema migration only.
 - If existing data may violate new constraints: use custom backfill migration first, then generated schema migration.
 
+Use the repository's existing generator script and package manager; the Bun commands below illustrate a configured `db:generate` script.
+
 ## Command Sequence
 
 ```bash
@@ -44,4 +46,4 @@ WHERE "status" = 'saved';
 ## Rollback Strategy
 
 - Prefer forward-fix migrations instead of editing old migration files.
-- If rollback is necessary, add a new migration that reintroduces valid compatibility states.
+- If rollback is necessary, prove a lossless recovery path with representative transformed data. Reintroducing an enum value does not restore the old rows. Preserve required backups or reversible mappings before lossy changes; follow the project's approval and compatibility policy.

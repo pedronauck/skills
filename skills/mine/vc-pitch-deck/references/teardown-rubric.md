@@ -1,5 +1,7 @@
 # Teardown Rubric — reviewing a deck the way investors read it
 
+Full slide-by-slide inspection belongs to a complete deck review. For a localized edit, inspect the changed slide, surrounding story, and material claim evidence; do not rerun the full checklist.
+
 Protocol for Step 4 (self-teardown of a draft) and for the review branch (an existing deck). Verdict per slide plus deck-level verdict; every finding names its fix.
 
 ## How investors actually consume a deck

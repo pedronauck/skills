@@ -1,5 +1,7 @@
 # Troubleshooting YouTube Channel Ingest
 
+Apply remedies only to an observed failure. Start with the current tool/network configuration and native backoff; cookies, optional impersonation packages, and proxies are not bulk-ingest prerequisites. Respect access restrictions and rate limits. Resolve the actual tool environment rather than copying a machine-specific Python path.
+
 All ingest mechanics run inside `kb ingest channel`; the rate-limit, proxy, and
 cookie knobs below are read by `kb` from its config (`[youtube]` in kb.toml) and
 environment, not from `scripts/ingest-channel.py`.
@@ -10,23 +12,19 @@ environment, not from `scripts/ingest-channel.py`.
 - Retry the channel videos URL directly, for example https://www.youtube.com/@aiDotEngineer/videos.
 - Configure YOUTUBE_PROXY, YOUTUBE_COOKIES_FILE, or YOUTUBE_USER_AGENT when YouTube blocks the local network.
 
-## Rate Limiting (HTTP 429) — the main blocker at scale
+## Rate Limiting (HTTP 429)
 
-YouTube throttles caption downloads (`timedtext`) per IP very aggressively. `kb
-ingest channel` paces itself with bounded concurrency, inter-request throttle +
-jitter, and adaptive exponential backoff (`[youtube].bulk_concurrency`,
-`[youtube].bulk_throttle`, `[youtube].bulk_retries`, `[youtube].bulk_backoff_max`),
-but on a bare IP that is still not enough. Layered mitigations, strongest first:
+Honor retry/backoff guidance and reduce request rate or concurrency before changing network infrastructure. `kb ingest channel` exposes bounded pacing through `[youtube].bulk_concurrency`, `bulk_throttle`, `bulk_retries`, and `bulk_backoff_max`; inspect the installed tool's options for the failing request.
 
-1. **Cookies (authenticated session).** Export a logged-in YouTube session to a Netscape cookies.txt and set `YOUTUBE_COOKIES_FILE` (or `[youtube].cookies_file`). Prefer a secondary Google account — bulk caption scraping can get an account temporarily flagged. yt-dlp can export from a browser: `yt-dlp --cookies-from-browser <browser> --cookies cookies.txt --skip-download <url>` (Chromium browsers need Keychain access; Arc is not a supported `--cookies-from-browser` name — extract from its profile or a supported browser).
-2. **Impersonation (curl_cffi).** yt-dlp's YouTube extractor wants to impersonate a browser TLS fingerprint; without curl_cffi it warns "no impersonate target available" and is blocked more often. Install it into the yt-dlp environment. Homebrew: `/opt/homebrew/opt/yt-dlp/libexec/bin/python -m pip install curl_cffi`. Verify with `yt-dlp --list-impersonate-targets`.
-3. **Residential proxy.** Set `YOUTUBE_PROXY`. **Datacenter IPs are blocked by YouTube** — use a rotating **residential** proxy. Pin to a single country to avoid account-geo flags (e.g. a `<user>-GB-rotate` username on Webshare rotates the IP per request but stays in GB). Plain all-country rotation with a logged-in account risks impossible-travel security flags.
-4. **Pacing.** Raise `--throttle` (e.g. `5s`) and keep `--concurrency 1` on a bare IP. `--concurrency N` (>1) is only safe behind a rotating proxy. Cookies alone are not enough at high volume; pacing or a rotating proxy is required.
+- Let the rate-limit window clear and resume with lower concurrency or higher throttle. A particular concurrency value does not guarantee success.
+- Use cookies only when the authorized content needs that session. Do not export unrelated browser sessions or treat authentication as a rate-limit bypass.
+- If yt-dlp reports a missing impersonation capability relevant to the failure, inspect its actual environment and supported targets before installing an optional package.
+- An existing, authorized proxy may be relevant to a diagnosed connectivity restriction. Rotating residential proxies are not a prerequisite for bulk work and do not guarantee that throttling disappears.
 
 ## Proxy Errors
 
-- **HTTP 402 Payment Required** (or "Tunnel connection failed: 402"): the proxy's bandwidth/credit is exhausted. Top up the plan and rerun — kb skips videos already ingested, so the run resumes.
-- **HTTP 400 / "Tunnel connection failed"**: usually too many concurrent connections for the plan, or a malformed/over-long sticky session id. Lower `--concurrency` (plans often cap ~5 concurrent), and prefer a server-side rotate username over many unique client session ids.
+- **HTTP 402 / tunnel credit errors:** inspect the configured provider's status and quota. Use an already-authorized route or report the provider boundary; do not purchase capacity automatically. Resume ingestion after the boundary is resolved.
+- **HTTP 400 / tunnel connection failed:** inspect the returned error, endpoint, credentials, and connection limits. Lower concurrency only when the error supports that diagnosis.
 
 ## Captions Fail / Wrong Language
 
@@ -40,7 +38,7 @@ but on a bare IP that is still not enough. Layered mitigations, strongest first:
 - Confirm OPENAI_API_KEY or OPENROUTER_API_KEY is configured for the selected provider.
 - Check kb.toml [stt] settings for provider, model, language, audio_format, chunk_duration, max_chunk_bytes, concurrency, and ffmpeg_path.
 - Reduce STT concurrency or chunk size if provider requests time out or exceed upload limits.
-- Note: audio downloads are also IP-blocked (HTTP 403) without cookies/proxy, like captions.
+- For an audio HTTP 403, inspect the actual access/network error; the status alone does not establish that cookies or a proxy are required.
 
 ## Partial Runs
 

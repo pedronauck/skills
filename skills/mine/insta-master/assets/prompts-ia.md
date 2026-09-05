@@ -1,5 +1,7 @@
 # Prompts de IA (ideação e engenharia reversa)
 
+Applicability: adapt only the parts needed for the requested Instagram artifact. Output counts, timing, checklists, and performance benchmarks are examples to validate against the account and current platform, not approval gates.
+
 Use a IA para ACELERAR, nunca para terceirizar 100% — senão "cai no mesmo cesto que todo mundo". Sempre passe pelo filtro da SUA voz (leia em voz alta e troque o que não soa você).
 
 ---

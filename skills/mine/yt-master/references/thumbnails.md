@@ -1,5 +1,7 @@
 # Thumbnails
 
+Applicability: use the parts relevant to the requested video, format, or diagnosis. Formula counts, timing targets, production mixes, checklists, and corpus benchmarks are adaptable examples, not prerequisite gates. Current platform rules and the creator's actual evidence take precedence.
+
 ## Conteúdo
 
 - Princípio: thumbnail = embalagem

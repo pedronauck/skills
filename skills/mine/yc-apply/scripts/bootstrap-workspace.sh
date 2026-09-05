@@ -37,4 +37,4 @@ sed "s/{{CREATED}}/$CREATED/g" "$TPL_DIR/template-09-journal.md" > "$WS/09_journ
 touch "$WS/01_form-spec.md"
 
 echo "OK: workspace bootstrapped at $WS"
-echo "next: Phase 0 — fill 00_meta.md, capture 01_form-spec.md, set reapplicant flag."
+echo "next: continue the requested task; capture the current form before preparing a submission."

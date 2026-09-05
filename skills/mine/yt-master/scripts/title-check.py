@@ -74,14 +74,14 @@ def main() -> int:
 
     dicas = []
     if not formulas_hit:
-        dicas.append("Não encaixa em nenhuma das 8 fórmulas — reescreva por uma delas (ver references/titulos.md).")
+        dicas.append("Nenhum dos 6 padrões detectáveis foi reconhecido. Isso não invalida o título; avalie clareza e promessa no contexto.")
     if not sinais["palavras_magneticas"]:
         dicas.append("Sem palavra magnética (agora, o fim, novo, segredo, nunca...). Considere adicionar 1.")
     if not sinais["caixa_alta_keyword"]:
-        dicas.append("Sem palavra-chave em CAIXA ALTA — ative leitura dinâmica destacando 1 palavra.")
+        dicas.append("Sem palavra-chave em CAIXA ALTA. Destaque é opcional; preserve a voz do canal e a legibilidade.")
     if len(title) > 75:
         dicas.append("Título longo: pode ser cortado no mobile. Encurte o gancho para os primeiros ~60 caracteres.")
-    dicas.append("Lembrete: gere ≥10 variações pelas 8 fórmulas e escolha por curiosidade × controvérsia × clareza; teste contra os 3 verbos (encontrável/clicável/compartilhável).")
+    dicas.append("Heurística, não previsão de CTR: avalie a promessa, a clareza e a relação com a thumbnail. Variações são opcionais.")
 
     if args.json:
         print(json.dumps({"titulo": title, "score": score, "sinais": sinais, "dicas": dicas}, ensure_ascii=False, indent=2))

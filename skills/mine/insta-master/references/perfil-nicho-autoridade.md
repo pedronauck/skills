@@ -1,5 +1,7 @@
 # Perfil, nicho e autoridade (fundações + 0→1000)
 
+Applicability: adapt only the parts needed for the requested Instagram artifact. Output counts, timing, checklists, and performance benchmarks are examples to validate against the account and current platform, not approval gates.
+
 ## Contents
 
 - Setup de perfil (bio, @nome, foto, 3 fixados)

@@ -1,6 +1,8 @@
 # Briefing de conteúdo — Instagram
 
-> Preencha ANTES de produzir. Um briefing por peça (Reel / carrossel / story-sequence).
+Applicability: adapt only the parts needed for the requested Instagram artifact. Output counts, timing, checklists, and performance benchmarks are examples to validate against the account and current platform, not approval gates.
+
+> Optional: fill the parts useful to a new piece; reuse an existing brief and skip this artifact for a focused edit.
 
 ## Contexto
 - Perfil / @:

@@ -1,8 +1,8 @@
 # YC Application Form — Summer 2026 batch
 
-Bundled default form spec. Phase 0 copies this to `<workspace>/01_form-spec.md` unless the founder pastes a fresher live version from apply.ycombinator.com. When YC changes the form, add a new `form-spec-<batch>.md` rather than editing this file.
+Historical Summer 2026 form snapshot. Use it as reference only; capture the current live form for submission and record it in `<workspace>/01_form-spec.md`. When YC changes the form, add a new `form-spec-<batch>.md` rather than editing this file.
 
-> Field-stakes legend: **[HIGH]** = runs the full grill loop in Phase 4; **[LOW]** = prompt + quick validation only.
+> Field-stakes legend: **[HIGH]** = a potentially important answer; **[LOW]** = a simpler field. These labels do not require a full coaching loop for each edit.
 
 ## Team & Roles
 

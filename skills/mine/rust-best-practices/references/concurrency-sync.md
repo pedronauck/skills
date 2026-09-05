@@ -10,7 +10,7 @@ A pointer is thread-safe only if the data behind it is.
 
 ## Atomics Over Mutex for Primitives
 
-For `bool`, `usize`, and other primitive types, use atomics instead of `Mutex`:
+Atomics can fit independent primitive state. Use a mutex when a multi-field invariant needs one consistency boundary; replacing each field with an atomic does not preserve that invariant:
 
 ```rust
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
@@ -37,7 +37,7 @@ Choose ordering carefully based on the consistency guarantee needed:
 | `Acquire` | Reads after this see writes before the paired `Release` | Reading shared data after a flag check |
 | `Release` | Writes before this are visible after the paired `Acquire` | Writing shared data before setting a flag |
 | `AcqRel` | Both `Acquire` and `Release` | Read-modify-write operations |
-| `SeqCst` | Total ordering across all threads | When in doubt (highest cost) |
+| `SeqCst` | Total ordering across all threads | A single order for sequentially consistent operations |
 
 When unsure, use `SeqCst`. Optimize to weaker orderings only with clear reasoning.
 
@@ -89,6 +89,8 @@ let data = Arc::new(RwLock::new(vec![1, 2, 3]));
 // Multiple concurrent readers
 let read_handle = data.read().unwrap();
 println!("{:?}", *read_handle);
+
+drop(read_handle); // Release the read guard before requesting exclusive access.
 
 // Exclusive writer
 let mut write_handle = data.write().unwrap();
@@ -142,7 +144,7 @@ select! {
 }
 ```
 
-Use `crossbeam::channel` for synchronous contexts and tokio channels for async contexts.
+Use the existing channel implementation unless required selection, multi-consumer, or async semantics justify another dependency.
 
 ## Shared State Patterns
 
@@ -192,11 +194,10 @@ impl Cache {
 
 ## Best Practices
 
-- Use atomics for primitive types (`bool`, `usize`) — avoid `Mutex` overhead
+- Choose synchronization around the invariant; independent primitive state may fit atomics
 - Choose memory ordering carefully — `SeqCst` when unsure, weaker when justified
 - Identify and document lock ordering to prevent deadlocks
-- Prefer `parking_lot::Mutex` and `parking_lot::RwLock` over std equivalents
-- Prefer `crossbeam::channel` over `std::sync::mpsc` for sync channels
+- Keep standard synchronization by default; adopt `parking_lot` or `crossbeam` for required semantics or measured benefits
 - Use `RwLock` instead of `Mutex` for read-heavy workloads
 - Prefer channels over shared state when possible
 - Use `Arc<Mutex<T>>` sparingly — consider architectural alternatives

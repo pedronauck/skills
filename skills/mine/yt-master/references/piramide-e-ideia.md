@@ -1,10 +1,12 @@
 # Pirâmide de Produção & Ideia
 
+Applicability: use the parts relevant to the requested video, format, or diagnosis. Formula counts, timing targets, production mixes, checklists, and corpus benchmarks are adaptable examples, not prerequisite gates. Current platform rules and the creator's actual evidence take precedence.
+
 ## Conteúdo
 
 - A pirâmide invertida (embrulho primeiro)
 - Por que essa ordem: ordem de produção × ordem de consumo
-- Gate de objetivo: Famoso vs Rico
+- Goal lens: reach and conversion
 - Fase de ideia: categorização Novidade / Aula / Lazer
 - A regra do INTERESSE
 - Método VAR (Visão, Atração, Riqueza)
@@ -41,18 +43,18 @@ interesse → vê thumbnail → lê título → clica → assiste → engaja (li
 
 Se a primeira e a segunda coisa que o usuário vê (thumbnail, título) não forem boas, **todo o trabalho anterior de roteiro, gravação e edição não adiantou de nada**. Por isso o embrulho vem primeiro: ele é a "venda" do vídeo, e o resto é a "entrega" que precisa cumprir a promessa.
 
-Gate inegociável da skill: **se o embrulho não convence, não escreva o roteiro.** Tratar título+thumbnail como hipótese testável — se não funciona, troca-se o embrulho em teste A/B e reaproveitam-se as outras ideias de título.
+Treat title and thumbnail as hypotheses when packaging is in scope. Improve a weak promise alongside the script; do not block a requested script on packaging approval or an A/B test.
 
-> ⚠️ O gate existe para **qualidade, não para paralisia.** "O perfeito é inimigo do bom" (Camilo): depois de bom o bastante, **publique** — perfeccionismo de embrulho/roteiro que impede postar é falha, não rigor.
+Prepare the requested artifact to the available evidence. Publication requires the user's authorization; an editorial heuristic does not authorize posting.
 
-## Gate de objetivo: Famoso vs Rico
+## Goal lens: reach and conversion
 
 Antes do embrulho, defina o **objetivo real do canal** — ele muda o formato e o que conta como sucesso:
 
 - **Fama (alcance):** meta = inscritos/views; conteúdo amplo que "convida todo mundo".
 - **Riqueza (conversão):** meta = **vendas**, não inscritos; conteúdo que leva à esteira de produto (caso Camilo: cliente fez R$33k+ com **<5.000 inscritos** usando ~3 vídeos encadeados → produto).
 
-Para canal de negócio, perseguir número de inscritos é a métrica errada. Pergunte cedo: *"esse canal quer ser famoso ou rico?"* — a resposta define o tipo de vídeo.
+Para canal de negócio, perseguir número de inscritos é a métrica errada. Reuse the stated channel objective; clarify only when the missing goal would materially change the requested artifact.
 
 ## Fase de ideia: categorização
 

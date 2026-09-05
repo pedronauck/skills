@@ -1,5 +1,7 @@
 # Busca, SEO interno e IA (AEO) + hashtags
 
+Applicability: adapt only the parts needed for the requested Instagram artifact. Output counts, timing, checklists, and performance benchmarks are examples to validate against the account and current platform, not approval gates.
+
 ## Contents
 
 - O comportamento de busca mudou (multicanal)

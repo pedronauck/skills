@@ -1,5 +1,7 @@
 # Comments and Documentation
 
+Applicability: use existing suites and project policy for the changed contract. Frameworks, snapshot tools, property tests, fuzzing, benchmarks, and documentation coverage settings below are options, not a checklist of mandatory additions.
+
 ## Comments vs Documentation
 
 | Purpose | `// comment` | `/// doc` or `//! crate doc` |
@@ -116,7 +118,7 @@ Place at the top of `lib.rs` or `mod.rs`:
 | `missing_errors_doc` | Functions returning `Result` need `# Errors` section |
 | `missing_safety_doc` | Unsafe functions need `# Safety` section |
 
-Enable in libraries: `#![deny(missing_docs)]`
+For a library with an explicit public-documentation coverage policy, `#![deny(missing_docs)]` can enforce it. Do not add this gate during unrelated edits.
 
 ## Documentation Coverage Checklist
 

@@ -1,6 +1,6 @@
 # Idea Narrative
 
-Phase 2 output. Answer the Seven Pitch Questions, compute the Idea Quality Score, and log the Email Test. See `references/seven-pitch-questions.md`.
+Optional idea-development aid. Use the questions relevant to unresolved claims; scores and the Email Test are coaching tools, not submission prerequisites. See `references/seven-pitch-questions.md`.
 
 ## Seven Pitch Questions (≤2 sentences each)
 

@@ -1,5 +1,7 @@
 # Algoritmo, CTR & Distribuição
 
+Applicability: use the parts relevant to the requested video, format, or diagnosis. Formula counts, timing targets, production mixes, checklists, and corpus benchmarks are adaptable examples, not prerequisite gates. Current platform rules and the creator's actual evidence take precedence.
+
 ## Conteúdo
 
 - O funil de 5 etapas (modelo mental)

@@ -1,5 +1,7 @@
 # Estratégia de conteúdo e ideação
 
+Applicability: adapt only the parts needed for the requested Instagram artifact. Output counts, timing, checklists, and performance benchmarks are examples to validate against the account and current platform, not approval gates.
+
 ## Contents
 
 - A matriz COCA × jornada (o núcleo)
@@ -40,7 +42,7 @@ Classifique **TODO** conteúdo em **dois eixos**. Não são modelos rivais — s
 
 ## Os 4 tipos de conteúdo (COCA)
 
-São quatro, sempre quatro, independente de lojista/prestador/influenciador:
+This framework offers four useful content intentions. Select or combine the ones that fit the account; it is not a mandatory taxonomy for every post:
 - **Crescimento** — fala com quem NÃO te segue; linguagem ampla/fácil; rápido de consumir; gera viralização/share. Quanto mais técnico/nichado, pior para crescer.
 - **Objeção (venda)** — oferta, depoimento, detalhe de produto, antes/depois, quebra de objeção.
 - **Conexão** — legenda longa, emocional, "posts do coração"; fala mais de pessoas e menos de trabalho. Aumenta o "prazo de validade" do seguidor.

@@ -1,5 +1,7 @@
 # Títulos
 
+Applicability: use the parts relevant to the requested video, format, or diagnosis. Formula counts, timing targets, production mixes, checklists, and corpus benchmarks are adaptable examples, not prerequisite gates. Current platform rules and the creator's actual evidence take precedence.
+
 ## Conteúdo
 
 - Princípios
@@ -71,7 +73,7 @@ Método observado no canal: gerar **muitas variações** (ex.: 11 títulos) e es
 
 Exemplo real: para um vídeo sobre ordem de produção, foram gerados 11 títulos ("Você está fazendo vídeos errado", "O maior erro ao planejar vídeos", "Por isso seu canal não cresce"...) e o escolhido foi o **contrarian/curioso** "O que acontece se você criar vídeos ao contrário?" — porque gerava curiosidade, era controverso e fugia da mesmice das outras 10. As ideias descartadas viram material para teste A/B futuro.
 
-Regra prática: gere ≥10 títulos pelas 8 fórmulas, ranqueie por (curiosidade × controvérsia × clareza do interesse) e teste contra os **3 verbos** (encontrável/clicável/compartilhável), escolha 1 e guarde as outras para A/B.
+Use as fórmulas como opções para explorar ângulos. Gere a quantidade pedida e escolha por clareza, promessa e adequação ao público; nenhuma quota de alternativas ou teste A/B é obrigatória.
 
 ## O par título + thumbnail
 

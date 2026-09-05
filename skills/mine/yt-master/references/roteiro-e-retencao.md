@@ -1,5 +1,7 @@
 # Roteiro & Retenção
 
+Applicability: use the parts relevant to the requested video, format, or diagnosis. Formula counts, timing targets, production mixes, checklists, and corpus benchmarks are adaptable examples, not prerequisite gates. Current platform rules and the creator's actual evidence take precedence.
+
 ## Conteúdo
 
 - A métrica-rainha: watch time, não CTR
@@ -58,7 +60,7 @@ Entregue o roteiro **segmentado por função**, com duração sugerida, marcando
 
 | # | Bloco | Função | Duração | Regra |
 | --- | --- | --- | --- | --- |
-| 0 | **Embrulho** (pré-roteiro) | Travar título + conceito de thumbnail; só seguir se "vendem" | — | Gate de prosseguimento (hipótese A/B) |
+| 0 | **Embrulho** (pré-roteiro) | Align title/thumbnail with the actual promise when packaging is in scope | — | Optional packaging hypothesis |
 | 1 | **Gancho** | (a) relembrar a promessa + (b) prometer payoff; abrir 1 técnica de gancho | 10–15s (máx 30s) | Sem enrolação; tom natural; escrito palavra por palavra |
 | 2 | **Contexto / stakes** | Por que importa agora; humanizar (história curta opcional) | curto, direto | Pauta tende a divagar aqui — cortar |
 | 3 | **Desenvolvimento (corpo)** | Entregar a promessa em partes; mini-loops/re-ganchos entre seções | maior bloco | Blocos ≤3 linhas; falar com as próprias palavras |
@@ -101,13 +103,13 @@ Pergunte/infira a idade-alvo antes de definir o ritmo de edição.
 
 ## Desbloqueio: a causa nº1 de travar para gravar
 
-Quando um criador **não consegue gravar**, a causa nº1 **não é técnica** (câmera/luz/áudio) — é **duvidar do conteúdo e não tê-lo planejado** (Camilo). Gates práticos antes de roteirizar/gravar:
+Quando um criador **não consegue gravar**, a causa nº1 **não é técnica** (câmera/luz/áudio) — é **duvidar do conteúdo e não tê-lo planejado** (Camilo). Optional techniques when the creator reports a planning or recording block:
 
 - **Brain dump primeiro:** descarregue tudo (ideias, pendências, medos) num caderno/doc antes de escrever — "não confie só na cabeça". Libera a carga mental que gera bloqueio.
 - **Medo de câmera → conteúdo de segurança + espelho:** grave primeiro o tema que você já domina e conversa com amigos (quase sem roteiro); ensaie no espelho com tópicos para achar cadência/entonação e cortar vícios ("é é", "i i") **antes** de investir em equipamento.
 - **Reframe de percalço:** cada obstáculo (esqueceu o áudio, câmera falhou) não é "não sirvo para isso" — é "preciso gravar mais N vídeos para melhorar oratória/roteiro/voz".
 
-Isto é **gate de desbloqueio**, não coaching: a regra operacional é "planeje e descarregue antes de gravar"; o resto (motivação) fica fora da skill.
+Use a planning exercise only when it addresses the observed block. It is not a prerequisite for drafting or recording, and general motivational coaching remains outside this skill.
 
 ## Conteúdo nativo por plataforma
 

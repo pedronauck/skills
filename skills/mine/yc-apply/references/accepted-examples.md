@@ -1,5 +1,7 @@
 # Accepted Examples
 
+Use a relevant example when it clarifies a field. No minimum candidate/example count applies; do not copy an accepted founder claim into a different application.
+
 Accepted answers and videos. The skill surfaces these while the founder drafts each field — as a reference rubric, NEVER to copy or invent. Excerpts are real and cited to a source, but **provenance varies — weight them accordingly**:
 
 - **[OFFICIAL]** — published by YC (e.g. the official application-video spec page, GitLab/Dropbox examples linked by partners). Highest confidence.

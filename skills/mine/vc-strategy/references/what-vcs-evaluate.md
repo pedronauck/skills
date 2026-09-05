@@ -1,5 +1,7 @@
 # What VCs Evaluate — the decision system the strategy must pass
 
+Use this as a diagnostic rubric for the requested fundability question. The twelve criteria and numeric examples are not prerequisites for drafting another artifact.
+
 The fundraise is designed against how VCs actually decide. Sources dated; conflicts shown, not averaged.
 
 ## Fund-returner arithmetic (the objective function)

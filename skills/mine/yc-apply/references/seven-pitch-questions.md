@@ -1,5 +1,7 @@
 # Seven Pitch Questions + Idea Quality Score + Email Test
 
+Use these questions selectively to strengthen the requested answer. The full interview, numeric score, and Email Test are optional coaching; they do not block drafting or packaging.
+
 The pre-flight framework every founder must pass in Phase 2 before any drafting begins. Sourced from Michael Seibel (`how-to-pitch-your-company-yc-startup-library-y-combinator.md`), Jared Friedman (`how-to-get-startup-ideas-yc-startup-library-y-combinator.md`), and Kevin Hale (`how-to-design-a-better-pitch-deck-yc-startup-library-y-combinator.md`).
 
 ## Contents
