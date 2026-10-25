@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **88 agent skills** for Claude Code and compatible AI coding assistants — **41 original** (⭐️), **34 hand-picked** (💎), and **13 marketing & business** (📣). Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **89 agent skills** for Claude Code and compatible AI coding assistants — **42 original** (⭐️), **34 hand-picked** (💎), and **13 marketing & business** (📣). Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -44,7 +44,7 @@ ln -s $(pwd)/skills/mine ~/.claude/skills/mine
 
 Skills are organized into three top-level buckets:
 
-- `skills/mine/` — 41 original skills authored in this repository (⭐️)
+- `skills/mine/` — 42 original skills authored in this repository (⭐️)
 - `skills/curated/` — 34 hand-picked skills, including locally authored skills (💎)
 - `skills/marketing/` — 13 marketing, business, and writing skills (📣)
 
@@ -65,6 +65,7 @@ Skills are structured instruction sets that give AI agents deep expertise in spe
 Original skills authored in this repository.
 
 - **[agent-exploration](./skills/mine/agent-exploration)** — Dispatch scoped-write explorer subagents in parallel through the current harness's native subagent facility for multi-area research — each slice writes one seven-section analysis file, and the parent synthesizes a summary
+- **[agent-qa-testing](./skills/mine/agent-qa-testing)** — Run selected agent-qa web/mobile regression tests with advanced memidex memory and self-improvement; inspect verdicts and incomplete run evidence
 - **[app-renderer-systems](./skills/mine/app-renderer-systems)** — Domain feature systems organized under a `systems/` directory
 - **[architectural-analysis](./skills/mine/architectural-analysis)** — Deep architectural audit for dead code, duplication, anti-patterns, and code smells
 - **[bubbletea](./skills/mine/bubbletea)** — Build terminal UIs with Go and Bubbletea -- Elm architecture, Lipgloss styling, dual-pane layouts, and reusable components
