@@ -57,7 +57,7 @@ from typing import Any
 ROUTES = {
     "typesafe": {
         "url": "https://api.typesafe.ai/v1/systemone",
-        "model": "jev-latest",              # alias; the response reports the versioned id
+        "model": "jev-latest",              # alias, now jev-1.14.0; pin a versioned id for active use
         "keys": ("TYPESAFE_API_KEY",),
     },
     "openrouter": {
@@ -67,7 +67,7 @@ ROUTES = {
     },
     "gateway": {
         "url": "https://ai-gateway.vercel.sh/v4/ai/evaluation-model",
-        "model": "typesafe-ai/jev",         # alias; the response may not report a dated version
+        "model": "typesafe-ai/jev",         # alias; pin typesafe-ai/jev-1.14.0 for active use
         "keys": ("VERCEL_AI_GATEWAY_API_KEY", "AI_GATEWAY_API_KEY"),
     },
 }
@@ -79,10 +79,11 @@ ROUTE_ROUNDING = {"typesafe": {"probabilityDecimals": 2, "scoreDecimals": 2},
                   "gateway": {"probabilityDecimals": 2, "scoreDecimals": 2}}
 RETRY_STATUS = {429, 500, 502, 503, 504, 524, 529}
 PERMANENT_STATUS = {400, 401, 402, 403, 404, 422}
-PRICE_PER_INPUT_TOKEN = 0.042 / 1_000_000   # list price, unchanged for jev-1.14 (checked 2026-10-17); output is free
+PRICE_PER_INPUT_TOKEN = 0.042 / 1_000_000   # list price, unchanged for jev-1.14 (checked 2026-11-02); output is free
 EPS = 1e-9
 # Danger-zone headers (2026-10-14): images/Box need the first on every request that carries them;
-# long context raises both limits to 262k tokens, slower and less accurate.
+# long context raises both TypeSafe API limits to 262k tokens, slower and less accurate.
+# OpenRouter ignores the header and already allows ~262k per request (measured 2026-11-02).
 IMAGES_HEADER = "TypeSafe-Danger-Zone-Images"
 LONG_CONTEXT_HEADER = "TypeSafe-Danger-Zone-Long-Context"
 IMAGE_ROUTES = {"typesafe"}       # live 2026-10-17: OpenRouter accepts the body but drops `assets` (305 tokens, wrong box)
@@ -384,7 +385,7 @@ class JevClient:
         self.cache_dir = Path(cache_dir) if cache_dir else None
         self.revision, self.timeout_s, self.attempts, self.workers = revision, float(timeout_s), attempts, workers
         self.extra_headers = extra_headers or {}
-        self.long_context = long_context   # danger zone: 262k tokens per request and per question
+        self.long_context = long_context   # danger zone: 262k per request and question on the TypeSafe API; no-op on OpenRouter
         self._secrets = tuple(filter(None, (self.api_key,)))
 
     # ---- transport
@@ -588,7 +589,7 @@ def main(argv: list[str] | None = None) -> int:
     d.add_argument("--state", required=True)
     d.add_argument("--questions", required=True)
     d.add_argument("--assets", help='JSON map {"<reference>": "image path"}; route typesafe only')
-    d.add_argument("--long-context", action="store_true", help="danger zone: 262k-token limits, slower and less accurate")
+    d.add_argument("--long-context", action="store_true", help="danger zone: 262k-token limits on the TypeSafe API (a no-op on OpenRouter), slower and less accurate")
     d.add_argument("--no-cache", action="store_true")
     d.add_argument("--cache-dir", default=".jev-cache")
     v = sub.add_parser("validate", help="validate a saved response against its questions (offline)")

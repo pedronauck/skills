@@ -37,7 +37,7 @@ A tool call can execute and still time out on the response. Before repeating any
 ## Cache and versioning
 
 - Key = hash(route, model, revision, sanitized state, questions). Include the questions: changing one word is a new decision. Include a `revision` you bump when policy or rubric semantics change without text changes, or when the alias behind a route moves.
-- Aliases (`jev-latest`, `jev-preview`, `typesafe-ai/jev`) move when a release ships (`jev-latest` from 1.13 to 1.14 announced for about a week after 2026-10-14), and a cache keyed on the alias keeps serving the old model's answers. For active use, pin a versioned model id (or bump `revision` on each release) and store the versioned id the response reported next to the answers; a cache hit cannot observe a model change.
+- Aliases (`jev-latest`, `jev-preview`, `typesafe-ai/jev`) move when a release ships (`jev-latest` already moved from 1.13 to 1.14), and a cache keyed on the alias keeps serving the old model's answers. For active use, pin a versioned model id (or bump `revision` on each release) and store the versioned id the response reported next to the answers; a cache hit cannot observe a model change.
 - Store the request next to the response; a cache that only keeps answers cannot be audited. Hand out copies, never the stored object (the TS client's memory cache clones on get and set). Decide retention and invalidation before enabling a persistent cache by default.
 - Cache hit returns `latency 0` and `cost 0` **flagged as a hit**; a replay of a cached run is not a cost measurement. Keep one cold run per rubric version for the real numbers.
 - Never cache an invalid receipt or an error.

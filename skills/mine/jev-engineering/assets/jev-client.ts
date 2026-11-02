@@ -96,10 +96,11 @@ export const ROUTE_ROUNDING: Record<Route, Rounding> = {
 };
 const RETRY = new Set([429, 500, 502, 503, 504, 524, 529]);
 const PERMANENT = new Set([400, 401, 402, 403, 404, 422]);
-export const PRICE_PER_INPUT_TOKEN = 0.042 / 1_000_000; // list price, unchanged for jev-1.14 (checked 2026-10-17); output is free
+export const PRICE_PER_INPUT_TOKEN = 0.042 / 1_000_000; // list price, unchanged for jev-1.14 (checked 2026-11-02); output is free
 const EPS = 1e-9;
 // Danger-zone headers (2026-10-14): images/Box need the first on every request that carries them;
-// long context raises both limits to 262k tokens, slower and less accurate.
+// long context raises both TypeSafe API limits to 262k tokens, slower and less accurate.
+// OpenRouter ignores the header and already allows ~262k per request (measured 2026-11-02).
 export const IMAGES_HEADER = "TypeSafe-Danger-Zone-Images";
 export const LONG_CONTEXT_HEADER = "TypeSafe-Danger-Zone-Long-Context";
 const IMAGE_ROUTES = new Set<Route>(["typesafe"]); // live 2026-10-17: OpenRouter accepts the body but drops `assets`
@@ -374,7 +375,7 @@ export interface JevClientOptions {
   timeoutMs?: number;          // one deadline for all attempts, backoff included
   attempts?: number;
   extraHeaders?: Record<string, string>;
-  longContext?: boolean;       // danger zone: 262k tokens per request and per question, slower and less accurate
+  longContext?: boolean;       // danger zone: 262k per request and question on the TypeSafe API, no-op on OpenRouter; slower and less accurate
   fetchImpl?: typeof fetch;
 }
 

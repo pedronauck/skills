@@ -6,14 +6,14 @@ All three expose the same model id family, but the version actually served, the 
 |---|---|---|---|
 | Endpoint | `POST https://api.typesafe.ai/v1/systemone` | `POST https://openrouter.ai/api/alpha/decisions` | `POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model` |
 | Auth | `Authorization: Bearer <TYPESAFE_API_KEY>` | `Authorization: Bearer <OPENROUTER_API_KEY>` | `Authorization: Bearer <gateway key>` + headers below |
-| Model id | `jev-1.14.0`, `jev-1.13.0`, or the aliases `jev-latest` (→ 1.13 until about 2026-10-21, then 1.14) and `jev-preview` (→ 1.14) | `typesafe/jev-1.14` or `typesafe/jev-1.13` (`jev-latest`, `jev-preview`, `jev-1.14.0` and `typesafe-ai/jev` are not valid here) | header `ai-model-id: typesafe-ai/jev`, `typesafe-ai/jev-1.13.0` or `typesafe-ai/jev-1.14.0` (listed 2026-10-17; the alias returns no dated version) |
+| Model id | `jev-1.14.0`, `jev-1.13.0`, or the aliases `jev-latest` and `jev-preview` (both → 1.14.0; `GET /v1/models` lists only aliases, versioned ids are accepted anyway) | `typesafe/jev-1.14` or `typesafe/jev-1.13` (`jev-latest`, `jev-preview`, `jev-1.14.0` and `typesafe-ai/jev` are not valid here) | header `ai-model-id: typesafe-ai/jev`, `typesafe-ai/jev-1.13.0` or `typesafe-ai/jev-1.14.0` (listed 2026-11-02 with `context_window: 32000`; the alias returns no dated version) |
 | Body | `{model, state, questions}` | `{model, state, questions}` | `{state, questions}` with every `noul` question sent as `type: "boolean"` |
 | Extra headers | optional `TypeSafe-Danger-Zone-Images: true`, `TypeSafe-Danger-Zone-Long-Context: true` | optional `HTTP-Referer`, `X-Title` | `ai-gateway-protocol-version: 0.0.1`, `ai-evaluation-model-specification-version: 4`, `ai-gateway-auth-method: api-key` |
 | Answers | native shape (below) | native shape; probabilities may be rounded to two decimals and can appear as float noise (`0.9299999999999999`); a `rounding` object may declare the precision | `boolean` answers carry `probability`; `choice`/`score` may omit `confidence`, observed under `providerMetadata.typesafe.confidence[id]` (observed behavior, not a documented guarantee of the generic v4 contract); `score.legend` may be absent |
 | Usage | `usage.input_tokens`, `usage.output_tokens` | same, plus `usage.cost` (USD) | `usage.inputTokens`, `usage.outputTokens`; cost in `providerMetadata.gateway.cost` as a string, often `"0"` during promotions or missing |
 | Model in response | `model` = versioned id | `model` = versioned id (e.g. `typesafe/jev-1.14-20261014`) | `response.modelId` when present |
 | Images and Box | yes, with the images header (multipart or base64 JSON) | **no**: `assets` dropped silently, a Box answers with garbage (live 2026-10-17) | not tested; the bundled clients refuse |
-| Dominant failure seen | 429 under burst | 503/524 rare; 400 `invalid_union` when the question schema is wrong | 503 in bursts; timeouts |
+| Dominant failure seen | 429 under burst | 503/524 rare; 400 `invalid_union` when the question schema is wrong; 400 `max_tokens_exceeded` over the limit | 503 in bursts; timeouts |
 
 ## Native answer shape (what the reference clients return on every route)
 
@@ -34,14 +34,14 @@ All three expose the same model id family, but the version actually served, the 
 
 - `questions` is a map; the key is yours and is **not shown to the model**. Naming a question `safe_to_publish` adds no instruction. Put the meaning in `instructions`.
 - `instructions` may be a string, an object (`{task, target, rubric, boundaries}`) or an array. `criteria`: Choice = map option → description (≤ 255 options); Score = ordered array of 2–10 level descriptions; Noul = optional `{true, false}` descriptions.
-- Limits: 32k tokens for `state` + the longest question; 64k for `state` + all questions; 262k for both with `TypeSafe-Danger-Zone-Long-Context: true`. Reference nested fields with backticks (`ticket.messages[0].text`).
+- Limits on the TypeSafe API (documented): 32k tokens for `state` + the longest question; 64k for `state` + all questions; 262k for both with `TypeSafe-Danger-Zone-Long-Context: true`. On OpenRouter Decisions (measured 2026-11-02): 66k and 262k states passed, ~263.5k failed, five ~21k questions passed, and the header is ignored, so ~262k per request with no 32k/64k split. Gateway limits were not tested. Over the limit is a 400 with `error_type: max_tokens_exceeded`, deterministic on every route: split the batch by estimated tokens before the call. Reference nested fields with backticks (`ticket.messages[0].text`).
 - Images (danger zone): a top-level `assets` map `{"<uuid ref>": {"type": "image", "format": "jpg", "data_base64": "..."}}` and the reference written anywhere in `state`, `instructions` or `criteria`; `{"type": "box", "instructions": "the mug in `photo`"}` returns `{"type": "box", "box": {"top", "bottom", "left", "right"}, "confidence"}` on jev-1.14 only. Details in `references/images.md`.
 - Bodies may be compressed with `Content-Encoding: gzip` or `zstd` (one layer, zstd window ≤ 8 MiB); the 32 MiB limit applies before and after decompression.
 - Every question in a request is evaluated independently against the same `state`; no question sees another's answer. Anything that needs an earlier answer (fetch a document, build new candidates) is a second request.
 
-## Rate and cost facts (checked 2026-09-20; price unchanged for jev-1.14 on 2026-10-17)
+## Rate and cost facts (checked 2026-11-02)
 
-- List price US$ 0.042 per million input tokens for both 1.13 and 1.14; output free; image tokens and long-context tokens cost the same. Rate limits published as 250k tokens/s and 1,200 requests/min and described as dynamic.
+- List price US$ 0.042 per million input tokens for both 1.13 and 1.14; output free; image tokens and long-context tokens cost the same. Rate limits are per organization, in tokens/s and requests/s, with the numbers in the console (OpenRouter applies its own). Each request has a fixed overhead of about 290 input tokens (measured on OpenRouter).
 - Observed in production-style runs: p50 0.3–0.6 s per call at 1–4k tokens; 6 workers ≈ 16 calls/s, 12 workers ≈ 33 calls/s with zero 429s over 10k calls on OpenRouter; batches of ~20k input tokens ≈ 0.75 s.
 - The Gateway's promotion reported cost `"0"` (its model page dated the promotion's end to 2026-09-25); one 177-million-token internal run showed US$ 0 while the list price would be ≈ US$ 7.45. A reported zero is a reported zero; a margin needs an invoice.
 

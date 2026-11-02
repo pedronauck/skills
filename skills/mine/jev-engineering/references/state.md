@@ -29,7 +29,8 @@ The docs say accuracy falls as state grows with unrelated detail, and a large st
 
 - One internal memory-retrieval integration compared 20 candidates sharing one state against one candidate per request over 320 pairs: mean absolute probability shift 0.12, 26 pairs crossing the 0.5 threshold, homonyms falling from 0.61–0.70 to 0.23–0.39. Batching was cheaper (31 → 12 HTTP calls) and changed answers. The transferable rule is the method, not the numbers: cap candidate lists, and compare batch against single on a sample of your own data before relying on batch results.
 - A long application text resent with every 10-question batch cost ~6k tokens per batch × 34 batches. Acceptable for one-off diagnostics; wrong for a hot path.
-- 30 questions with long rubrics on a ~1k-token document ≈ 7.3k tokens per request and one atomic receipt. Question text counts toward the 64k budget too.
+- 30 questions with long rubrics on a ~1k-token document ≈ 7.3k tokens per request and one atomic receipt. Question text counts toward the request budget too (64k on the TypeSafe API, ~262k on OpenRouter).
+- A memory writer that prefixed each of 864 per-unit questions with long instructions reached 1.7 MB of question text with almost no state, got a deterministic `max_tokens_exceeded` and retried it forever. Estimate tokens per question, split before the call, and treat that 400 as permanent for that batch.
 
 Rules:
 1. Filter in code before the call (eligibility, dedup, time window, glob match). When you cannot filter, run a cheap relevance Noul per candidate as a first pass and send only the survivors.

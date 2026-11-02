@@ -8,14 +8,14 @@ TypeSafe released these on 2026-10-14 behind "danger zone" request headers: feat
 |---|---|---|---|
 | Images anywhere text goes: `state`, `instructions`, `criteria` | `TypeSafe-Danger-Zone-Images: true` | jev-1.13.0 and jev-1.14.0 | without the header the API answers 400 "Images are experimental" |
 | `box` question type: one bounding box per question | same images header | jev-1.14.0 only (`jev-preview`) | on jev-1.13.0 a Box answers 400 with a bare "Invalid request." |
-| Long context: 262k tokens per request and per question | `TypeSafe-Danger-Zone-Long-Context: true` | both | same price per token; slower and less accurate than the default 64k request / 32k question |
+| Long context: 262k tokens per request and per question | `TypeSafe-Danger-Zone-Long-Context: true` | both | same price per token; slower and less accurate than the default 64k request / 32k question. The header and those defaults belong to the TypeSafe API: OpenRouter accepts ~262k without it (measured 2026-11-02) |
 | Opt-in to share queries for debugging | console setting, not a header | — | TypeSafe still does not train on queries |
 
-## Routes (checked live 2026-10-17)
+## Routes (image behavior checked live 2026-10-17, context limits 2026-11-02)
 
 - **TypeSafe API** (`api.typesafe.ai/v1/systemone`): images, Box and long context all work, both as multipart (what the SDKs send) and as base64 inside JSON (what the bundled clients send).
 - **OpenRouter Decisions**: `typesafe/jev-1.14` answers text (reports `typesafe/jev-1.14-20261014`), and accepts a Box question, but **silently drops `assets`**: the same request billed 305 input tokens instead of ~1.6k and returned a box at confidence 0.03 in the wrong corner. Never send images there; the bundled clients refuse before the network.
-- **Vercel AI Gateway** lists `typesafe-ai/jev-1.14.0`; images there were not tested. The bundled clients refuse images on it until someone verifies it.
+- **Vercel AI Gateway** lists `typesafe-ai/jev-1.14.0` with a `vision` tag; images there were not tested. The bundled clients refuse images on it until someone verifies it.
 - A check that catches a dropped image on any route: `usage.input_tokens` must grow by roughly the image's token cost (below). A receipt with an image that costs text-only tokens is a failure, not an answer.
 
 ## Request shape
