@@ -57,7 +57,7 @@ python3 scripts/upstream-skills.py update --bootstrap --skill skills/curated/exa
 
 The September 14, 2026 research covered all **102 original directories** in the four external/deprecated buckets using Exa searches, upstream file comparisons, and historical GitHub revisions where names or content changed: **71 verified installable sources, 4 retired sources, 9 local skills/adaptations, and 18 unresolved origins**. Of the 71 verified packages, 59 changed and 12 were already current at initial adoption. Consumer validation then identified 11 required Firecrawl sibling guides, bringing the manifest to **113 entries and 82 managed sources**. `verified` establishes provenance and an installable target; it does not certify the quality or continued maintenance of an upstream project.
 
-The owner subsequently confirmed authorship of `centrifugo`, `effect-ts`, `shadcn`, `xstate`, `zustand`, `elysia`, `es-toolkit`, `evolution-api`, `electron-builder`, `electron-dev`, and `electron-release`. All 11 live in `curated` as explicitly requested, with no external source. Seven moved from community; four were already in curated. The current classification is **82 verified, 20 local, 7 unresolved, and 4 retired**. Current bucket sizes are curated 42 and community 39. These local skills are never downloaded or replaced by the updater.
+The owner subsequently confirmed authorship of `centrifugo`, `effect-ts`, `shadcn`, `xstate`, `zustand`, `elysia`, `es-toolkit`, `evolution-api`, `electron-builder`, `electron-dev`, and `electron-release`. All 11 live in `curated` as explicitly requested, with no external source. Seven moved from community; four were already in curated. The current classification is **82 verified, 20 local, 6 unresolved, and 4 retired**. Current bucket sizes are curated 42 and community 39. These local skills are never downloaded or replaced by the updater.
 
 The current Firecrawl skill routes to 11 sibling guides. They are included in `skills/curated` and recorded with `requiredBy`, so selecting `firecrawl` for a maintainer update/check also selects its guides. Consumers should install the curated bucket to receive the family together; native `--skill firecrawl` alone does not install dependencies. A newly split upstream package still needs a dependency review during future upgrades.
 
@@ -71,7 +71,7 @@ Known aliases retained for existing consumers are `context7` ← `find-docs`, `b
 
 Retired entries are `a11y-testing` (merged into a broader upstream skill), `next-best-practices` (retired by its author), `brand-storytelling` (removed during reorganization), and `pptx-creator` (original archive unavailable). They retain their current content and historical references. `viz` is a local adapter around upstream prompts without an installable `SKILL.md`, so wholesale replacement would discard its implementation. `hormozi-ad-factory` is treated as local based on the dedicated Pedro commit and available provenance, with that inference explicitly noted.
 
-For unresolved entries, the manifest records searches and rejected candidates. Absence of an external match is not proof of local authorship. In particular, `extreme-software-optimization` has a known publisher but no verified public GitHub update source. These entries remain usable and untouched, without fabricated lock records.
+For unresolved entries, the manifest records searches and rejected candidates. Absence of an external match is not proof of local authorship. These entries remain usable and untouched, without fabricated lock records.
 
 ## Validation
 

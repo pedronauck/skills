@@ -1,6 +1,6 @@
 # Source inventory
 
-All 102 original directories were researched with Exa on September 14, 2026. Native consumer validation added 11 Firecrawl sibling guides. The owner subsequently confirmed authorship of 11 previously unresolved skills and requested that they live in curated. Current inventory: 113 entries — 82 verified, 20 local, 7 unresolved, 4 retired. Full evidence: [`sources.json`](sources.json). Maintenance commands: [guide](../docs/upstream-skills.md).
+All 102 original directories were researched with Exa on September 14, 2026. Native consumer validation added 11 Firecrawl sibling guides. The owner subsequently confirmed authorship of 11 previously unresolved skills and requested that they live in curated. Current inventory: 112 entries — 82 verified, 20 local, 6 unresolved, 4 retired. Full evidence: [`sources.json`](sources.json). Maintenance commands: [guide](../docs/upstream-skills.md).
 
 | Catalogue skill | Status | Install source | Evidence |
 | --- | --- | --- | --- |
@@ -56,7 +56,6 @@ All 102 original directories were researched with Exa on September 14, 2026. Nat
 | [skills/curated/es-toolkit](../skills/curated/es-toolkit) | local | Local authorship | Owner confirmation |
 | [skills/curated/evolution-api](../skills/curated/evolution-api) | local | Local authorship | Owner confirmation |
 | [skills/curated/exa-web-search-free](../skills/curated/exa-web-search-free) | verified | [sundial-org/awesome-openclaw-skills](https://github.com/sundial-org/awesome-openclaw-skills) (mirror) | [Reference](https://clawhub.ai/api/v1/skills/exa-web-search-free) |
-| [skills/curated/extreme-software-optimization](../skills/curated/extreme-software-optimization) | unresolved | Not established | [Reference](https://jeffreys-skills.md/skills/extreme-software-optimization) |
 | [skills/curated/firecrawl](../skills/curated/firecrawl) | verified | [firecrawl/cli](https://github.com/firecrawl/cli) | [Reference](https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl/SKILL.md) |
 | [skills/curated/firecrawl-agent](../skills/curated/firecrawl-agent) | verified | [firecrawl/cli](https://github.com/firecrawl/cli) | [Reference](https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-agent/SKILL.md) |
 | [skills/curated/firecrawl-crawl](../skills/curated/firecrawl-crawl) | verified | [firecrawl/cli](https://github.com/firecrawl/cli) | [Reference](https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-crawl/SKILL.md) |

@@ -121,7 +121,6 @@ Hand-picked skills maintained in this repository, including locally authored ski
 - **[electron-dev](./skills/curated/electron-dev)** — Electron development with Electron Vite and Builder -- main/renderer processes, IPC
 - **[electron-release](./skills/curated/electron-release)** — Electron production builds, notarization, auto-updates, and releases
 - **[es-toolkit](./skills/curated/es-toolkit)** — Modern utility library as a lodash replacement -- array, object, string operations
-- **[extreme-software-optimization](./skills/curated/extreme-software-optimization)** — Profile-driven performance optimization with behavior proofs, opportunity scoring, and isomorphism guarantees
 - **[hono](./skills/curated/hono)** — Hono framework development with documentation search and API reference
 - **[inngest](./skills/curated/inngest)** — Serverless background jobs, event-driven workflows, and durable execution
 - **[lesson-learned](./skills/curated/lesson-learned)** — Extract software engineering lessons from git history and recent code changes

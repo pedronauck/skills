@@ -696,20 +696,6 @@
       "localName": "exa-web-search-free"
     },
     {
-      "path": "skills/curated/extreme-software-optimization",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "extreme-software-optimization",
-      "status": "unresolved",
-      "evidence": [
-        "https://jeffreys-skills.md/skills/extreme-software-optimization",
-        "https://raw.githubusercontent.com/lev-os/agents/HEAD/skills-db/dev/extreme-software-optimization/SKILL.md",
-        "https://raw.githubusercontent.com/oysteinkrog/dotfiles/HEAD/.claude/skills/extreme-software-optimization/SKILL.md"
-      ],
-      "notes": "Publisher found: Jeffreys Skills, exact distinctive description match. Publisher website requires subscription for downloads/CLI sync; no authoritative public npx skills GitHub upstream found. Independent lev-os/agents and oysteinkrog/dotfiles copies have 100% local SKILL.md line overlap, but these are vendored copies with no verified maintenance provenance. Preserve rather than treating a mirror as original.",
-      "localName": "extreme-software-optimization"
-    },
-    {
       "path": "skills/curated/firecrawl",
       "source": "firecrawl/cli",
       "upstreamPath": "skills/firecrawl",
