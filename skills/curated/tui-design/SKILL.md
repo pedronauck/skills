@@ -7,7 +7,7 @@ description: Use this skill when designing terminal user interfaces, creating TU
 
 Design around the user's repeated action, the data they must keep in view, and the terminal capabilities actually available. Keep input responsive under slow I/O and make selection, focus, and operation state explicit.
 
-**Primary documentation checked: 2026-09-04.** Framework APIs change; use the project's versions. Follow the project's visual identity (SilkCircuit Neon for Bliss's personal tools) rather than treating an example palette as a universal theme.
+**Primary documentation checked: 2026-09-04.** Framework APIs change; use the project's versions. Follow the project's visual identity (SilkCircuit Neon for the maintainer's personal tools) rather than treating an example palette as a universal theme.
 
 ## Choose the Layout from the Work
 
@@ -130,7 +130,7 @@ Exercise launch, typing, paste, resize, modal open/close, slow or failed I/O, an
 
 ## Primary Sources
 
-Checked 2026-09-04: [Ratatui application patterns](https://ratatui.rs/concepts/application-patterns/), [Ratatui restoration contract](https://docs.rs/ratatui/latest/ratatui/fn.restore.html), [Crossterm input ownership](https://docs.rs/crossterm/latest/crossterm/event/index.html), [kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol/), [NO_COLOR](https://no-color.org/), [Unicode grapheme segmentation](https://unicode.org/reports/tr29/), and [contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
+Reviewed 2026-09-04 and 2026-10-27; sources and their limits are in `references/evidence.md`.
 
 The state-ownership and verification guidance is engineering synthesis from these contracts, not a claim that a protocol guarantees application correctness.
 

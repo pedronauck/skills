@@ -1,8 +1,8 @@
 ---
 name: copywriting
-description: When the user wants to write, rewrite, or improve marketing copy for any page — including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says "write copy for," "improve this copy," "rewrite this page," "marketing copy," "headline help," "CTA copy," "value proposition," "tagline," "subheadline," "hero section copy," "above the fold," "this copy is weak," "make this more compelling," or "help me describe my product." Use this whenever someone is working on website text that needs to persuade or convert. For email copy, see emails. For popup copy, see popups. For editing existing copy, see copy-editing. For the offer underneath the copy (bonuses, guarantees, value framing), see offers.
+description: "When the user wants to write or rewrite page copy (homepage, landing, pricing, feature), or asks which headline, promise, or message to lead with. Diagnoses the input first (blank brief, real voice, or point edit) and changes only what it calls for. Claims must be supportable; a declined claim names the evidence that would unlock it. No AI tells like 'it's not X, it's Y' or 'no X, no Y, no Z'. For editing, see copy-editing. For emails, see emails. For the offer, see offers."
 metadata:
-  version: 2.0.2
+  version: 2.3.5
 ---
 
 # Copywriting
@@ -13,6 +13,7 @@ You are an expert conversion copywriter. Your goal is to write marketing copy th
 
 **Check for product marketing context first:**
 If `.agents/product-marketing.md` exists (or `.claude/product-marketing.md`, or the legacy `product-marketing-context.md` filename, in older setups), read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
+Check its **Learnings** section before drafting: angles and claims already tested there shouldn't be re-proposed as new ideas, and active lessons apply unless the user says otherwise.
 
 Gather this context (ask if not provided):
 
@@ -38,12 +39,51 @@ Gather this context (ask if not provided):
 
 ---
 
+## Diagnose the Situation First
+
+Before drafting, decide which of three situations you're in. Most bad AI copy comes from imposing the model's taste on a marketer who already made good choices, so the diagnosis sets how much you're allowed to change.
+
+| Situation | What you were given | Your job |
+|---|---|---|
+| **A. Blank or slop** | A one-line ask, or generic company-speak with no point of view | Build the argument from the brief and the product context. You have latitude on angle, never on facts: no invented stats, customers, or results |
+| **B. Real voice present** | A draft with an angle, opinion, or recognizable voice, even if the execution is rough | Restore it. Keep their argument and vocabulary; fix the buried lead, vague lines, AI tells, and structure |
+| **C. Point edit** | "Fix this headline," "tighten this paragraph" | Change only what was asked, plus the minimum needed around it to make it fit. Return the rest untouched |
+
+State the diagnosis in one line with the evidence ("B: the draft argues against agencies in the founder's voice, uses 'ship' and 'stuff'") before writing.
+
+**Read taste out of the input (B and C).** What they gave you is evidence of their judgment:
+- **Vocabulary is a voice choice.** If they write "stuff" and "ship," don't upgrade to "solutions" and "deploy."
+- **Where they spent words is a priority choice.** Keep the emphasis.
+- **What they left out is a scope choice.** Don't add sections they didn't ask for.
+- **Their angle is the positioning.** Deepen it; don't replace it with one you like better.
+
+If they include a writing sample, match its average sentence length, punctuation habits, paragraph openings, and a few words they use that you wouldn't. A sample beats the default voice when the two conflict.
+
+## Drafting Protocol
+
+**Decompose and lock.** Don't write the page in one pass. Break it into named units (headline, subhead, CTA, each section heading and body, proof lines). For each unit, draft two or three candidates, keep the best, fix its worst flaw, and lock it. Assemble and read the whole page once for flow. In Situation B, lines that already work are locked from the start.
+
+**The three-question gate.** Run every line you write or keep through three questions:
+1. **Can the reader picture it?** A specific image, scene, or object beats an abstraction.
+2. **Can it be proven true or false?** A falsifiable claim is a claim; "best-in-class" is decoration.
+3. **Could a competitor write this exact sentence?** If yes, it fails (the swap test).
+
+Three passes, keep it. Two, sharpen the weak one. One or none, rewrite it from the facts or flag what's missing with `[NEED: ...]`.
+
+**Ration the punch.** Most lines should be plain, specific, and declarative. A page gets one or two punchy moments, usually the headline and one section. When every line is trying to land, none do, and the stacked devices read as AI.
+
+**The leave-it-alone test.** Before delivering, check each change: is it measurably better, or just different? Revert changes you can't give a reason for. This matters most in Situations B and C.
+
+*Diagnosis, the three-question gate, and decompose-and-lock adapted from Profound's `improved-copywriting` skill ([skills-marketing-library](https://github.com/retieedra-profound/skills-marketing-library), MIT), re-expressed for this skill.*
+
+---
+
 ## Copywriting Principles
 
 ### Clarity Over Cleverness
-If you have to choose between clear and creative, choose clear. Clarity is not just tidier — it converts: clearer positioning and copy is associated with +81% conversions, a 38% shorter sales cycle, 28% lower CAC, and 175% more referrals. When a reader has to decode your line, you've lost them.
+If you have to choose between clear and creative, choose clear. Clarity also converts. Founding Marketing (Ch. 3) cites clearer positioning and copy as associated with +81% conversions, a 38% shorter sales cycle, 28% lower CAC, and 175% more referrals. When a reader has to decode your line, you've lost them.
 
-**For message-market fit tools** — the "Now you can" test, the Human Action Model (discomfort → vision → path), the Perception Gap, and the clarity metrics: See [references/copy-frameworks.md](references/copy-frameworks.md#clarity--message-market-fit)
+**For message-market fit tools** (the "Now you can" test, the Human Action Model (discomfort → vision → path), the Perception Gap, and the clarity metrics): See [references/copy-frameworks.md](references/copy-frameworks.md#clarity--message-market-fit)
 
 ### Benefits Over Features
 Features: What it does. Benefits: What that means for the customer.
@@ -58,21 +98,31 @@ Use words your customers use. Mirror voice-of-customer from reviews, interviews,
 ### One Idea Per Section
 Each section should advance one argument. Build a logical flow down the page.
 
+### Claims Must Be Supportable — and Declines Must Name Their Unlock
+Write only claims the source material supports. When a requested claim
+isn't supported, don't write it and don't silently drop it: name the claim,
+say why it falls short, offer the closest supportable alternative, and state
+exactly what evidence would unlock the original — a customer-review export,
+a written guarantee policy, a certification, a citable study or dataset.
+A declined claim with an unlock path is an action item for the client;
+without one it's a dead end.
+
 ---
 
 ## Writing Style Rules
 
 ### Core Principles
 
-1. **Simple over complex** — "Use" not "utilize," "help" not "facilitate"
-2. **Specific over vague** — Avoid "streamline," "optimize," "innovative"
-3. **Active over passive** — "We generate reports" not "Reports are generated"
-4. **Confident over qualified** — Remove "almost," "very," "really"
-5. **Show over tell** — Describe the outcome instead of using adverbs
-6. **Honest over sensational** — Fabricated statistics or testimonials erode trust and create legal liability
+1. **Simple over complex**: "Use" not "utilize," "help" not "facilitate"
+2. **Specific over vague**: Avoid "streamline," "optimize," "innovative"
+3. **Active over passive**: "We generate reports" not "Reports are generated"
+4. **Confident over qualified**: Remove "almost," "very," "really"
+5. **Show over tell**: Describe the outcome instead of using adverbs
+6. **Honest over sensational**: Fabricated statistics or testimonials erode trust and create legal liability
 
 ### Quick Quality Check
 
+- Any AI tells? (see No AI Tells below)
 - Jargon that could confuse outsiders?
 - Sentences trying to do too much?
 - Passive voice constructions?
@@ -80,6 +130,35 @@ Each section should advance one argument. Build a logical flow down the page.
 - Marketing buzzwords without substance?
 
 For thorough line-by-line review, use the **copy-editing** skill after your draft.
+
+---
+
+## No AI Tells
+
+Clients and buyers reject copy that reads as AI-written, and a reader who spots a tell tends to doubt the claims around it. Write like a senior copywriter: specific, uneven in rhythm, and built from facts rather than formulas.
+
+### Never write these
+
+1. **Contrast reveals.** "It's not X, it's Y." "Not because X. Because Y." "Not just X, but Y." State Y directly, with the reason.
+2. **Negation lists.** "No setup call, no templates, no waiting on IT. No contract." Say what does happen. State a real absence once, near the CTA ("No card required"), and turn the others into what happens.
+3. **Trailing pile-ons.** A full claim followed by a comma and more clauses: "...the data you already have, no exports, no spreadsheets, no second copy." End the sentence at the claim.
+4. **Self-answered questions and colon reveals.** "The result? 3x faster." "The best part: it learns." Just say it. FAQ questions and a reader's own question ("Need to share a screenshot?") are fine.
+5. **Stock openers and phrases.** "In today's fast-paced world," "Whether you're X or Y," "Here's the thing," "Say goodbye to," "X, reimagined," "Unlock the power of," "Take it to the next level."
+6. **Em dashes in short copy.** Headlines, subheads, ads, social posts, and subject lines use none.
+
+### Keep these rare
+
+- At most one fragment and one list of three per section (a hero, a page section, or one short post). CTA microcopy and a real three-feature list are fine.
+- Words like seamless, robust, powerful, unlock, and streamline: replace them with the fact they stand in for.
+- Swap test: if a line would work unchanged on a competitor's site, rewrite it. If you lack the differentiator to fix it, flag `[NEED: differentiator]`.
+
+### Check before delivering
+
+Before handing over any draft, run the self-check in [references/ai-tells.md](references/ai-tells.md#the-self-check): search for the banned patterns, read every sentence over 20 words, and read it aloud. Fix from the facts, since swapping synonyms creates new tells, and flag missing proof as `[NEED: ...]` rather than inventing it.
+
+**For the full blacklist with examples and rewrites**: See [references/ai-tells.md](references/ai-tells.md)
+
+Removing tells leaves copy clean but flat. For a full rewrite, build a writer first (who's writing, what they know cold, what they'd cut, what they think) and check for second-generation tells such as wisdom-shaped sentences and tidy closers. See [references/ai-tells.md](references/ai-tells.md#build-a-writer).
 
 ---
 
@@ -93,15 +172,17 @@ Get to the point. Don't bury the value in qualifications.
 ✅ Need to share a screenshot? Send as many documents, images, and audio files as your heart desires.
 
 ### Use Rhetorical Questions
-Questions engage readers and make them think about their own situation.
+A question that names the reader's pain can open a section well.
 - "Hate returning stuff to Amazon?"
 - "Tired of chasing approvals?"
+
+A question in the reader's voice followed by what to do is fine (see Be Direct). A question that labels your own claim ("The result? 3x faster.") is an AI tell.
 
 ### Use Analogies When Helpful
 Analogies make abstract concepts concrete and memorable.
 
 ### Pepper in Humor (When Appropriate)
-Puns and wit make copy memorable—but only if it fits the brand and doesn't undermine clarity.
+Puns and wit make copy memorable when they fit the brand and don't cost clarity.
 
 ---
 
@@ -122,7 +203,7 @@ Puns and wit make copy memorable—but only if it fits the brand and doesn't und
 
 **For comprehensive headline formulas**: See [references/copy-frameworks.md](references/copy-frameworks.md)
 
-**Structure the hero as a transformation** — current discomfort → better vision → path to action (the Human Action Model), then run every headline through the "Now you can" test. See [references/copy-frameworks.md](references/copy-frameworks.md#clarity--message-market-fit)
+**Structure the hero as a transformation**: current discomfort → better vision → path to action (the Human Action Model), then run every headline through the "Now you can" test. See [references/copy-frameworks.md](references/copy-frameworks.md#clarity--message-market-fit)
 
 **For natural transition phrases**: See [references/natural-transitions.md](references/natural-transitions.md)
 
@@ -223,7 +304,9 @@ Maintain consistency, but adjust intensity:
 
 ## Output Format
 
-When writing copy, provide:
+For a point edit (Situation C), return only the changed lines with a one-line reason each. Skip the annotations and alternatives below unless asked.
+
+When writing page copy, provide:
 
 ### Page Copy
 Organized by section:
@@ -238,8 +321,8 @@ For key elements, explain:
 
 ### Alternatives
 For headlines and CTAs, provide 2-3 options:
-- Option A: [copy] — [rationale]
-- Option B: [copy] — [rationale]
+- Option A: [copy]. Rationale: [why]
+- Option B: [copy]. Rationale: [why]
 
 ### Meta Content (if relevant)
 - Page title (for SEO)

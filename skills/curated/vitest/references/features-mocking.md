@@ -32,6 +32,10 @@ fn.mockImplementation((x) => x * 2)
 fn.mockImplementationOnce(() => 'first call')
 ```
 
+`fn.mock.instances` (and `contexts`) has one entry per call: `this` for plain calls, or the object `new` returned (`undefined` if the constructor threw). `mockReturnValue`/`mockResolvedValue` etc. throw when the mock is called with `new`; use `mockImplementation` for classes.
+
+`fn.mock.calls` stores arguments **by reference**. If the argument is mutated after the call, assertions see the mutated value; clone at call time (e.g. `mockImplementation(arg => calls.push(structuredClone(arg)))`) when you need the pre-mutation state.
+
 ## Spying on Objects
 
 ```ts
@@ -95,6 +99,8 @@ it('mocks console only here', () => {
 
 ## Module Mocking
 
+`vi.mock`, `vi.unmock`, and `vi.hoisted` are hoisted to the top of the file. In v5 calling them inside a function, block, or `describe`/`test` callback **throws** (it only warned before) — keep them at the module top level. Use `vi.doMock`/`vi.doUnmock` for non-hoisted, in-scope mocking.
+
 ```ts
 // vi.mock is hoisted to top of file
 vi.mock('./api', () => ({
@@ -108,10 +114,20 @@ test('mocked module', () => {
 })
 ```
 
+### Typed Mocks with `import()`
+
+Pass `import('./db.js')` instead of a string. TypeScript infers the module type, so the factory's return value is type-checked and `importOriginal` is typed. IDE renames/moves also update the path.
+
+```ts
+vi.mock(import('./db.js'), () => ({
+  getUser: vi.fn(),
+}))
+```
+
 ### Partial Mock
 
 ```ts
-vi.mock('./utils', async (importOriginal) => {
+vi.mock(import('./utils'), async (importOriginal) => {
   const actual = await importOriginal()
   return {
     ...actual,
@@ -222,6 +238,22 @@ expect(new Date().getFullYear()).toBe(2024)
 vi.useRealTimers() // Restore
 ```
 
+v5 fake timers (and `vi.setSystemTime` used without them) also mock `Temporal` when it's on the global object, not just `Date`:
+
+```ts
+vi.setSystemTime(0)
+Temporal.Now.instant().epochMilliseconds // 0
+
+// keep Temporal native:
+vi.useFakeTimers({ toNotFake: ['Temporal'] })
+```
+
+### Auto-advancing and Tick Modes
+
+While fake timers are on, `vi.waitFor`/`vi.waitUntil` advance timers by `interval` before each check, and `expect.poll` advances by `interval` after each failed attempt, so they don't hang. `vi.setTimerTickMode('interval' | 'nextTimerAsync')` makes timers advance by themselves: `interval` steps fake time on a real-time interval (for state with a limited lifetime), `nextTimerAsync` fires the next pending timer after each macrotask (for code that eventually settles).
+
+`vi.setSystemTime` and the `now` option of `vi.useFakeTimers` also accept `Temporal.Instant`/`Temporal.ZonedDateTime`. Set `fakeTimers.fakeNodeBuiltins: true` to also fake `node:timers` and `node:timers/promises`.
+
 ## Mock Globals
 
 ```ts
@@ -265,7 +297,7 @@ vi.restoreAllMocks()
 // vitest.config.ts
 defineConfig({
   test: {
-    clearMocks: true,    // Clear before each test
+    clearMocks: true,    // Clear call history before each test — v5 DEFAULT
     mockReset: true,     // Reset before each test
     restoreMocks: true,  // Restore after each test
     unstubEnvs: true,    // Restore env vars
@@ -273,6 +305,8 @@ defineConfig({
   },
 })
 ```
+
+> **v5:** `clearMocks` defaults to `true`, so mock call history no longer leaks between tests. Mocks set up outside the test body (setup files, module top level, `beforeAll`) are most affected — their recorded calls are cleared before the asserting test runs. Set `clearMocks: false` to restore the old behavior.
 
 ## Hoisted Variables for Mocks
 
@@ -291,6 +325,11 @@ test('hoisted mock', () => {
 })
 ```
 
+## v5 Behavior Changes
+
+- **Class mocks keep prototype methods.** `vi.fn(Dog)`, `vi.spyOn(obj, 'Dog')`, and `.mockImplementation(class …)` now chain the mock's `prototype` to the implementation's, so instance methods work and `instanceof Dog` passes. `mockReset` reverts the chain.
+- **Automocked modules stay automocked in the browser** — their exports return `undefined` unless you pass `{ spy: true }` or a factory.
+
 ## v4 Behavior Changes
 
 - `vi.fn().getMockName()` returns `'vi.fn()'` (was `'spy'`); snapshots show `[MockFunction]` instead of `[MockFunction spy]`.
@@ -305,10 +344,12 @@ test('hoisted mock', () => {
 - Use `vi.when` for argument-specific behaviors; `using` for scoped auto-restore
 - Use `{ spy: true }` to keep implementation but track calls
 - `vi.hoisted` lets you reference variables in mock factories
+- Prefer `vi.mock(import('./mod'), factory)` over a string path for type-checked factories
 
 <!-- 
 Source references:
 - https://vitest.dev/guide/mocking.html
+- https://vitest.dev/guide/learn/mock-functions
 - https://vitest.dev/api/vi.html
 - https://vitest.dev/guide/recipes/conditional-mocking
 - https://vitest.dev/guide/recipes/explicit-resources

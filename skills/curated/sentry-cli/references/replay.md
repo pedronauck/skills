@@ -20,7 +20,7 @@ List recent Session Replays
 - `-q, --query <value> - Search query (Sentry replay search syntax)`
 - `-e, --environment <value>... - Filter by environment (repeatable, comma-separated)`
 - `-s, --sort <value> - Sort by: date, oldest, duration, errors, activity, or a raw replay sort field - (default: "date")`
-- `-t, --period <value> - Time range: "7d", "2026-08-01..2026-09-01", ">=2026-08-01" - (default: "7d")`
+- `-t, --period <value> - Time range: "7d", "2026-09-01..2026-10-01", ">=2026-09-01" - (default: "7d")`
 - `-f, --fresh - Bypass cache, re-detect projects, and fetch fresh data`
 - `-c, --cursor <value> - Navigate pages: "next", "prev", "first" (or raw cursor string)`
 
@@ -143,6 +143,9 @@ sentry replay view my-org/frontend/346789a703f6454384f1de473b8b9fcc
 
 # Open a replay in the browser
 sentry replay view my-org/346789a703f6454384f1de473b8b9fcc --web
+
+# View the replay linked to a trace
+sentry replay view my-org/frontend/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 ```
 
 All commands also support `--json`, `--fields`, `--help`, `--log-level`, and `--verbose` flags.

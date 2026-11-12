@@ -258,12 +258,12 @@
       "computedHash": "4d247a243fec7e23f1247976e0e491520cb0feb397c5477022551e7b4f5cdd93"
     },
     "skills/curated/agent-browser": {
-      "treeHash": "8e4d3509d1ef6514c0eb82733646310cbb5c19d526bb80c6db36620cf98a0f53",
+      "treeHash": "23965b97ef1742cfd73f548bbc97005efd5f7a28848438295066574b53dd2893",
       "source": "vercel-labs/agent-browser",
       "upstreamPath": "skills/agent-browser",
       "upstreamName": "agent-browser",
       "localName": "agent-browser",
-      "computedHash": "80161e6836b3b40f4e83730a290deb40ac14d877d38c97ad5f6d71be37ce74c3"
+      "computedHash": "1369f96acbedfa4bfc3fe3be8a51ddd852449b2a6399159c81bf4b7e2112434e"
     },
     "skills/curated/autoresearch": {
       "treeHash": "967233d43ec84d66ac59edf04e8666cddb0047dfda1f5b19be7a0b332cf3aeef",
@@ -274,12 +274,12 @@
       "computedHash": "f8efb7dc97667bc62269aaa924ef176d50aaa11d34bd4882c6e42d6506315a27"
     },
     "skills/curated/context7": {
-      "treeHash": "7f988057a542e6bb1a2e4e2992a0d9d941a79be43319ac9da5e6f7d196f7c2d6",
+      "treeHash": "1879edf79ed74f72e536b7b05256edef876b5de5554ca0e209bd4837d0cd3843",
       "source": "upstash/context7",
       "upstreamPath": "skills/find-docs",
       "upstreamName": "find-docs",
       "localName": "context7",
-      "computedHash": "93ec2d2786d7e83973252383875c4f345a2ee7cbbd08a1ab38e5201b214640ee"
+      "computedHash": "001a2a6137510cdffcc235f8571746d4636b5baaa315e6ca33ad2a169d05fa20"
     },
     "skills/curated/documentation-writer": {
       "treeHash": "968e309c8bf33629c13b4e3152498ebbd8cadd059535f3470e4959a3c38c69a4",
@@ -306,12 +306,12 @@
       "computedHash": "d4aeeccee5e30d0b41db63cbae1bf99627ada6ed2939701453c80dd8a15d6e75"
     },
     "skills/curated/hono": {
-      "treeHash": "c40c5635c5270411167f46489adea619d74c9ccf30f8feb2394ec42b4a790793",
+      "treeHash": "ef2a9e7c375b9231b3e8c7905da32b32e63dff6f39940684088ac98b955c5958",
       "source": "honojs/skills",
       "upstreamPath": "skills/hono",
       "upstreamName": "hono",
       "localName": "hono",
-      "computedHash": "2b2d642a6698cf1767d7a65f8beb4aceb078033d5afc5838c08da6d683fc333d"
+      "computedHash": "f469bac28a53d010bb47bd61109d0cfebe9a4f3fd407310746114549886b5870"
     },
     "skills/curated/lesson-learned": {
       "treeHash": "6fb3534edb207a0b9ff3848c0e18998d621fbff445519fc6b420382dfb47ea59",
@@ -330,36 +330,36 @@
       "computedHash": "6482dad39fb72d1fe9d02078c15c3ee708774fd026a8557b4c7dc37fb554977a"
     },
     "skills/curated/qmd": {
-      "treeHash": "f8966317525e943e2424532463d4a6b1ba82447e3c525e683edf70542d2199a7",
+      "treeHash": "e1d71181277673eb3dd82428c8e51e8b6dee3210cecf0311cc43a2a128883b6b",
       "source": "tobi/qmd",
       "upstreamPath": "skills/qmd",
       "upstreamName": "qmd",
       "localName": "qmd",
-      "computedHash": "c8811095809100cfc21c18b0bc6cb2aec4ae8d27d2126795cd4f4aebea9136fb"
+      "computedHash": "c8df0783e5bb894f34bbacce20fb26b9e524a129656a2bb422209cf0d30a13e7"
     },
     "skills/curated/sentry-cli": {
-      "treeHash": "a03fef5f984fc70e8ed213684c46d836ab19d3d7634c5242cdd76429d0039919",
+      "treeHash": "88f63c87e0226aa0228b13c7dc602bf5cee2c35fa0694b52fd5c3b51146f4c5e",
       "source": "getsentry/cli",
       "upstreamPath": "packages/cli/plugins/sentry-cli/skills/sentry-cli",
       "upstreamName": "sentry-cli",
       "localName": "sentry-cli",
-      "computedHash": "44def760ae679754161f6463aee9e12fdd49299c16a015c02542d63d3d00ce28"
+      "computedHash": "f9668ef7a583e7463681cd275a646533a4568a6d30f51b24616aec4fb6c44a5f"
     },
     "skills/curated/systematic-debugging": {
-      "treeHash": "da6652bde93d7991158ecdf88a01918a10714c578e388ba05470eae8f23b2bd3",
+      "treeHash": "e0425c4b9ebbc01e956731c60ac4045562693ac1c9cefe1a55e4d53259aba14f",
       "source": "obra/superpowers",
       "upstreamPath": "skills/systematic-debugging",
       "upstreamName": "systematic-debugging",
       "localName": "systematic-debugging",
-      "computedHash": "a2750dfbaed1690da73b120254892c4f926b4576cb82eb16fc877783941fe39b"
+      "computedHash": "b7b6e98c3bffe371893bdb69845ec61124a65b6a96313dc8d6a2bce4437b13eb"
     },
     "skills/curated/tui-design": {
-      "treeHash": "fcd7ae8ce61d4d150332d6b1be5787531c25b5e70f188a6b48c1ce067e31451e",
+      "treeHash": "d201a46884d552696bcea3bca783f53fb5ff5990216a75b99ae5e1a88ce3b91a",
       "source": "hyperb1iss/hyperskills",
       "upstreamPath": "skills/tui-design",
       "upstreamName": "tui-design",
       "localName": "tui-design",
-      "computedHash": "18309915f2d0a247fd727d207a77bcf6847fb428af37ab3996e0a94bb999d455"
+      "computedHash": "df5eb80ddb1b62b27a53eacf24634a62754ea40a655cf74eb5299b26f3e5cebe"
     },
     "skills/curated/vercel-composition-patterns": {
       "treeHash": "2e40546ae32afa6a4e63bdf8549ee36c3fa4f994e146c4132bfb38e21defc94b",
@@ -386,12 +386,12 @@
       "computedHash": "b529822bdac4b197b180fe12225cff86b930b65910435103c10622df7f041651"
     },
     "skills/curated/vitest": {
-      "treeHash": "d35576d2f3a774052a285d0376efcfe9609cb39b94c0848c612a59b7e6e1d972",
+      "treeHash": "ea2ca678c511b272d19b434cbc5dbc66eb01aac7147161e896011432d808b0f8",
       "source": "antfu/skills",
       "upstreamPath": "skills/vitest",
       "upstreamName": "vitest",
       "localName": "vitest",
-      "computedHash": "943d436114c677802426741980146c07560bf375297666b03062444f4b98a785"
+      "computedHash": "90f1cee9326269c91b46a601b3a575491505d8e771009dacff01329381d45291"
     },
     "skills/curated/zod": {
       "treeHash": "05667900d987f8235d01c0c9e82aeb84e21fe872ee1c2df5f65bb2cc5c2f34dc",
@@ -474,12 +474,12 @@
       "computedHash": "de7e9085e875a651f209c826d1a5e7dd5f2436fb38fe565ef76b54492c1a0c22"
     },
     "skills/marketing/copywriting": {
-      "treeHash": "4bfffa9b6dacbd48e8ac238f6a70260fd529584920bcbdd402cdf132164d404a",
+      "treeHash": "551415be61aa31f69658278f83472ab7bc515c8f76a7788c6a7d18d68969ccdf",
       "source": "coreyhaines31/marketingskills",
       "upstreamPath": "skills/copywriting",
       "upstreamName": "copywriting",
       "localName": "copywriting",
-      "computedHash": "779f05c8be67da475e6a7af78de3e0400b0038e371ce898dd6ff9d3331aab7db"
+      "computedHash": "6aaa371ad7277c452b650c838bd94ae061ae70bcd564f357b6e32feaec5c130f"
     },
     "skills/marketing/fundraising": {
       "treeHash": "230f5fe8471d026291781d512ad5007587e4fa1a41a33aec014d2ec56913c515",
@@ -498,12 +498,12 @@
       "computedHash": "caf6a28b3f5fc4dff4b4b8a0d7f57764ed0cd8854081d0f6d014f30a04e84144"
     },
     "skills/marketing/humanizer": {
-      "treeHash": "4215fb138b0bb8517330f57d67543e72a2bbf641360d1ec43095d3108b7328e4",
+      "treeHash": "3b8e5f084b2d7a9561a315866a4fbc1c9b82eabc9c0fbaa7a3d3357f364b1fa1",
       "source": "blader/humanizer",
       "upstreamPath": ".",
       "upstreamName": "humanizer",
       "localName": "humanizer",
-      "computedHash": "0a4518725b506f6c83e65f2d6d87cb56fbc042ba92de5eecb1ef8b995ec69d70"
+      "computedHash": "99d9195cec720ebe9ae29956e710d7e278991bdd54366503cf1ff7b03f8de45c"
     },
     "skills/marketing/pitch-deck": {
       "treeHash": "b6d5b190ebfee1312d5de26645547eb2b35c030e5988d7616a9af161184e84d2",

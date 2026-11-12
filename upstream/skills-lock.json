@@ -197,7 +197,7 @@
       "source": "vercel-labs/agent-browser",
       "sourceType": "github",
       "skillPath": "skills/agent-browser/SKILL.md",
-      "computedHash": "80161e6836b3b40f4e83730a290deb40ac14d877d38c97ad5f6d71be37ce74c3"
+      "computedHash": "1369f96acbedfa4bfc3fe3be8a51ddd852449b2a6399159c81bf4b7e2112434e"
     },
     "autoresearch": {
       "source": "olelehmann100kMRR/autoresearch-skill",
@@ -209,7 +209,7 @@
       "source": "upstash/context7",
       "sourceType": "github",
       "skillPath": "skills/find-docs/SKILL.md",
-      "computedHash": "93ec2d2786d7e83973252383875c4f345a2ee7cbbd08a1ab38e5201b214640ee"
+      "computedHash": "001a2a6137510cdffcc235f8571746d4636b5baaa315e6ca33ad2a169d05fa20"
     },
     "documentation-writer": {
       "source": "github/awesome-copilot",
@@ -233,7 +233,7 @@
       "source": "honojs/skills",
       "sourceType": "github",
       "skillPath": "skills/hono/SKILL.md",
-      "computedHash": "2b2d642a6698cf1767d7a65f8beb4aceb078033d5afc5838c08da6d683fc333d"
+      "computedHash": "f469bac28a53d010bb47bd61109d0cfebe9a4f3fd407310746114549886b5870"
     },
     "lesson-learned": {
       "source": "softaworks/agent-toolkit",
@@ -251,25 +251,25 @@
       "source": "tobi/qmd",
       "sourceType": "github",
       "skillPath": "skills/qmd/SKILL.md",
-      "computedHash": "c8811095809100cfc21c18b0bc6cb2aec4ae8d27d2126795cd4f4aebea9136fb"
+      "computedHash": "c8df0783e5bb894f34bbacce20fb26b9e524a129656a2bb422209cf0d30a13e7"
     },
     "sentry-cli": {
       "source": "getsentry/cli",
       "sourceType": "github",
       "skillPath": "packages/cli/plugins/sentry-cli/skills/sentry-cli/SKILL.md",
-      "computedHash": "44def760ae679754161f6463aee9e12fdd49299c16a015c02542d63d3d00ce28"
+      "computedHash": "f9668ef7a583e7463681cd275a646533a4568a6d30f51b24616aec4fb6c44a5f"
     },
     "systematic-debugging": {
       "source": "obra/superpowers",
       "sourceType": "github",
       "skillPath": "skills/systematic-debugging/SKILL.md",
-      "computedHash": "a2750dfbaed1690da73b120254892c4f926b4576cb82eb16fc877783941fe39b"
+      "computedHash": "b7b6e98c3bffe371893bdb69845ec61124a65b6a96313dc8d6a2bce4437b13eb"
     },
     "tui-design": {
       "source": "hyperb1iss/hyperskills",
       "sourceType": "github",
       "skillPath": "skills/tui-design/SKILL.md",
-      "computedHash": "18309915f2d0a247fd727d207a77bcf6847fb428af37ab3996e0a94bb999d455"
+      "computedHash": "df5eb80ddb1b62b27a53eacf24634a62754ea40a655cf74eb5299b26f3e5cebe"
     },
     "vercel-composition-patterns": {
       "source": "vercel-labs/agent-skills",
@@ -293,7 +293,7 @@
       "source": "antfu/skills",
       "sourceType": "github",
       "skillPath": "skills/vitest/SKILL.md",
-      "computedHash": "943d436114c677802426741980146c07560bf375297666b03062444f4b98a785"
+      "computedHash": "90f1cee9326269c91b46a601b3a575491505d8e771009dacff01329381d45291"
     },
     "zod": {
       "source": "pproenca/dot-skills",
@@ -359,7 +359,7 @@
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
       "skillPath": "skills/copywriting/SKILL.md",
-      "computedHash": "779f05c8be67da475e6a7af78de3e0400b0038e371ce898dd6ff9d3331aab7db"
+      "computedHash": "6aaa371ad7277c452b650c838bd94ae061ae70bcd564f357b6e32feaec5c130f"
     },
     "fundraising": {
       "source": "oldwinter/skills",
@@ -377,7 +377,7 @@
       "source": "blader/humanizer",
       "sourceType": "github",
       "skillPath": "SKILL.md",
-      "computedHash": "0a4518725b506f6c83e65f2d6d87cb56fbc042ba92de5eecb1ef8b995ec69d70"
+      "computedHash": "99d9195cec720ebe9ae29956e710d7e278991bdd54366503cf1ff7b03f8de45c"
     },
     "pitch-deck": {
       "source": "ailabs-393/ai-labs-claude-skills",

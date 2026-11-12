@@ -19,7 +19,7 @@ List issues in a project
 - `-q, --query <value> - Search query (Sentry syntax, implicit AND, no OR operator)`
 - `-n, --limit <value> - Maximum number of issues to list - (default: "25")`
 - `-s, --sort <value> - Sort by: recommended, date, new, freq, user (default: recommended on sentry.io, else date)`
-- `-t, --period <value> - Time range: "7d", "2026-08-01..2026-09-01", ">=2026-08-01" - (default: "90d")`
+- `-t, --period <value> - Time range: "7d", "2026-09-01..2026-10-01", ">=2026-09-01" - (default: "90d")`
 - `-c, --cursor <value> - Pagination cursor (use "next" for next page, "prev" for previous)`
 - `--compact - Single-line rows for compact output (auto-detects if omitted)`
 - `-f, --fresh - Bypass cache, re-detect projects, and fetch fresh data`
@@ -92,7 +92,7 @@ List events for a specific issue
 - `-n, --limit <value> - Number of events (1-1000) - (default: "25")`
 - `-q, --query <value> - Search query (Sentry search syntax)`
 - `--full - Include full event body (stacktraces)`
-- `-t, --period <value> - Time range: "7d", "2026-08-01..2026-09-01", ">=2026-08-01" - (default: "7d")`
+- `-t, --period <value> - Time range: "7d", "2026-09-01..2026-10-01", ">=2026-09-01" - (default: "7d")`
 - `-f, --fresh - Bypass cache, re-detect projects, and fetch fresh data`
 - `-c, --cursor <value> - Navigate pages: "next", "prev", "first" (or raw cursor string)`
 
@@ -135,9 +135,9 @@ sentry issue events FRONT-ABC --limit 50 --period 24h
 sentry issue events FRONT-ABC -c next
 ```
 
-### `sentry issue explain <issue>`
+### `sentry issue explain <issue...>`
 
-Analyze an issue's root cause using Seer AI
+Analyze one or more issues using Seer AI
 
 **Flags:**
 - `--force - Force new analysis even if one exists`
@@ -161,14 +161,11 @@ sentry issue explain 123456789
 # By short ID with org prefix
 sentry issue explain my-org/MYPROJECT-ABC
 
+# Analyze multiple issues in one invocation
+sentry issue explain FRONT-ABC BACK-2
+
 # Force a fresh analysis
 sentry issue explain 123456789 --force
-
-# Generate a fix plan (automatically runs explain if needed)
-sentry issue plan 123456789
-
-# Force a fresh plan even if one already exists
-sentry issue plan 123456789 --force
 ```
 
 ### `sentry issue plan <issue>`
@@ -179,12 +176,23 @@ Generate a solution plan using Seer AI
 - `--force - Force new plan even if one exists`
 - `-f, --fresh - Bypass cache, re-detect projects, and fetch fresh data`
 
-### `sentry issue view <issue>`
+**Examples:**
 
-View details of a specific issue
+```bash
+# Generate a fix plan (automatically runs explain if needed)
+sentry issue plan 123456789
+
+# Force a fresh plan even if one already exists
+sentry issue plan 123456789 --force
+```
+
+### `sentry issue view <issue...>`
+
+View details of one or more issues
 
 **Flags:**
 - `-w, --web - Open in browser`
+- `--force - Allow --web to open more than 5 issues`
 - `--spans <value> - Span tree depth limit (number, "all" for unlimited, "no" to disable) - (default: "3")`
 - `-f, --fresh - Bypass cache, re-detect projects, and fetch fresh data`
 
@@ -221,8 +229,14 @@ View details of a specific issue
 ```bash
 sentry issue view FRONT-ABC
 
-# Open in browser
-sentry issue view FRONT-ABC -w
+# Multiple issues in one invocation (space-separated, not commas)
+sentry issue view FRONT-ABC BACK-2
+
+# Open one or more issues in the browser (up to 5 tabs by default)
+sentry issue view FRONT-ABC BACK-2 -w
+
+# Explicitly allow more than 5 tabs
+sentry issue view FRONT-ABC BACK-2 API-3 WEB-4 IOS-5 OPS-6 -w --force
 
 # GitHub-style identifiers work too (the "#" replaces the final slash)
 sentry issue view my-org/my-project#FRONT-ABC
@@ -230,6 +244,9 @@ sentry issue view my-project#FRONT-ABC
 
 # Full JSON (issue fields + latest event + trace/replay context)
 sentry issue view FRONT-ABC --json
+
+# Multiple issues: JSON is an array of the same objects
+sentry issue view FRONT-ABC BACK-2 --json
 
 # Select specific top-level fields to keep output small
 sentry issue view FRONT-ABC --json --fields shortId,title,culprit,count,userCount,permalink
