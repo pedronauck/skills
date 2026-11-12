@@ -1,6 +1,6 @@
 # Maintaining third-party skills
 
-Published skills stay in `skills/{curated,community,marketing,deprecated}`. Consumers can continue installing a bucket with `npx skills add pedronauck/skills/skills/curated`. The maintainer workflow uses the native `skills` CLI in temporary projects, then copies the installed packages into their mapped catalogue directories.
+Published third-party skills stay in `skills/{curated,marketing}`. Consumers can continue installing a bucket with `npx skills add pedronauck/skills/skills/curated`. The maintainer workflow uses the native `skills` CLI in temporary projects, then copies the installed packages into their mapped catalogue directories.
 
 ## Commands
 
@@ -57,21 +57,19 @@ python3 scripts/upstream-skills.py update --bootstrap --skill skills/curated/exa
 
 The September 14, 2026 research covered all **102 original directories** in the four external/deprecated buckets using Exa searches, upstream file comparisons, and historical GitHub revisions where names or content changed: **71 verified installable sources, 4 retired sources, 9 local skills/adaptations, and 18 unresolved origins**. Of the 71 verified packages, 59 changed and 12 were already current at initial adoption. Consumer validation then identified 11 required Firecrawl sibling guides, bringing the manifest to **113 entries and 82 managed sources**. `verified` establishes provenance and an installable target; it does not certify the quality or continued maintenance of an upstream project.
 
-The owner subsequently confirmed authorship of `centrifugo`, `effect-ts`, `shadcn`, `xstate`, `zustand`, `elysia`, `es-toolkit`, `evolution-api`, `electron-builder`, `electron-dev`, and `electron-release`. All 11 live in `curated` as explicitly requested, with no external source. Seven moved from community; four were already in curated. The current classification is **82 verified, 20 local, 6 unresolved, and 4 retired**. Current bucket sizes are curated 42 and community 39. These local skills are never downloaded or replaced by the updater.
-
-The current Firecrawl skill routes to 11 sibling guides. They are included in `skills/curated` and recorded with `requiredBy`, so selecting `firecrawl` for a maintainer update/check also selects its guides. Consumers should install the curated bucket to receive the family together; native `--skill firecrawl` alone does not install dependencies. A newly split upstream package still needs a dependency review during future upgrades.
+The owner subsequently confirmed authorship of `centrifugo`, `effect-ts`, `shadcn`, `xstate`, `zustand`, `elysia`, `es-toolkit`, `evolution-api`, `electron-builder`, `electron-dev`, and `electron-release`. All 11 live in `curated` as explicitly requested, with no external source. Seven moved from community; four were already in curated. The current classification is **82 verified, 20 local, 6 unresolved, and 4 retired**. These local skills are never downloaded or replaced by the updater.
 
 The autoresearch package has an upstream link to `references/eval-guide.md` although the file is at its root. A narrow manifest replacement repairs that link after each native install; the native lock retains the upstream hash while the catalogue lock reflects the correction. If the source changes so neither the old nor corrected text exists, installation fails for review. The `.gitignore` exception ensures this real skill package is included in the published repository.
 
-A second narrow correction in Firecrawl states that optional workflow skills need `firecrawl setup workflows`; the upstream text incorrectly assumes they are already installed alongside the CLI guides.
+The known alias retained for existing consumers is `context7` ← `find-docs`.
 
-Known aliases retained for existing consumers are `context7` ← `find-docs`, `better-auth-organization-best-practices` ← `organization-best-practices`, `drizzle-postgres` ← `postgres-drizzle`, and `writing-great-skills` ← `writing-for-agents`.
-
-`exa-web-search-free` uses an explicitly identified GitHub mirror. Its contents were checked byte-for-byte against the original ClawHub 1.0.1 package from `whiteknight07`. Updates track that mirror; a later ClawHub release is not guaranteed to appear there. The original registry and mirror evidence are both in the manifest.
-
-Retired entries are `a11y-testing` (merged into a broader upstream skill), `next-best-practices` (retired by its author), `brand-storytelling` (removed during reorganization), and `pptx-creator` (original archive unavailable). They retain their current content and historical references. `viz` is a local adapter around upstream prompts without an installable `SKILL.md`, so wholesale replacement would discard its implementation. `hormozi-ad-factory` is treated as local based on the dedicated Pedro commit and available provenance, with that inference explicitly noted.
+Retired entries are `next-best-practices` (retired by its author), `brand-storytelling` (removed during reorganization), and `fundraising` (deleted upstream by `oldwinter/skills` commit `4de594e780`, 2026-10-12). They retain their current content and historical references. `hormozi-ad-factory` is treated as local based on the dedicated Pedro commit and available provenance, with that inference explicitly noted.
 
 For unresolved entries, the manifest records searches and rejected candidates. Absence of an external match is not proof of local authorship. These entries remain usable and untouched, without fabricated lock records.
+
+### Catalogue cleanup (November 12, 2026)
+
+The owner had deleted the `community` and `deprecated` buckets, the Firecrawl family, `mastra`, `exa-web-search-free`, the `pitch-*` skills, `pptx-creator`, `viz`, `elysia` and `evolution-api` from disk while their manifest entries remained, so the updater reported them as local edits and refused to run. Their 66 entries were removed from `sources.json`, both locks and the source table. Eight skills that had moved from `community` to `curated` (`ai-sdk`, `inngest`, `mermaid-diagrams`, `obsidian-bases`, `obsidian-cli`, `obsidian-markdown`, `requirements-clarity`, `tauri-v2`) now use their `curated` paths. The Obsidian skills moved upstream to `plugins/obsidian/skills/`; their manifest and native lock paths were migrated deliberately. Current inventory: **46 entries: 33 verified, 10 local, 3 retired**. A full `make update` and `make check` passed.
 
 ## Validation
 

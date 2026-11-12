@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **89 agent skills** for Claude Code and compatible AI coding assistants — **42 original** (⭐️), **34 hand-picked** (💎), and **13 marketing & business** (📣). Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **88 agent skills** for Claude Code and compatible AI coding assistants — **42 original** (⭐️), **33 hand-picked** (💎), and **13 marketing & business** (📣). Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -45,7 +45,7 @@ ln -s $(pwd)/skills/mine ~/.claude/skills/mine
 Skills are organized into three top-level buckets:
 
 - `skills/mine/` — 42 original skills authored in this repository (⭐️)
-- `skills/curated/` — 34 hand-picked skills, including locally authored skills (💎)
+- `skills/curated/` — 33 hand-picked skills, including locally authored skills (💎)
 - `skills/marketing/` — 13 marketing, business, and writing skills (📣)
 
 ## Usage

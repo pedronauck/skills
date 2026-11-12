@@ -1,6 +1,6 @@
 ---
 name: obsidian-bases
-description: Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of notes, or when the user mentions Bases, table views, card views, filters, or formulas in Obsidian.
+description: Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of notes, or when the user mentions Bases, table views, card views, kanban boards, filters, or formulas in Obsidian.
 ---
 
 # Obsidian Bases Skill
@@ -10,9 +10,9 @@ description: Create and edit Obsidian Bases (.base files) with views, filters, f
 1. **Create the file**: Create a `.base` file in the vault with valid YAML content
 2. **Define scope**: Add `filters` to select which notes appear (by tag, folder, property, or date)
 3. **Add formulas** (optional): Define computed properties in the `formulas` section
-4. **Configure views**: Add one or more views (`table`, `cards`, `list`, or `map`) with `order` specifying which properties to display
+4. **Configure views**: Add one or more views (`table`, `cards`, `list`, `map`, or `kanban`) with `order` specifying which properties to display
 5. **Validate**: Verify the file is valid YAML with no syntax errors. Check that all referenced properties and formulas exist. Common issues: unquoted strings containing special YAML characters, mismatched quotes in formula expressions, referencing `formula.X` without defining `X` in `formulas`
-6. **Test in Obsidian**: Open the `.base` file in Obsidian to confirm the view renders correctly. If it shows a YAML error, check quoting rules below
+6. **Test in Obsidian**: Open the `.base` file in Obsidian to confirm the view renders correctly. If it shows a YAML error, check quoting rules below. If it doesn't open as a base at all, check that Bases is turned on in Settings → Core plugins
 
 ## Schema
 
@@ -32,9 +32,10 @@ filters:
 formulas:
   formula_name: 'expression'
 
-# Configure display names and settings for properties
+# Configure display names and settings for properties.
+# Note properties need the `note.` prefix here, or the setting is ignored.
 properties:
-  property_name:
+  note.property_name:
     displayName: "Display Name"
   formula.formula_name:
     displayName: "Formula Display Name"
@@ -47,12 +48,18 @@ summaries:
 
 # Define one or more views
 views:
-  - type: table | cards | list | map
+  - type: table | cards | list | map | kanban
     name: "View Name"
     limit: 10                    # Optional: limit results
     groupBy:                     # Optional: group results
       property: property_name
       direction: ASC | DESC
+    groupOrder:                  # Optional: only these groups, in this order
+      - value_one
+      - null                     # Files with no value for the groupBy property
+    sort:                        # Optional: sort results (supports multiple properties)
+      - property: property_name
+        direction: ASC | DESC
     filters:                     # View-specific filters follow the same rules
       and:
         - 'status == "active"'
@@ -125,6 +132,8 @@ filters:
 2. **File properties** - File metadata: `file.name`, `file.mtime`, etc.
 3. **Formula properties** - Computed values: `formula.my_formula`
 
+In `order`, `filters`, `groupBy`, and `sort`, a note property can be written bare (`author`) or prefixed (`note.author`). In the top-level `properties:` section, always write `note.author`, because Obsidian ignores a bare key there and shows the raw name as the column header.
+
 ### File Properties Reference
 
 | Property | Type | Description |
@@ -139,9 +148,10 @@ filters:
 | `file.mtime` | Date | Modified time |
 | `file.tags` | List | All tags in file |
 | `file.links` | List | Internal links in file |
-| `file.backlinks` | List | Files linking to this file |
+| `file.backlinks` | List | Files linking to this file. Slow in large vaults and doesn't refresh when the vault changes; prefer reversing the lookup with `file.links` |
 | `file.embeds` | List | Embeds in the note |
-| `file.properties` | Object | All frontmatter properties |
+| `file.properties` | Object | All frontmatter properties. Doesn't refresh when the vault changes |
+| `file.file` | File | File object, only usable in specific functions |
 
 ### The `this` Keyword
 
@@ -257,6 +267,26 @@ views:
       - status
 ```
 
+### Kanban View
+
+Requires Obsidian 1.14+. Cards are grouped into columns by the `groupBy` property, which a kanban view needs. `groupOrder` sets which columns show and in what order; use `null` to include files with no value. Without `groupOrder`, every value gets a column. Dragging a card to another column updates that property in the note. Only Markdown notes can be moved, except when grouping by `file.folder`, where moving a card moves the file to that folder. When grouping by a formula or by a file property other than `file.folder`, cards and columns can't be moved and notes can't be created from a column.
+
+```yaml
+views:
+  - type: kanban
+    name: "Projects"
+    groupBy:
+      property: note.status
+      direction: ASC
+    groupOrder:
+      - Planned
+      - In progress
+      - Done
+    order:
+      - file.name
+      - due_date
+```
+
 ### Map View
 
 Requires latitude/longitude properties and the Maps community plugin.
@@ -267,6 +297,35 @@ views:
     name: "Locations"
     # Map-specific settings for lat/lng properties
 ```
+
+## Sorting
+
+Sort results by one or more properties. Each sort entry specifies a `property` and `direction`, which must be uppercase `ASC` or `DESC`; an entry with any other value, or a sort written as a string, is silently ignored. Multiple sort entries are applied in order — the first entry is the primary sort key, subsequent entries break ties.
+
+```yaml
+views:
+  - type: table
+    name: "Sorted Tasks"
+    sort:
+      - property: due
+        direction: ASC
+      - property: file.name
+        direction: ASC
+    order:
+      - file.name
+      - due
+      - status
+```
+
+Sort options depend on the property type:
+
+| Property Type | ASC | DESC |
+|---------------|-----|------|
+| Text | A→Z | Z→A |
+| Number | 0→9 | 9→0 |
+| Date | Old→New | New→Old |
+
+You can sort by any property including formulas (`formula.my_formula`), file properties (`file.mtime`), and note properties.
 
 ## Default Summary Formulas
 
@@ -304,7 +363,7 @@ formulas:
   priority_label: 'if(priority == 1, "🔴 High", if(priority == 2, "🟡 Medium", "🟢 Low"))'
 
 properties:
-  status:
+  note.status:
     displayName: Status
   formula.days_until_due:
     displayName: "Days Until Due"
@@ -326,6 +385,11 @@ views:
     groupBy:
       property: status
       direction: ASC
+    sort:
+      - property: due
+        direction: ASC
+      - property: file.name
+        direction: ASC
     summaries:
       formula.days_until_due: Average
 
@@ -353,10 +417,10 @@ formulas:
   year_read: 'if(finished_date, date(finished_date).year, "")'
 
 properties:
-  author:
+  note.author:
     displayName: Author
   formula.status_icon:
-    displayName: ""
+    displayName: "Status"
   formula.reading_time:
     displayName: "Est. Time"
 
@@ -415,7 +479,9 @@ views:
 
 ## Embedding Bases
 
-Embed in Markdown files:
+### Embed a `.base` file
+
+Embed an external `.base` file in any Markdown note:
 
 ```markdown
 ![[MyBase.base]]
@@ -423,6 +489,26 @@ Embed in Markdown files:
 <!-- Specific view -->
 ![[MyBase.base#View Name]]
 ```
+
+### Embed inline with a code block
+
+Bases can also be embedded **inline** directly inside a note using a `base` fenced code block. This is useful for note-level filters (e.g. using `this.file.links`) and avoids creating a separate `.base` file:
+
+````markdown
+```base
+filters:
+  and:
+    - file.hasTag("example")
+views:
+  - type: table
+    name: Table
+    order:
+      - file.name
+      - status
+```
+````
+
+When embedded inline this way, the `this` keyword refers to the containing note, so you can build per-note views such as showing all notes linked from the current file.
 
 ## YAML Quoting Rules
 
@@ -434,7 +520,7 @@ Embed in Markdown files:
 
 ### YAML Syntax Errors
 
-**Unquoted special characters**: Strings containing `:`, `{`, `}`, `[`, `]`, `,`, `&`, `*`, `#`, `?`, `|`, `-`, `<`, `>`, `=`, `!`, `%`, `@`, `` ` `` must be quoted.
+**Unquoted special characters**: Strings containing `:`, `{`, `}`, `[`, `]`, `,`, `&`, `*`, `#`, `?`, `|`, `-`, `<`, `>`, `=`, `%`, `@`, `` ` ``, `!` must be quoted.
 
 ```yaml
 # WRONG - colon in unquoted string
@@ -477,6 +563,22 @@ formulas:
 # CORRECT - guard with if()
 'if(due_date, (date(due_date) - today()).days, "")'
 ```
+
+**`displayName` ignored, column shows the raw name**: prefix note properties with `note.` in the `properties:` section.
+
+```yaml
+# WRONG - displayName ignored, column header shows "status"
+properties:
+  status:
+    displayName: Status
+
+# CORRECT - column header shows "Status"
+properties:
+  note.status:
+    displayName: Status
+```
+
+**Empty `displayName` doesn't hide a header**: `displayName: ""` falls back to the property name, the same as leaving it out, so `formula.status_icon` shows `status_icon`. Use a non-empty name such as `displayName: "Status"`.
 
 **Referencing undefined formulas**: Ensure every `formula.X` in `order` or `properties` has a matching entry in `formulas`.
 

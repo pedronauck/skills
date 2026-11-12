@@ -1,159 +1,23 @@
 {
   "version": 1,
   "skills": {
-    "skills/community/find-skills": {
-      "treeHash": "cbf0169061bd03712d06bbc9fdbf03f86fe5f26e646e8decf1ac58a3db24717c",
-      "source": "vercel-labs/skills",
-      "upstreamPath": "skills/find-skills",
-      "upstreamName": "find-skills",
-      "localName": "find-skills",
-      "computedHash": "b146008599c31057cef1c145774cea5d5afb30e8f43fa802e47a4b461419aaaf"
-    },
-    "skills/community/adversarial-review": {
-      "treeHash": "0812e06e59e37f5ca1b3b897fcbe902bab0a1dcf877be7736c6ba15bfb9141d2",
-      "source": "poteto/noodle",
-      "upstreamPath": ".agents/skills/adversarial-review",
-      "upstreamName": "adversarial-review",
-      "localName": "adversarial-review",
-      "computedHash": "f6c911a45bf080b6c7dcf274b0e22a93d7730ec0efebf2a58934c5be0cd8ac4e"
-    },
-    "skills/community/ai-sdk": {
-      "treeHash": "d9321f0d79e7eb120a838f462189237bec8a01d1ca0d47090b43fd9eb8140316",
+    "skills/curated/ai-sdk": {
+      "treeHash": "8c9ca40a3bee710947033fc69cb1ae28119a96b3f6a642eb86ae60fcbe895a64",
       "source": "vercel/ai",
       "upstreamPath": "skills/use-ai-sdk",
       "upstreamName": "ai-sdk",
       "localName": "ai-sdk",
-      "computedHash": "0883204d11b055e968dee697c5858e68064c27dfd4deb6310212895daa65c5ad"
+      "computedHash": "aee5bf7ecb066b54eae76799610fa8a9be9ff1ca9a000ea92d17c14ec862938b"
     },
-    "skills/community/argocd-expert": {
-      "treeHash": "cb5057b2d20f98dbdac825f79ae7daf65ce40966e857f7d912ba594a4f12a166",
-      "source": "personamanagmentlayer/pcl",
-      "upstreamPath": "stdlib/devops/argocd-expert",
-      "upstreamName": "argocd-expert",
-      "localName": "argocd-expert",
-      "computedHash": "5c7ff65b5a084ec23a48ccddbf40c565387617ac119275ae6291070cce785cd5"
-    },
-    "skills/community/better-auth-best-practices": {
-      "treeHash": "6a9c6c098267c67d962079e877ef17bdea2c195680766b7407fd7f404588353d",
-      "source": "better-auth/skills",
-      "upstreamPath": "better-auth/best-practices",
-      "upstreamName": "better-auth-best-practices",
-      "localName": "better-auth-best-practices",
-      "computedHash": "0c30be0e118c2b7a0c4c57bd9e63bf110c7e420a79ec6ce7997153f3b1e066ee"
-    },
-    "skills/community/better-auth-organization-best-practices": {
-      "treeHash": "a1836607f565fd8f7d23a79635702b180130d566a099a528abb3b5f9521d6e89",
-      "source": "better-auth/skills",
-      "upstreamPath": "better-auth/organization",
-      "upstreamName": "organization-best-practices",
-      "localName": "better-auth-organization-best-practices",
-      "computedHash": "8c85e683dabef4532f1e8b67bbed5c453d39e0e3d5aeedd69d16b568f6e6d44f"
-    },
-    "skills/community/building-components": {
-      "treeHash": "39038fcaa24eef770be78316d747cc20cdce477340026ef35c6d441402358a7a",
-      "source": "vercel/components.build",
-      "upstreamPath": "skills/building-components",
-      "upstreamName": "building-components",
-      "localName": "building-components",
-      "computedHash": "20889af7cb9b3abca1e38824f7fffaa873eb0cc4d45187967b97bd85462cf934"
-    },
-    "skills/community/cloudflare": {
-      "treeHash": "3aabf81aabc4cb9393b6e4ac1ca3b77f5200255facbb05fa4867812a68d1688f",
-      "source": "dmmulroy/cloudflare-skill",
-      "upstreamPath": "skills/cloudflare",
-      "upstreamName": "cloudflare",
-      "localName": "cloudflare",
-      "computedHash": "931e4ab8337b629b1cdee3faecae6929abb714e912bf51ab2aea693f0f6fc908"
-    },
-    "skills/community/crafting-effective-readmes": {
-      "treeHash": "6f1c83353d9f90d144386315705b72fbb04c6bcf0ac0ff1c437492eb1893e1f9",
-      "source": "softaworks/agent-toolkit",
-      "upstreamPath": "skills/crafting-effective-readmes",
-      "upstreamName": "crafting-effective-readmes",
-      "localName": "crafting-effective-readmes",
-      "computedHash": "c931a8c22160e8925400778fcb2266b5d1df762f3052edba65f72479f79f2d6c"
-    },
-    "skills/community/design-spec-extraction": {
-      "treeHash": "6817d56438e3ec4c1c05824f45058982e21ebefa878ec06cee0f9215575d3725",
-      "source": "Cygnusfear/claude-stuff",
-      "upstreamPath": "skills/design-spec-extraction",
-      "upstreamName": "design-spec-extraction",
-      "localName": "design-spec-extraction",
-      "computedHash": "98ff3e84341f0ebc081a4eb1e00b11a33aabd7d6e00381add59ffc5641eac1d3"
-    },
-    "skills/community/devops-engineer": {
-      "treeHash": "0974373020713cecac8af1e4855377896fe580a1b0610652b3bf373555b90d81",
-      "source": "Jeffallan/claude-skills",
-      "upstreamPath": "skills/devops-engineer",
-      "upstreamName": "devops-engineer",
-      "localName": "devops-engineer",
-      "computedHash": "bd17df11a066010e1cf4cb5a593c6d523274b0db66459134436b3be249337ea2"
-    },
-    "skills/community/drizzle-postgres": {
-      "treeHash": "934bfad300e2104634249de2612963be150f86bf7c7fd1eaad5ae689565f3654",
-      "source": "ccheney/robust-skills",
-      "upstreamPath": "skills/postgres-drizzle",
-      "upstreamName": "postgres-drizzle",
-      "localName": "drizzle-postgres",
-      "computedHash": "992e9c4f8fd4e2d9ea03329291fb382d0f41a6dfbb78d8b7b451539c7c113cf5"
-    },
-    "skills/community/executing-plans": {
-      "treeHash": "921e43aa832e9302ebfb2701c2fe960505c418b3ecb28bfebcbb5c93d6f22927",
-      "source": "obra/superpowers",
-      "upstreamPath": "skills/executing-plans",
-      "upstreamName": "executing-plans",
-      "localName": "executing-plans",
-      "computedHash": "78a07800ee99a5861ae10be59d79fad085fdca10444e8aaeb2691597e357cff8"
-    },
-    "skills/community/fixing-motion-performance": {
-      "treeHash": "b12480914064811ec6fcfb48fc269db665867164eecad93999955792e9d0d1d9",
-      "source": "ibelick/ui-skills",
-      "upstreamPath": "skills/fixing-motion-performance",
-      "upstreamName": "fixing-motion-performance",
-      "localName": "fixing-motion-performance",
-      "computedHash": "426dcf33f23419643f2aab71e2253e1a5b5684a808fabb8a4ad135e489ed7a0f"
-    },
-    "skills/community/helm-chart-scaffolding": {
-      "treeHash": "ddef243e5b95afb3a36eaf93a5f0df9a531e9b4ce33b7d542a306eb6ab9227af",
-      "source": "wshobson/agents",
-      "upstreamPath": "plugins/kubernetes-operations/skills/helm-chart-scaffolding",
-      "upstreamName": "helm-chart-scaffolding",
-      "localName": "helm-chart-scaffolding",
-      "computedHash": "d37f4bee4daa0c969ce9912054b46b04164d57ecd0e1d958e6dfb2e5aec16503"
-    },
-    "skills/community/hetzner-server": {
-      "treeHash": "6b96e89d10d011bf8507ffcd25e3447363338154f759a1e3ff12de1b1dae288b",
-      "source": "connorads/dotfiles",
-      "upstreamPath": ".config/skills/personal/hetzner-server",
-      "upstreamName": "hetzner-server",
-      "localName": "hetzner-server",
-      "computedHash": "796c1b00a9c5d2e3dab2f155970edaa75937ef007b098b4735d6e83096cb8f5b"
-    },
-    "skills/community/inngest": {
-      "treeHash": "4a95c577798d595d2e4daf6bea358c4302208838c40ea42d93c2629d068b3f0f",
+    "skills/curated/inngest": {
+      "treeHash": "515f9905cfdb38303be0fa7f20b1a45d905e3b5b90bb36d838713b8b9415c1bc",
       "source": "sickn33/antigravity-awesome-skills",
       "upstreamPath": "skills/inngest",
       "upstreamName": "inngest",
       "localName": "inngest",
-      "computedHash": "7699067ce20c4c276530db7fc9297d7f5bfb73cf2a042ab9e2bbbc1593793b5b"
+      "computedHash": "97b10098ba60086467a3980377beeef9ae8fb09128c1f3f04e3d39e0ee9bc6db"
     },
-    "skills/community/k8s-security-policies": {
-      "treeHash": "0f3b0b7c8a47807c67253ed070fe18699d7835cab7b4f7f37ca1ffbc25daffdf",
-      "source": "wshobson/agents",
-      "upstreamPath": "plugins/kubernetes-operations/skills/k8s-security-policies",
-      "upstreamName": "k8s-security-policies",
-      "localName": "k8s-security-policies",
-      "computedHash": "47d2fe175423c7bc4f26019b3acf0ea7d3f37159172a217466c50b8d1b83cbb4"
-    },
-    "skills/community/kubernetes-specialist": {
-      "treeHash": "267053ddb267653886870035749e64e31d541a6273233f79496249562010234e",
-      "source": "Jeffallan/claude-skills",
-      "upstreamPath": "skills/kubernetes-specialist",
-      "upstreamName": "kubernetes-specialist",
-      "localName": "kubernetes-specialist",
-      "computedHash": "9c5eb68fc9d553ee29e745258bc6198563158c4b2c57436d63647e61010b5f0a"
-    },
-    "skills/community/mermaid-diagrams": {
+    "skills/curated/mermaid-diagrams": {
       "treeHash": "d8166277b278877b57b8b58f1793b888d6360214f4318a8dd743de5dfee970a7",
       "source": "softaworks/agent-toolkit",
       "upstreamPath": "skills/mermaid-diagrams",
@@ -161,55 +25,31 @@
       "localName": "mermaid-diagrams",
       "computedHash": "6d36e69adad781f106a2fb4b19ebc22bf0c211babdc0d1ae5822fa65abb48bd8"
     },
-    "skills/community/motion": {
-      "treeHash": "23ecfb43adf00fb7e59fd84de4f11420d8002abe9796345ce8abb94840a90a5e",
-      "source": "secondsky/claude-skills",
-      "upstreamPath": "plugins/motion/skills/motion",
-      "upstreamName": "motion",
-      "localName": "motion",
-      "computedHash": "7b293f2fd97c563bbe9835ba0010ef6771aa0493493fb9c31cfa704a556da8aa"
-    },
-    "skills/community/obsidian-bases": {
-      "treeHash": "63fd96b5df261ae3a7828eea50c64b439361cc5cde70766d205ebd0e2597db69",
+    "skills/curated/obsidian-bases": {
+      "treeHash": "f82126f2e58d839445fcd58c773de561c8dec9eeb15e6ad25e5696001e5aedf1",
       "source": "kepano/obsidian-skills",
-      "upstreamPath": "skills/obsidian-bases",
+      "upstreamPath": "plugins/obsidian/skills/obsidian-bases",
       "upstreamName": "obsidian-bases",
       "localName": "obsidian-bases",
-      "computedHash": "65db029661f38daadc8b8eb755bd7b96011336f49bdc11e966ec7fd157d8f125"
+      "computedHash": "0a60cde572384cda054aba8d6bc033d174f54d2fd06bda4adae836eccaad856f"
     },
-    "skills/community/obsidian-cli": {
-      "treeHash": "b6219eef6130d9c5f5247337d64f055289bc46e9a0188b0a4216ded82c27d082",
+    "skills/curated/obsidian-cli": {
+      "treeHash": "0120dcb93057fd4cd801c860514a4e6053042bf696c1424d0a21e3ff0f6a1ee5",
       "source": "kepano/obsidian-skills",
-      "upstreamPath": "skills/obsidian-cli",
+      "upstreamPath": "plugins/obsidian/skills/obsidian-cli",
       "upstreamName": "obsidian-cli",
       "localName": "obsidian-cli",
-      "computedHash": "f46ae626875f7e47c410c2ee93896c4526024ebe127719e8fb430261b5677edc"
+      "computedHash": "e3bf3bbdceb49c4a56a00c3ddede4cfc34388b6295ede7df0958722fe47e2333"
     },
-    "skills/community/obsidian-markdown": {
-      "treeHash": "9def7be1c467da5d715c3a09a072cbf05c3cab9f4bb03fc23a7d4e9d91c18bb1",
+    "skills/curated/obsidian-markdown": {
+      "treeHash": "723d273e8653ecb2f20470fe4b2701e6a25698a2fb83b705094857e730c3daa4",
       "source": "kepano/obsidian-skills",
-      "upstreamPath": "skills/obsidian-markdown",
+      "upstreamPath": "plugins/obsidian/skills/obsidian-markdown",
       "upstreamName": "obsidian-markdown",
       "localName": "obsidian-markdown",
-      "computedHash": "0f47297035d7824e7bf0f1984e8145a59a123e2258b5d54c9ac9642f9f77e177"
+      "computedHash": "15a30b1845478055f0daa299356b8ba3a3d9a1d6c4225a1a7b1cadf61f1cd0f5"
     },
-    "skills/community/perplexity": {
-      "treeHash": "eb044576eb34eaa9ec666c89a0aa6f3e384d16570960b5e5335acea8349d0e96",
-      "source": "softaworks/agent-toolkit",
-      "upstreamPath": "skills/perplexity",
-      "upstreamName": "perplexity",
-      "localName": "perplexity",
-      "computedHash": "a8c31732045ef978362c29b27c13ba6ee11b93d522a0019f08dd8568a08d7de6"
-    },
-    "skills/community/remotion-best-practices": {
-      "treeHash": "f5ca6046ee4dd5676de25a969c89132c7ca310ae34d314cfe479692720bb3a86",
-      "source": "remotion-dev/skills",
-      "upstreamPath": "skills/remotion-best-practices",
-      "upstreamName": "remotion-best-practices",
-      "localName": "remotion-best-practices",
-      "computedHash": "390ee6fe90ac10cfd587745e7e77fae403875df9aa6b25f34d8eeb7297b3308a"
-    },
-    "skills/community/requirements-clarity": {
+    "skills/curated/requirements-clarity": {
       "treeHash": "b39c06ff2062e7241e9475c687a32782531a31f7b47a19bed36a5a436535d7f7",
       "source": "softaworks/agent-toolkit",
       "upstreamPath": "skills/requirements-clarity",
@@ -217,45 +57,13 @@
       "localName": "requirements-clarity",
       "computedHash": "27ab2b19ebb31ff719c2e19d1ae3c4122f37d964a447b180bfb838d7b2198a02"
     },
-    "skills/community/ship-learn-next": {
-      "treeHash": "8c460f5ebd273fe403715cbef19a00a30df786dcecdcfcf6377b10fa709f1751",
-      "source": "michalparkola/tapestry-skills-for-claude-code",
-      "upstreamPath": "ship-learn-next",
-      "upstreamName": "ship-learn-next",
-      "localName": "ship-learn-next",
-      "computedHash": "e04c6a8a8008e8d4bd736c345e83ffdba1d61b6b9fe861ff16cff5008481ea7d"
-    },
-    "skills/community/tauri-v2": {
+    "skills/curated/tauri-v2": {
       "treeHash": "703d56c078e1b2abf173a8a92f03b95102b3eedaf155562936b7f5940444f9f9",
       "source": "nodnarbnitram/claude-code-extensions",
       "upstreamPath": "plugins/cce-tauri/skills/tauri-v2",
       "upstreamName": "tauri-v2",
       "localName": "tauri-v2",
       "computedHash": "b79a5c0bc187c7a3b08def2bd6a8f360966afab5047dbb81cbd3eab2e07d72b5"
-    },
-    "skills/community/terraform-style-guide": {
-      "treeHash": "d3e6ddd6f9468c2a26d44c244125b317ce2ae7d69ab6e5873f42df1fd4108c44",
-      "source": "hashicorp/agent-skills",
-      "upstreamPath": "plugins/terraform/skills/terraform-style-guide",
-      "upstreamName": "terraform-style-guide",
-      "localName": "terraform-style-guide",
-      "computedHash": "3b914c5ae01a7101d45b5222fbc38e0be6eb7412deba5f54d471905f22af70c6"
-    },
-    "skills/community/workflow": {
-      "treeHash": "5cb28e5fec8bddd1f54f15fc9b940daf81e09282fe1746a3d1df28936649864f",
-      "source": "vercel/workflow",
-      "upstreamPath": "skills/workflow",
-      "upstreamName": "workflow",
-      "localName": "workflow",
-      "computedHash": "af4439e02fd43d99687d5c5aa4b399b261e26b271daaf7cdf5b4e1292cc4f93d"
-    },
-    "skills/community/wrangler": {
-      "treeHash": "6e6cddabd82a422f6fb51ac2cbc35d64e0fe568ffeaec8cccff70cfe78871791",
-      "source": "cloudflare/skills",
-      "upstreamPath": "skills/wrangler",
-      "upstreamName": "wrangler",
-      "localName": "wrangler",
-      "computedHash": "4d247a243fec7e23f1247976e0e491520cb0feb397c5477022551e7b4f5cdd93"
     },
     "skills/curated/agent-browser": {
       "treeHash": "23965b97ef1742cfd73f548bbc97005efd5f7a28848438295066574b53dd2893",
@@ -289,22 +97,6 @@
       "localName": "documentation-writer",
       "computedHash": "ee53d65b163cd7eb953a930c95841cfe398cc2c0bd24c06508bbaa07c432be35"
     },
-    "skills/curated/exa-web-search-free": {
-      "treeHash": "c2b199a5d4c17fd38542e65937d99104cf9de4ac4dd7a9022b4421edbbbdcc13",
-      "source": "sundial-org/awesome-openclaw-skills",
-      "upstreamPath": "skills/exa-web-search-free",
-      "upstreamName": "exa-web-search-free",
-      "localName": "exa-web-search-free",
-      "computedHash": "4e2bce6b4826fa8bbc7a409caf9e861b5f47f59a298c1431819a5fc58ab81862"
-    },
-    "skills/curated/firecrawl": {
-      "treeHash": "e2f777aef716a74568bb68ab98b7a32190340aeafed23adbee92fe1060d6b753",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl",
-      "upstreamName": "firecrawl",
-      "localName": "firecrawl",
-      "computedHash": "d4aeeccee5e30d0b41db63cbae1bf99627ada6ed2939701453c80dd8a15d6e75"
-    },
     "skills/curated/hono": {
       "treeHash": "ef2a9e7c375b9231b3e8c7905da32b32e63dff6f39940684088ac98b955c5958",
       "source": "honojs/skills",
@@ -320,14 +112,6 @@
       "upstreamName": "lesson-learned",
       "localName": "lesson-learned",
       "computedHash": "2bdf72af18ccc97c8c5580f252769610d2c0d814c36433ea7dd3f25c822ff6b7"
-    },
-    "skills/curated/mastra": {
-      "treeHash": "7d067ff28aaa27de9f2829f2d109fd0c3cff8c49d3068624a3fcda4a1a6a09aa",
-      "source": "mastra-ai/skills",
-      "upstreamPath": "skills/mastra",
-      "upstreamName": "mastra",
-      "localName": "mastra",
-      "computedHash": "6482dad39fb72d1fe9d02078c15c3ee708774fd026a8557b4c7dc37fb554977a"
     },
     "skills/curated/qmd": {
       "treeHash": "e1d71181277673eb3dd82428c8e51e8b6dee3210cecf0311cc43a2a128883b6b",
@@ -401,62 +185,6 @@
       "localName": "zod",
       "computedHash": "c69b5133b65643317236707f2cd3e521b4fc6e5ee5fd6c6c00cf62a37dfd0144"
     },
-    "skills/deprecated/agent-md-refactor": {
-      "treeHash": "5db8f5d589646632949a8b6e038849b10dd31c5573a72c11a8dcf6939edbf44b",
-      "source": "softaworks/agent-toolkit",
-      "upstreamPath": "skills/agent-md-refactor",
-      "upstreamName": "agent-md-refactor",
-      "localName": "agent-md-refactor",
-      "computedHash": "51c53259bba830ebad6741b2ab69d213d5a4d02835f7f27925a0e4e93515fc22"
-    },
-    "skills/deprecated/architecture-diagram": {
-      "treeHash": "0a0088401cd587c3baca7643accf9c98b23c2caac7979fbbd604a75c09ec095c",
-      "source": "Cocoon-AI/architecture-diagram-generator",
-      "upstreamPath": "architecture-diagram",
-      "upstreamName": "architecture-diagram",
-      "localName": "architecture-diagram",
-      "computedHash": "0109ef20fef39843a3dc14c733c69f4209b9d27ebb320cb8b403ff68a410684b"
-    },
-    "skills/deprecated/brainstorming": {
-      "treeHash": "ed508fd7f18acd6be3bae9b0a79c2b2f776ecb4817b907e95d0c3629d7388e46",
-      "source": "obra/superpowers",
-      "upstreamPath": "skills/brainstorming",
-      "upstreamName": "brainstorming",
-      "localName": "brainstorming",
-      "computedHash": "b58d55b64742ecd37923985ec7bdfbe678ffbcb9895562abd28c0a32dcacd7fb"
-    },
-    "skills/deprecated/game-changing-features": {
-      "treeHash": "4f8c271773a673af986fb51654d0d774a482b4298979c423a22843ea47b0228c",
-      "source": "softaworks/agent-toolkit",
-      "upstreamPath": "skills/game-changing-features",
-      "upstreamName": "game-changing-features",
-      "localName": "game-changing-features",
-      "computedHash": "aa6f4b25f60cbad65bd0826f09e0eded14e588da06172995277511e9a86ee2d7"
-    },
-    "skills/deprecated/golang-pro": {
-      "treeHash": "e1c75e906e36f5fa39778f33edf0db1f6af59112d0db25b6feef94b248ff1d2e",
-      "source": "Jeffallan/claude-skills",
-      "upstreamPath": "skills/golang-pro",
-      "upstreamName": "golang-pro",
-      "localName": "golang-pro",
-      "computedHash": "12b4cac8f65228f82cbc26f0da9232aba87ffa45ccd01afa3998fb8ec61dc288"
-    },
-    "skills/deprecated/ratatui-tui": {
-      "treeHash": "ae6adaecd80094efbb4b95ffaff05fbe7561fc03977c3d52a466e24da1e30bfa",
-      "source": "blacktop/dotfiles",
-      "upstreamPath": "ai/skills/ratatui-tui",
-      "upstreamName": "ratatui-tui",
-      "localName": "ratatui-tui",
-      "computedHash": "519ad8e9d88e2cd5e8a9754874b078860524146050f80f1236203c7e140b61bd"
-    },
-    "skills/deprecated/writing-great-skills": {
-      "treeHash": "c032cb959d917699f2cf19bc28fb242cdac683ca8b6e04d18fe68fd9714dc451",
-      "source": "mattpocock/skills",
-      "upstreamPath": "skills/productivity/writing-for-agents",
-      "upstreamName": "writing-for-agents",
-      "localName": "writing-great-skills",
-      "computedHash": "95da47fc97af998e85b7d7e6d57b3ac76727c1e290cfe9ea09005aacb826959f"
-    },
     "skills/marketing/alex-hormozi-pitch": {
       "treeHash": "00e1dd2d818fd29f5bd7c0198853e006e36dbb0d10277ff75e4967d4cab0cdd6",
       "source": "danielmiessler/PAIPlugin",
@@ -481,14 +209,6 @@
       "localName": "copywriting",
       "computedHash": "6aaa371ad7277c452b650c838bd94ae061ae70bcd564f357b6e32feaec5c130f"
     },
-    "skills/marketing/fundraising": {
-      "treeHash": "230f5fe8471d026291781d512ad5007587e4fa1a41a33aec014d2ec56913c515",
-      "source": "oldwinter/skills",
-      "upstreamPath": "lenny-skills/fundraising",
-      "upstreamName": "fundraising",
-      "localName": "fundraising",
-      "computedHash": "cefaa880829d4e2336a5c75908ed328b3f2f273db0c76586b03cbd52d51193fa"
-    },
     "skills/marketing/google-ads": {
       "treeHash": "0f3a738670aba8843152a7525445cbc70bbb1fa598567493ca59132a990c4f6e",
       "source": "jdrhyne/agent-skills",
@@ -504,30 +224,6 @@
       "upstreamName": "humanizer",
       "localName": "humanizer",
       "computedHash": "99d9195cec720ebe9ae29956e710d7e278991bdd54366503cf1ff7b03f8de45c"
-    },
-    "skills/marketing/pitch-deck": {
-      "treeHash": "b6d5b190ebfee1312d5de26645547eb2b35c030e5988d7616a9af161184e84d2",
-      "source": "ailabs-393/ai-labs-claude-skills",
-      "upstreamPath": "packages/skills/pitch-deck",
-      "upstreamName": "pitch-deck",
-      "localName": "pitch-deck",
-      "computedHash": "b23b5c7542d53e3cada85052bd4165210a95447215afa4456256dc43a864eee4"
-    },
-    "skills/marketing/pitch-deck-visuals": {
-      "treeHash": "b60208830bb9bbab8ce066361ec46624e5f713249183e551cd6beeefae7d457a",
-      "source": "inference-sh/skills",
-      "upstreamPath": "guides/design/pitch-deck-visuals",
-      "upstreamName": "pitch-deck-visuals",
-      "localName": "pitch-deck-visuals",
-      "computedHash": "21b5e9eeef27b164d6b09aa3f8371675ab3dbc6549f6739c9b3ecbffa232b51a"
-    },
-    "skills/marketing/pitch-gen": {
-      "treeHash": "1997b309bbec45f5309ec4ddfe21eb6f7f0e3d2438f384279b46b6ea954d3f1a",
-      "source": "LXGIC-Studios/ai-pitch",
-      "upstreamPath": ".",
-      "upstreamName": "pitch-gen",
-      "localName": "pitch-gen",
-      "computedHash": "ebfffd4576b84f1051c88f57ea7f54542774926b441e6cc220b335c108226d7e"
     },
     "skills/marketing/professional-communication": {
       "treeHash": "0f1afb55fc6e72fc364611f3208120041c4dd16ef9c83b0237edf7a20de435cc",
@@ -568,94 +264,6 @@
       "upstreamName": "writing-clearly-and-concisely",
       "localName": "writing-clearly-and-concisely",
       "computedHash": "136a0413255aa82d800459c775eabf041620b2e9cbf2d713b739bf1b87a3db3a"
-    },
-    "skills/curated/firecrawl-agent": {
-      "treeHash": "52773e4722f85d7776a24629d78e80741ee9993c9e180042167b8a6f13f7474c",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-agent",
-      "upstreamName": "firecrawl-agent",
-      "localName": "firecrawl-agent",
-      "computedHash": "52609731f61c2acb0c4bca8ba2212d07ff03d8e158c38e692a46431d6c085b28"
-    },
-    "skills/curated/firecrawl-crawl": {
-      "treeHash": "fa1b3aa0433aaeca014db4e2e63f5ba9ab1ce5f13e0698dfeb9598711cee92f4",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-crawl",
-      "upstreamName": "firecrawl-crawl",
-      "localName": "firecrawl-crawl",
-      "computedHash": "db14d09120fca01bb00bbf8d4f4fbd476239ed0b3ccd36fadb9a959614c9dada"
-    },
-    "skills/curated/firecrawl-developer-index": {
-      "treeHash": "6e739250570f59e7f8f066845f1f14385f5befc620bcd5b4cf232f2a5247af47",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-developer-index",
-      "upstreamName": "firecrawl-developer-index",
-      "localName": "firecrawl-developer-index",
-      "computedHash": "c6dd08ba398c400b39ed6b80661a99c19b74e139b30aca88e7d1db6efe8ef7df"
-    },
-    "skills/curated/firecrawl-download": {
-      "treeHash": "b28dc0ca46eb7903092548a0ba228bbb6ef1a82a679af7386adc44132e4bb68c",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-download",
-      "upstreamName": "firecrawl-download",
-      "localName": "firecrawl-download",
-      "computedHash": "84bc35b5baecbf029b37f2527a144ffe33f4e27f3eab1bd8d6408a35dc87b75f"
-    },
-    "skills/curated/firecrawl-interact": {
-      "treeHash": "0a12ec63fc0bdaf546dfb9b1c1340d32ef9d80aceb007585c6021810a8bb7e2d",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-interact",
-      "upstreamName": "firecrawl-interact",
-      "localName": "firecrawl-interact",
-      "computedHash": "eb0efffb4cec121239586199e465487a3050bf7b154786c5a8a144797e908711"
-    },
-    "skills/curated/firecrawl-map": {
-      "treeHash": "9cec3cf5dd80f95efa0d96037003e92df517a2b99d061847198ad3ac514be4ed",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-map",
-      "upstreamName": "firecrawl-map",
-      "localName": "firecrawl-map",
-      "computedHash": "5087919b840d8654ed139402a766e14a95921cbbb709675ebf6931bec0dc538b"
-    },
-    "skills/curated/firecrawl-monitor": {
-      "treeHash": "4b4b2dac3e754dcc32a3c8189192f4e298fd3145aff29a7e6a4871cd8c0df71b",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-monitor",
-      "upstreamName": "firecrawl-monitor",
-      "localName": "firecrawl-monitor",
-      "computedHash": "f656ab2263025981aab7972648ee2db75813c7900d4682a3aa43a148081d3de9"
-    },
-    "skills/curated/firecrawl-parse": {
-      "treeHash": "c1a72d38256ee26df860c734b8b948f790815ae1079f3ba2aece7ea85ebdd3a4",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-parse",
-      "upstreamName": "firecrawl-parse",
-      "localName": "firecrawl-parse",
-      "computedHash": "99dcb9e05f86323fe4601c02a234372ef07815b2d332e941967027a8877a993c"
-    },
-    "skills/curated/firecrawl-research-index": {
-      "treeHash": "554440354365f307fa3ebfbe5023f9829bc8f4792f4ffca4cad2b373aa1149c6",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-research-index",
-      "upstreamName": "firecrawl-research-index",
-      "localName": "firecrawl-research-index",
-      "computedHash": "f8b85904d53287247d4cdb5733f3b88b08f70f6a75df7d606d460ccc854e89ca"
-    },
-    "skills/curated/firecrawl-scrape": {
-      "treeHash": "722354d51b837862419eca0ae3dc69c764ade9eee49d1a71b6a671013c806d2b",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-scrape",
-      "upstreamName": "firecrawl-scrape",
-      "localName": "firecrawl-scrape",
-      "computedHash": "a7f2a64f41304b2795b632bf127116119c5636bdf7810a20d1ed375d6cb77c07"
-    },
-    "skills/curated/firecrawl-search": {
-      "treeHash": "6af1251de9d1397e3d01747478dec0bfc529286d1794eabb3bf25e20c541f1e8",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-search",
-      "upstreamName": "firecrawl-search",
-      "localName": "firecrawl-search",
-      "computedHash": "cd13571285ba1f2f1a08f0d3786dac4430f50ace76985817b7c7ddbf276ebaa9"
     }
   }
 }

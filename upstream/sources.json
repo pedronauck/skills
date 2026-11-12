@@ -4,32 +4,7 @@
   "researchedAt": "2026-09-14",
   "skills": [
     {
-      "path": "skills/community/a11y-testing",
-      "source": "yonatangross/orchestkit",
-      "upstreamPath": "src/skills/a11y-testing",
-      "upstreamName": "a11y-testing",
-      "status": "retired",
-      "evidence": [
-        "https://raw.githubusercontent.com/yonatangross/orchestkit/20d1f4faf0a3de9dc4d01ab1b702f4143bc58323/src/skills/a11y-testing/SKILL.md",
-        "https://github.com/yonatangross/orchestkit/commit/ba4b3a820fb55e96ee78fb0e0efff928ff83a18a"
-      ],
-      "notes": "ORIGINAL VERIFIED, UPSTREAM REMOVED: historical 2026-02-07 version matches 95.6% of local content. Standalone src/skills/a11y-testing was deleted by 2026-02-13 commit ba4b3a820fb55e96ee78fb0e0efff928ff83a18a, consolidated into broader testing-e2e. Marked unresolved because no currently installable same skill exists; preserve local content or pin historical revision explicitly. Do not auto-replace with testing-e2e.",
-      "localName": "a11y-testing"
-    },
-    {
-      "path": "skills/community/adversarial-review",
-      "source": "poteto/noodle",
-      "upstreamPath": ".agents/skills/adversarial-review",
-      "upstreamName": "adversarial-review",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/poteto/noodle/HEAD/.agents/skills/adversarial-review/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "adversarial-review"
-    },
-    {
-      "path": "skills/community/ai-sdk",
+      "path": "skills/curated/ai-sdk",
       "source": "vercel/ai",
       "upstreamPath": "skills/use-ai-sdk",
       "upstreamName": "ai-sdk",
@@ -42,220 +17,7 @@
       "localName": "ai-sdk"
     },
     {
-      "path": "skills/community/argocd-expert",
-      "source": "personamanagmentlayer/pcl",
-      "upstreamPath": "stdlib/devops/argocd-expert",
-      "upstreamName": "argocd-expert",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/personamanagmentlayer/pcl/HEAD/stdlib/devops/argocd-expert/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "argocd-expert"
-    },
-    {
-      "path": "skills/community/better-auth-best-practices",
-      "source": "better-auth/skills",
-      "upstreamPath": "better-auth/best-practices",
-      "upstreamName": "better-auth-best-practices",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/better-auth/skills/HEAD/better-auth/best-practices/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "better-auth-best-practices"
-    },
-    {
-      "path": "skills/community/better-auth-organization-best-practices",
-      "source": "better-auth/skills",
-      "upstreamPath": "better-auth/organization",
-      "upstreamName": "organization-best-practices",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/better-auth/skills/HEAD/better-auth/organization/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa. Local frontmatter renamed organization-best-practices to better-auth-organization-best-practices.",
-      "localName": "better-auth-organization-best-practices"
-    },
-    {
-      "path": "skills/community/building-components",
-      "source": "vercel/components.build",
-      "upstreamPath": "skills/building-components",
-      "upstreamName": "building-components",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/vercel/components.build/HEAD/skills/building-components/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "building-components"
-    },
-    {
-      "path": "skills/community/cloudflare",
-      "source": "dmmulroy/cloudflare-skill",
-      "upstreamPath": "skills/cloudflare",
-      "upstreamName": "cloudflare",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/dmmulroy/cloudflare-skill/HEAD/skills/cloudflare/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa. Original is dmmulroy/cloudflare-skill; official cloudflare/skills currently has different content and is not the copied source.",
-      "localName": "cloudflare"
-    },
-    {
-      "path": "skills/community/crafting-effective-readmes",
-      "source": "softaworks/agent-toolkit",
-      "upstreamPath": "skills/crafting-effective-readmes",
-      "upstreamName": "crafting-effective-readmes",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/softaworks/agent-toolkit/HEAD/skills/crafting-effective-readmes/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "crafting-effective-readmes"
-    },
-    {
-      "path": "skills/community/creating-spec",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "",
-      "status": "unresolved",
-      "evidence": [
-        "https://www.skillsdirectory.com/skills/pedronauck-creating-spec",
-        "https://skills.cat/skills/pedronauck/skills/creating-spec",
-        "https://github.com/mderk/memento/blob/main/memento/static/skills/create-spec/SKILL.md"
-      ],
-      "notes": "Exa exact-name and distinctive-text searches did not verify matching external original. Local history traces to Pedro Nauck commit 80584d4 (2026-03-14, add my set of skills), which proves import only, not authorship. Do not overwrite with same-name unrelated skill.",
-      "localName": "creating-spec"
-    },
-    {
-      "path": "skills/community/design-spec-extraction",
-      "source": "Cygnusfear/claude-stuff",
-      "upstreamPath": "skills/design-spec-extraction",
-      "upstreamName": "design-spec-extraction",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/Cygnusfear/claude-stuff/HEAD/skills/design-spec-extraction/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "design-spec-extraction"
-    },
-    {
-      "path": "skills/community/devops-engineer",
-      "source": "Jeffallan/claude-skills",
-      "upstreamPath": "skills/devops-engineer",
-      "upstreamName": "devops-engineer",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/Jeffallan/claude-skills/HEAD/skills/devops-engineer/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "devops-engineer"
-    },
-    {
-      "path": "skills/community/drizzle-orm",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "",
-      "status": "unresolved",
-      "evidence": [
-        "https://github.com/TerminalSkills/skills/blob/main/skills/drizzle-orm/SKILL.md",
-        "https://github.com/mindrally/skills/blob/HEAD/drizzle-orm/SKILL.md",
-        "https://github.com/EpicenterHQ/epicenter/blob/210c3d3691a008f542a56fef8db089cd707375a5/.agents/skills/drizzle-orm/SKILL.md"
-      ],
-      "notes": "Exa exact-name and distinctive-text searches did not verify matching external original. Local history traces to Pedro Nauck commit 80584d4 (2026-03-14, add my set of skills), which proves import only, not authorship. Do not overwrite with same-name unrelated skill.",
-      "localName": "drizzle-orm"
-    },
-    {
-      "path": "skills/community/drizzle-postgres",
-      "source": "ccheney/robust-skills",
-      "upstreamPath": "skills/postgres-drizzle",
-      "upstreamName": "postgres-drizzle",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/ccheney/robust-skills/e797c5ddcae53035d000460f63a9b96be5e86342/skills/postgres-drizzle/SKILL.md",
-        "https://raw.githubusercontent.com/ccheney/robust-skills/HEAD/skills/postgres-drizzle/SKILL.md"
-      ],
-      "notes": "Exa found candidate; fetched full upstream history and verified 91.9% character similarity to 2026-01-28 version (90.3% to February version). Local renamed postgres-drizzle to drizzle-postgres. Current upstream has been substantially rewritten, but lineage is confirmed. Preserve local name alias.",
-      "localName": "drizzle-postgres"
-    },
-    {
-      "path": "skills/community/executing-plans",
-      "source": "obra/superpowers",
-      "upstreamPath": "skills/executing-plans",
-      "upstreamName": "executing-plans",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/obra/superpowers/HEAD/skills/executing-plans/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "executing-plans"
-    },
-    {
-      "path": "skills/community/find-rules",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "",
-      "status": "unresolved",
-      "evidence": [
-        "https://github.com/pedronauck/skills/",
-        "https://www.skills.sh/pedronauck/skills/find-rules",
-        "https://skills.cat/skills/pedronauck/skills/find-rules"
-      ],
-      "notes": "Exa exact-name and distinctive-text searches did not verify matching external original. Local history traces to Pedro Nauck commit 80584d4 (2026-03-14, add my set of skills), which proves import only, not authorship. Do not overwrite with same-name unrelated skill.",
-      "localName": "find-rules"
-    },
-    {
-      "path": "skills/community/find-skills",
-      "source": "vercel-labs/skills",
-      "upstreamPath": "skills/find-skills",
-      "upstreamName": "find-skills",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/vercel-labs/skills/HEAD/skills/find-skills/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "find-skills"
-    },
-    {
-      "path": "skills/community/fixing-motion-performance",
-      "source": "ibelick/ui-skills",
-      "upstreamPath": "skills/fixing-motion-performance",
-      "upstreamName": "fixing-motion-performance",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/ibelick/ui-skills/HEAD/skills/fixing-motion-performance/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "fixing-motion-performance"
-    },
-    {
-      "path": "skills/community/helm-chart-scaffolding",
-      "source": "wshobson/agents",
-      "upstreamPath": "plugins/kubernetes-operations/skills/helm-chart-scaffolding",
-      "upstreamName": "helm-chart-scaffolding",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/wshobson/agents/HEAD/plugins/kubernetes-operations/skills/helm-chart-scaffolding/SKILL.md"
-      ],
-      "notes": "Verified upstream SKILL.md shares distinctive content and structure; newer upstream may differ substantially. Source found through Exa.",
-      "localName": "helm-chart-scaffolding"
-    },
-    {
-      "path": "skills/community/hetzner-server",
-      "source": "connorads/dotfiles",
-      "upstreamPath": ".config/skills/personal/hetzner-server",
-      "upstreamName": "hetzner-server",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/connorads/dotfiles/HEAD/.config/skills/personal/hetzner-server/SKILL.md",
-        "https://playbooks.com/skills/connorads/dotfiles/hetzner-server",
-        "https://www.skills.sh/connorads/dotfiles/hetzner-server"
-      ],
-      "notes": "Live upstream SKILL.md compared with local: 84.4% character similarity; 30 exact substantive lines. Upstream has changes. Upstream moved from .agents/skills/hetzner-server to .config/skills/personal/hetzner-server.",
-      "localName": "hetzner-server"
-    },
-    {
-      "path": "skills/community/inngest",
+      "path": "skills/curated/inngest",
       "source": "sickn33/antigravity-awesome-skills",
       "upstreamPath": "skills/inngest",
       "upstreamName": "inngest",
@@ -268,34 +30,7 @@
       "localName": "inngest"
     },
     {
-      "path": "skills/community/k8s-security-policies",
-      "source": "wshobson/agents",
-      "upstreamPath": "plugins/kubernetes-operations/skills/k8s-security-policies",
-      "upstreamName": "k8s-security-policies",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/wshobson/agents/HEAD/plugins/kubernetes-operations/skills/k8s-security-policies/SKILL.md",
-        "https://github.com/wshobson/agents/blob/HEAD/plugins/kubernetes-operations/skills/k8s-security-policies/SKILL.md"
-      ],
-      "notes": "Live upstream SKILL.md compared with local: 98.6% character similarity; 17 exact substantive lines. Upstream has changes.",
-      "localName": "k8s-security-policies"
-    },
-    {
-      "path": "skills/community/kubernetes-specialist",
-      "source": "Jeffallan/claude-skills",
-      "upstreamPath": "skills/kubernetes-specialist",
-      "upstreamName": "kubernetes-specialist",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/Jeffallan/claude-skills/HEAD/skills/kubernetes-specialist/SKILL.md",
-        "https://github.com/jeffallan/claude-skills/blob/main/skills/kubernetes-specialist/SKILL.md",
-        "https://playbooks.com/skills/jeffallan/claude-skills/kubernetes-specialist"
-      ],
-      "notes": "Live upstream SKILL.md compared with local: 96.0% character similarity; 26 exact substantive lines. Upstream has changes.",
-      "localName": "kubernetes-specialist"
-    },
-    {
-      "path": "skills/community/mermaid-diagrams",
+      "path": "skills/curated/mermaid-diagrams",
       "source": "softaworks/agent-toolkit",
       "upstreamPath": "skills/mermaid-diagrams",
       "upstreamName": "mermaid-diagrams",
@@ -308,41 +43,13 @@
       "localName": "mermaid-diagrams"
     },
     {
-      "path": "skills/community/motion",
-      "source": "secondsky/claude-skills",
-      "upstreamPath": "plugins/motion/skills/motion",
-      "upstreamName": "motion",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/secondsky/claude-skills/HEAD/plugins/motion/skills/motion/SKILL.md",
-        "https://github.com/secondsky/claude-skills/blob/main/plugins/motion/skills/motion/SKILL.md",
-        "https://github.com/secondsky/claude-skills/tree/main/plugins/motion/skills/motion"
-      ],
-      "notes": "Live upstream SKILL.md compared with local: 45.5% character similarity; 43 exact substantive lines. Upstream has changes. Local footer identifies jezweb/claude-skills; GitHub source now resolves as secondsky/claude-skills.",
-      "localName": "motion"
-    },
-    {
-      "path": "skills/community/motion-react",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "motion-react",
-      "status": "unresolved",
-      "evidence": [
-        "https://github.com/pedronauck/skills/blob/main/skills/community/motion-react/SKILL.md",
-        "https://claudeskills.info/skills/pedronauck/skills/motion-react/",
-        "https://claudemarketplaces.com/skills/pedronauck/skills/motion-react"
-      ],
-      "notes": "Two Exa searches (name and distinctive body phrase) found only Pedro copies or unrelated skills; no external original verified. Repository history begins in Pedro bulk import 80584d4, which does not prove authorship. Preserve local copy rather than assign an unrelated upstream.",
-      "localName": "motion-react"
-    },
-    {
-      "path": "skills/community/obsidian-bases",
+      "path": "skills/curated/obsidian-bases",
       "source": "kepano/obsidian-skills",
-      "upstreamPath": "skills/obsidian-bases",
+      "upstreamPath": "plugins/obsidian/skills/obsidian-bases",
       "upstreamName": "obsidian-bases",
       "status": "verified",
       "evidence": [
-        "https://raw.githubusercontent.com/kepano/obsidian-skills/HEAD/skills/obsidian-bases/SKILL.md",
+        "https://raw.githubusercontent.com/kepano/obsidian-skills/HEAD/plugins/obsidian/skills/obsidian-bases/SKILL.md",
         "https://github.com/kepano/obsidian-skills/blob/bb9ec95e/skills/obsidian-bases/SKILL.md",
         "https://github.com/kepano/obsidian-skills/blob/553ef99a/skills/obsidian-bases/SKILL.md"
       ],
@@ -350,13 +57,13 @@
       "localName": "obsidian-bases"
     },
     {
-      "path": "skills/community/obsidian-cli",
+      "path": "skills/curated/obsidian-cli",
       "source": "kepano/obsidian-skills",
-      "upstreamPath": "skills/obsidian-cli",
+      "upstreamPath": "plugins/obsidian/skills/obsidian-cli",
       "upstreamName": "obsidian-cli",
       "status": "verified",
       "evidence": [
-        "https://raw.githubusercontent.com/kepano/obsidian-skills/HEAD/skills/obsidian-cli/SKILL.md",
+        "https://raw.githubusercontent.com/kepano/obsidian-skills/HEAD/plugins/obsidian/skills/obsidian-cli/SKILL.md",
         "https://github.com/kepano/obsidian-skills/blob/main/skills/obsidian-cli/SKILL.md",
         "https://github.com/kepano/obsidian-skills/blob/553ef99a/skills/obsidian-cli/SKILL.md"
       ],
@@ -364,13 +71,13 @@
       "localName": "obsidian-cli"
     },
     {
-      "path": "skills/community/obsidian-markdown",
+      "path": "skills/curated/obsidian-markdown",
       "source": "kepano/obsidian-skills",
-      "upstreamPath": "skills/obsidian-markdown",
+      "upstreamPath": "plugins/obsidian/skills/obsidian-markdown",
       "upstreamName": "obsidian-markdown",
       "status": "verified",
       "evidence": [
-        "https://raw.githubusercontent.com/kepano/obsidian-skills/HEAD/skills/obsidian-markdown/SKILL.md",
+        "https://raw.githubusercontent.com/kepano/obsidian-skills/HEAD/plugins/obsidian/skills/obsidian-markdown/SKILL.md",
         "https://raw.githubusercontent.com/kepano/obsidian-skills/main/skills/obsidian-markdown/SKILL.md",
         "https://github.com/kepano/obsidian-skills/blob/ac9398734fe719565809f7a6048b05c36b1ca38f/skills/obsidian-markdown/SKILL.md"
       ],
@@ -378,47 +85,7 @@
       "localName": "obsidian-markdown"
     },
     {
-      "path": "skills/community/pal",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "pal",
-      "status": "unresolved",
-      "evidence": [
-        "https://github.com/pedronauck/skills/",
-        "https://claudeskills.info/skills/pedronauck/skills/pal/"
-      ],
-      "notes": "Two Exa searches (name and distinctive body phrase) found only Pedro copies or unrelated skills; no external original verified. Repository history begins in Pedro bulk import 80584d4, which does not prove authorship. Preserve local copy rather than assign an unrelated upstream.",
-      "localName": "pal"
-    },
-    {
-      "path": "skills/community/perplexity",
-      "source": "softaworks/agent-toolkit",
-      "upstreamPath": "skills/perplexity",
-      "upstreamName": "perplexity",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/softaworks/agent-toolkit/HEAD/skills/perplexity/SKILL.md",
-        "https://github.com/softaworks/agent-toolkit/blob/main/skills/perplexity/SKILL.md"
-      ],
-      "notes": "Live upstream SKILL.md compared with local: 100.0% character similarity; 22 exact substantive lines. Same text.",
-      "localName": "perplexity"
-    },
-    {
-      "path": "skills/community/remotion-best-practices",
-      "source": "remotion-dev/skills",
-      "upstreamPath": "skills/remotion-best-practices",
-      "upstreamName": "remotion-best-practices",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/remotion-dev/skills/HEAD/skills/remotion-best-practices/SKILL.md",
-        "https://github.com/remotion-dev/skills/blob/main/skills/remotion/SKILL.md",
-        "https://github.com/remotion-dev/skills/tree/main/skills/remotion-best-practices"
-      ],
-      "notes": "Live upstream SKILL.md compared with local: 13.0% character similarity; 0 exact substantive lines. Upstream has changes. Indexed historical skills/remotion/SKILL.md matches the local rule list. Current path moved and became a router with nested remotion-* reference directories; copy the full directory.",
-      "localName": "remotion-best-practices"
-    },
-    {
-      "path": "skills/community/requirements-clarity",
+      "path": "skills/curated/requirements-clarity",
       "source": "softaworks/agent-toolkit",
       "upstreamPath": "skills/requirements-clarity",
       "upstreamName": "requirements-clarity",
@@ -432,33 +99,7 @@
       "localName": "requirements-clarity"
     },
     {
-      "path": "skills/community/ship-learn-next",
-      "source": "michalparkola/tapestry-skills-for-claude-code",
-      "upstreamPath": "ship-learn-next",
-      "upstreamName": "ship-learn-next",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/michalparkola/tapestry-skills-for-claude-code/HEAD/ship-learn-next/SKILL.md",
-        "https://github.com/michalparkola/tapestry-skills-for-claude-code/blob/main/ship-learn-next/SKILL.md"
-      ],
-      "notes": "Live upstream SKILL.md compared with local: 99.9% character similarity; 51 exact substantive lines. Upstream has changes.",
-      "localName": "ship-learn-next"
-    },
-    {
-      "path": "skills/community/sourcebot",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "sourcebot",
-      "status": "unresolved",
-      "evidence": [
-        "https://github.com/pedronauck/skills/",
-        "https://www.skillsdirectory.com/skills/pedronauck-sourcebot"
-      ],
-      "notes": "Two Exa searches (name and distinctive body phrase) found only Pedro copies or unrelated skills; no external original verified. Repository history begins in Pedro bulk import 80584d4, which does not prove authorship. Preserve local copy rather than assign an unrelated upstream.",
-      "localName": "sourcebot"
-    },
-    {
-      "path": "skills/community/tauri-v2",
+      "path": "skills/curated/tauri-v2",
       "source": "nodnarbnitram/claude-code-extensions",
       "upstreamPath": "plugins/cce-tauri/skills/tauri-v2",
       "upstreamName": "tauri-v2",
@@ -470,47 +111,6 @@
       ],
       "notes": "Live upstream SKILL.md compared with local: 75.4% character similarity; 65 exact substantive lines. Upstream has changes.",
       "localName": "tauri-v2"
-    },
-    {
-      "path": "skills/community/terraform-style-guide",
-      "source": "hashicorp/agent-skills",
-      "upstreamPath": "plugins/terraform/skills/terraform-style-guide",
-      "upstreamName": "terraform-style-guide",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/hashicorp/agent-skills/HEAD/plugins/terraform/skills/terraform-style-guide/SKILL.md",
-        "https://github.com/hashicorp/agent-skills/blob/main/plugins/terraform/skills/terraform-style-guide/SKILL.md",
-        "https://github.com/hashicorp/agent-skills/blob/de4323afdfbc30d1387f287b55062fa8d82b62e8/terraform/code-generation/skills/terraform-style-guide/SKILL.md"
-      ],
-      "notes": "Live upstream SKILL.md compared with local: 89.7% character similarity; 21 exact substantive lines. Upstream has changes.",
-      "localName": "terraform-style-guide"
-    },
-    {
-      "path": "skills/community/workflow",
-      "source": "vercel/workflow",
-      "upstreamPath": "skills/workflow",
-      "upstreamName": "workflow",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/vercel/workflow/HEAD/skills/workflow/SKILL.md"
-      ],
-      "notes": "Live upstream SKILL.md compared with local: 50.7% character similarity; 53 exact substantive lines. Upstream has changes.",
-      "localName": "workflow"
-    },
-    {
-      "path": "skills/community/wrangler",
-      "source": "cloudflare/skills",
-      "upstreamPath": "skills/wrangler",
-      "upstreamName": "wrangler",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/cloudflare/skills/HEAD/skills/wrangler/SKILL.md",
-        "https://raw.githubusercontent.com/cloudflare/skills/refs/heads/main/skills/wrangler/SKILL.md",
-        "https://github.com/cloudflare/skills/tree/main/skills/wrangler",
-        "https://raw.githubusercontent.com/cloudflare/skills/d3113039790f64e052ff80f351190da65e9b7510/skills/wrangler/SKILL.md"
-      ],
-      "notes": "Live upstream SKILL.md compared with local: 7.0% character similarity; 0 exact substantive lines. Upstream has changes. Primary historical commit d3113039 is 97.4% similar to local; upstream now uses a concise documentation retrieval workflow.",
-      "localName": "wrangler"
     },
     {
       "path": "skills/curated/agent-browser",
@@ -639,20 +239,6 @@
       "notes": "Pedro Nauck explicitly confirmed authorship. Kept in curated at his request. No external source; excluded from upstream updates."
     },
     {
-      "path": "skills/curated/elysia",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "elysia",
-      "localName": "elysia",
-      "status": "local",
-      "author": "Pedro Nauck",
-      "authorshipConfirmedBy": "Repository owner in this task, 2026-09-14",
-      "evidence": [
-        "https://github.com/pedronauck/skills"
-      ],
-      "notes": "Pedro Nauck explicitly confirmed authorship. Kept in curated at his request. No external source; excluded from upstream updates."
-    },
-    {
       "path": "skills/curated/es-toolkit",
       "source": null,
       "upstreamPath": null,
@@ -665,219 +251,6 @@
         "https://github.com/pedronauck/skills"
       ],
       "notes": "Pedro Nauck explicitly confirmed authorship. Kept in curated at his request. No external source; excluded from upstream updates."
-    },
-    {
-      "path": "skills/curated/evolution-api",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "evolution-api",
-      "localName": "evolution-api",
-      "status": "local",
-      "author": "Pedro Nauck",
-      "authorshipConfirmedBy": "Repository owner in this task, 2026-09-14",
-      "evidence": [
-        "https://github.com/pedronauck/skills"
-      ],
-      "notes": "Pedro Nauck explicitly confirmed authorship. Kept in curated at his request. No external source; excluded from upstream updates."
-    },
-    {
-      "path": "skills/curated/exa-web-search-free",
-      "source": "sundial-org/awesome-openclaw-skills",
-      "upstreamPath": "skills/exa-web-search-free",
-      "upstreamName": "exa-web-search-free",
-      "status": "verified",
-      "evidence": [
-        "https://clawhub.ai/api/v1/skills/exa-web-search-free",
-        "https://clawhub.ai/whiteknight07/exa-web-search-free",
-        "https://raw.githubusercontent.com/sundial-org/awesome-openclaw-skills/HEAD/skills/exa-web-search-free/SKILL.md"
-      ],
-      "notes": "Original publisher: ClawHub whiteknight07 (Stavan), latest 1.0.1. Installable source is an explicitly identified curated mirror, not original publisher GitHub. Downloaded original ClawHub package SKILL.md is byte-identical to this mirror; local copy has formatting differences (98% line overlap). Future mirror freshness may lag registry.",
-      "sourceRole": "mirror",
-      "localName": "exa-web-search-free"
-    },
-    {
-      "path": "skills/curated/firecrawl",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl",
-      "upstreamName": "firecrawl",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl/SKILL.md"
-      ],
-      "notes": "Upstream SKILL.md fetched. Local line overlap 49%; source content inspected; local content may differ. The catalogue includes the 11 required CLI sibling guides. Correct the upstream claim that optional workflow skills are already installed; workflow skills require their separate setup.",
-      "localName": "firecrawl",
-      "replacements": [
-        {
-          "file": "SKILL.md",
-          "old": "(already installed alongside this CLI skill)",
-          "new": "(available separately with `firecrawl setup workflows`)"
-        }
-      ]
-    },
-    {
-      "path": "skills/curated/firecrawl-agent",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-agent",
-      "upstreamName": "firecrawl-agent",
-      "localName": "firecrawl-agent",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-agent/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
-    },
-    {
-      "path": "skills/curated/firecrawl-crawl",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-crawl",
-      "upstreamName": "firecrawl-crawl",
-      "localName": "firecrawl-crawl",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-crawl/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
-    },
-    {
-      "path": "skills/curated/firecrawl-developer-index",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-developer-index",
-      "upstreamName": "firecrawl-developer-index",
-      "localName": "firecrawl-developer-index",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-developer-index/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
-    },
-    {
-      "path": "skills/curated/firecrawl-download",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-download",
-      "upstreamName": "firecrawl-download",
-      "localName": "firecrawl-download",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-download/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
-    },
-    {
-      "path": "skills/curated/firecrawl-interact",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-interact",
-      "upstreamName": "firecrawl-interact",
-      "localName": "firecrawl-interact",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-interact/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
-    },
-    {
-      "path": "skills/curated/firecrawl-map",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-map",
-      "upstreamName": "firecrawl-map",
-      "localName": "firecrawl-map",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-map/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
-    },
-    {
-      "path": "skills/curated/firecrawl-monitor",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-monitor",
-      "upstreamName": "firecrawl-monitor",
-      "localName": "firecrawl-monitor",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-monitor/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
-    },
-    {
-      "path": "skills/curated/firecrawl-parse",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-parse",
-      "upstreamName": "firecrawl-parse",
-      "localName": "firecrawl-parse",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-parse/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
-    },
-    {
-      "path": "skills/curated/firecrawl-research-index",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-research-index",
-      "upstreamName": "firecrawl-research-index",
-      "localName": "firecrawl-research-index",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-research-index/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
-    },
-    {
-      "path": "skills/curated/firecrawl-scrape",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-scrape",
-      "upstreamName": "firecrawl-scrape",
-      "localName": "firecrawl-scrape",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-scrape/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
-    },
-    {
-      "path": "skills/curated/firecrawl-search",
-      "source": "firecrawl/cli",
-      "upstreamPath": "skills/firecrawl-search",
-      "upstreamName": "firecrawl-search",
-      "localName": "firecrawl-search",
-      "status": "verified",
-      "requiredBy": [
-        "skills/curated/firecrawl"
-      ],
-      "evidence": [
-        "https://raw.githubusercontent.com/firecrawl/cli/HEAD/skills/firecrawl-search/SKILL.md"
-      ],
-      "notes": "Required sibling reference of the current upstream Firecrawl router, verified against the upstream SKILL.md. Added during native consumer validation so the updated router has its referenced command guides."
     },
     {
       "path": "skills/curated/hono",
@@ -902,18 +275,6 @@
       ],
       "notes": "Upstream SKILL.md fetched. Local line overlap 100%; source content inspected; local content may differ.",
       "localName": "lesson-learned"
-    },
-    {
-      "path": "skills/curated/mastra",
-      "source": "mastra-ai/skills",
-      "upstreamPath": "skills/mastra",
-      "upstreamName": "mastra",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/mastra-ai/skills/HEAD/skills/mastra/SKILL.md"
-      ],
-      "notes": "Upstream SKILL.md fetched. Local line overlap 30%; source content inspected; local content may differ.",
-      "localName": "mastra"
     },
     {
       "path": "skills/curated/next-best-practices",
@@ -1079,176 +440,6 @@
       "notes": "Pedro Nauck explicitly confirmed authorship. Kept in curated at his request. No external source; excluded from upstream updates."
     },
     {
-      "path": "skills/deprecated/agent-md-refactor",
-      "source": "softaworks/agent-toolkit",
-      "upstreamPath": "skills/agent-md-refactor",
-      "upstreamName": "agent-md-refactor",
-      "status": "verified",
-      "evidence": [
-        "https://github.com/softaworks/agent-toolkit/blob/main/skills/agent-md-refactor/SKILL.md"
-      ],
-      "notes": "Exa discovery followed by live raw GitHub content verification. SKILL.md text similarity 1.000; matching name, description, characteristic content.",
-      "localName": "agent-md-refactor"
-    },
-    {
-      "path": "skills/deprecated/architecture-diagram",
-      "source": "Cocoon-AI/architecture-diagram-generator",
-      "upstreamPath": "architecture-diagram",
-      "upstreamName": "architecture-diagram",
-      "status": "verified",
-      "evidence": [
-        "https://github.com/Cocoon-AI/architecture-diagram-generator/blob/main/architecture-diagram/SKILL.md"
-      ],
-      "notes": "Exa discovery followed by live raw GitHub content verification. SKILL.md text similarity 0.829; matching name, description, characteristic content.",
-      "localName": "architecture-diagram"
-    },
-    {
-      "path": "skills/deprecated/brainstorming",
-      "source": "obra/superpowers",
-      "upstreamPath": "skills/brainstorming",
-      "upstreamName": "brainstorming",
-      "status": "verified",
-      "evidence": [
-        "https://github.com/obra/superpowers/blob/main/skills/brainstorming/SKILL.md"
-      ],
-      "notes": "Exa discovery followed by live raw GitHub content verification. SKILL.md text similarity 0.236; matching name, description, characteristic content; upstream has extensively revised the brainstorming process.",
-      "localName": "brainstorming"
-    },
-    {
-      "path": "skills/deprecated/cmux-orchestration",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "cmux-orchestration",
-      "status": "local",
-      "evidence": [
-        "https://github.com/pedronauck/skills/commit/bffd8cf3994ea16dfab905235702c56ce9055dc0"
-      ],
-      "notes": "Explicit Pedro Nauck author/repository metadata and local git history. Exa searched the exact name; third-party namesakes are not this skill. Preserve as locally authored deprecated skill.",
-      "localName": "cmux-orchestration"
-    },
-    {
-      "path": "skills/deprecated/council",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "council",
-      "status": "local",
-      "evidence": [
-        "https://github.com/pedronauck/skills/commit/7207eebe76664ddbed2613ccf612b362fd45ef28"
-      ],
-      "notes": "Explicit Pedro Nauck author/repository metadata and local git history. Exa searched the exact name; third-party namesakes are not this skill. Preserve as locally authored deprecated skill.",
-      "localName": "council"
-    },
-    {
-      "path": "skills/deprecated/fix-coderabbit-review",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "fix-coderabbit-review",
-      "status": "local",
-      "evidence": [
-        "https://github.com/pedronauck/skills/commit/80584d466d768f48cc3314ec83a6f85f9dafc5f5"
-      ],
-      "notes": "Explicit Pedro Nauck author/repository metadata and local git history. Exa searched the exact name; third-party namesakes are not this skill. Preserve as locally authored deprecated skill.",
-      "localName": "fix-coderabbit-review"
-    },
-    {
-      "path": "skills/deprecated/game-changing-features",
-      "source": "softaworks/agent-toolkit",
-      "upstreamPath": "skills/game-changing-features",
-      "upstreamName": "game-changing-features",
-      "status": "verified",
-      "evidence": [
-        "https://github.com/softaworks/agent-toolkit/blob/main/skills/game-changing-features/SKILL.md"
-      ],
-      "notes": "Exa discovery followed by live raw GitHub content verification. SKILL.md text similarity 1.000; matching name, description, characteristic content.",
-      "localName": "game-changing-features"
-    },
-    {
-      "path": "skills/deprecated/golang-pro",
-      "source": "Jeffallan/claude-skills",
-      "upstreamPath": "skills/golang-pro",
-      "upstreamName": "golang-pro",
-      "status": "verified",
-      "evidence": [
-        "https://github.com/Jeffallan/claude-skills/blob/main/skills/golang-pro/SKILL.md"
-      ],
-      "notes": "Exa discovery followed by live raw GitHub content verification. SKILL.md text similarity 0.991; matching name, description, characteristic content.",
-      "localName": "golang-pro"
-    },
-    {
-      "path": "skills/deprecated/impl-peer-review",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "impl-peer-review",
-      "status": "local",
-      "evidence": [
-        "https://github.com/pedronauck/skills/commit/0484325924f2e99022525fa2b46f9db9a58ea02c"
-      ],
-      "notes": "Explicit Pedro Nauck author/repository metadata and local git history. Exa searched the exact name; third-party namesakes are not this skill. Preserve as locally authored deprecated skill.",
-      "localName": "impl-peer-review"
-    },
-    {
-      "path": "skills/deprecated/outside-to-issue",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "outside-to-issue",
-      "status": "local",
-      "evidence": [
-        "https://github.com/pedronauck/skills/commit/80584d466d768f48cc3314ec83a6f85f9dafc5f5"
-      ],
-      "notes": "Explicit Pedro Nauck author/repository metadata and local git history. Exa searched the exact name; third-party namesakes are not this skill. Preserve as locally authored deprecated skill.",
-      "localName": "outside-to-issue"
-    },
-    {
-      "path": "skills/deprecated/ratatui-tui",
-      "source": "blacktop/dotfiles",
-      "upstreamPath": "ai/skills/ratatui-tui",
-      "upstreamName": "ratatui-tui",
-      "status": "verified",
-      "evidence": [
-        "https://github.com/blacktop/dotfiles/blob/master/ai/skills/ratatui-tui/SKILL.md"
-      ],
-      "notes": "Exa discovery followed by live raw GitHub content verification. SKILL.md text similarity 0.769; matching name, description, characteristic content.",
-      "localName": "ratatui-tui"
-    },
-    {
-      "path": "skills/deprecated/skill-best-practices",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "skill-best-practices",
-      "status": "local",
-      "evidence": [
-        "https://github.com/pedronauck/skills/commit/80584d466d768f48cc3314ec83a6f85f9dafc5f5"
-      ],
-      "notes": "Explicit Pedro Nauck author/repository metadata and local git history. Exa searched the exact name; third-party namesakes are not this skill. Preserve as locally authored deprecated skill.",
-      "localName": "skill-best-practices"
-    },
-    {
-      "path": "skills/deprecated/skill-load-tips",
-      "source": null,
-      "upstreamPath": null,
-      "upstreamName": "skill-load-tips",
-      "status": "local",
-      "evidence": [
-        "https://github.com/pedronauck/skills/commit/75c938fad5632e9b416f6fa09fbb1dc0d4c0621f"
-      ],
-      "notes": "Explicit Pedro Nauck author/repository metadata and local git history. Exa searched the exact name; third-party namesakes are not this skill. Preserve as locally authored deprecated skill.",
-      "localName": "skill-load-tips"
-    },
-    {
-      "path": "skills/deprecated/writing-great-skills",
-      "source": "mattpocock/skills",
-      "upstreamPath": "skills/productivity/writing-for-agents",
-      "upstreamName": "writing-for-agents",
-      "status": "verified",
-      "evidence": [
-        "https://github.com/mattpocock/skills/blob/af6d6922c3e2b5288eef155346cbe319e4ed3bd0/skills/productivity/writing-great-skills/SKILL.md",
-        "https://github.com/mattpocock/skills/commit/1fc6573e0e300118ce342fb9365521c9c34eefd4",
-        "https://github.com/mattpocock/skills/blob/main/skills/productivity/writing-for-agents/SKILL.md"
-      ],
-      "notes": "Local SKILL.md exactly matches original historical upstream. Upstream explicitly renamed writing-great-skills to writing-for-agents and restructured it. Current path/name verified by GitHub tree and raw content; keep local catalog directory name while tracking renamed upstream.",
-      "localName": "writing-great-skills"
-    },
-    {
       "path": "skills/marketing/alex-hormozi-pitch",
       "source": "danielmiessler/PAIPlugin",
       "upstreamPath": "skills/alex-hormozi-pitch",
@@ -1302,11 +493,12 @@
       "source": "oldwinter/skills",
       "upstreamPath": "lenny-skills/fundraising",
       "upstreamName": "fundraising",
-      "status": "verified",
+      "status": "retired",
       "evidence": [
-        "https://raw.githubusercontent.com/oldwinter/skills/HEAD/lenny-skills/fundraising/SKILL.md"
+        "https://raw.githubusercontent.com/oldwinter/skills/HEAD/lenny-skills/fundraising/SKILL.md",
+        "https://github.com/oldwinter/skills/commit/4de594e780"
       ],
-      "notes": "Upstream SKILL.md content directly verified; text similarity 100.0%.",
+      "notes": "ORIGINAL VERIFIED, UPSTREAM REMOVED: oldwinter/skills commit 4de594e780 (2026-10-12) kept only 10 skills and deleted lenny-skills/fundraising. No installable same skill remains; local content is preserved and excluded from updates.",
       "localName": "fundraising"
     },
     {
@@ -1346,56 +538,6 @@
       ],
       "notes": "Local frontmatter explicitly credits blader/humanizer. Live upstream verified and substantially rewritten since local v2.1.1.",
       "localName": "humanizer"
-    },
-    {
-      "path": "skills/marketing/pitch-deck",
-      "source": "ailabs-393/ai-labs-claude-skills",
-      "upstreamPath": "packages/skills/pitch-deck",
-      "upstreamName": "pitch-deck",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/ailabs-393/ai-labs-claude-skills/HEAD/packages/skills/pitch-deck/SKILL.md"
-      ],
-      "notes": "Upstream SKILL.md content directly verified; text similarity 100.0%.",
-      "localName": "pitch-deck"
-    },
-    {
-      "path": "skills/marketing/pitch-deck-visuals",
-      "source": "inference-sh/skills",
-      "upstreamPath": "guides/design/pitch-deck-visuals",
-      "upstreamName": "pitch-deck-visuals",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/inference-sh/skills/HEAD/guides/design/pitch-deck-visuals/SKILL.md"
-      ],
-      "notes": "Upstream SKILL.md content directly verified; text similarity 98.45%.",
-      "localName": "pitch-deck-visuals"
-    },
-    {
-      "path": "skills/marketing/pitch-gen",
-      "source": "LXGIC-Studios/ai-pitch",
-      "upstreamPath": ".",
-      "upstreamName": "pitch-gen",
-      "status": "verified",
-      "evidence": [
-        "https://raw.githubusercontent.com/LXGIC-Studios/ai-pitch/HEAD/SKILL.md"
-      ],
-      "notes": "Local _meta.json identifies lxgicstudios and removed clawdbot/skills archive. Original author repository verified: src/index.ts, src/cli.ts, README.md match exactly; package differs only description/keywords. SKILL.md has editorial differences. Original repo root is installable and maintained source.",
-      "localName": "pitch-gen"
-    },
-    {
-      "path": "skills/marketing/pptx-creator",
-      "source": "openclaw/skills",
-      "upstreamPath": "skills/dbhurley/pptx-creator",
-      "upstreamName": "pptx-creator",
-      "status": "retired",
-      "evidence": [
-        "https://github.com/clawdbot/skills/commit/3748bfe5433847b5104e84651faf40a521f7b0e8",
-        "https://getclawkit.com/skills/official-dbhurley-pptx-creator",
-        "https://raw.githubusercontent.com/danstrem2/clawdbot-skill-master-pack/HEAD/skills/pptx-creator/SKILL.md"
-      ],
-      "notes": "Local _meta.json credits dbhurley with canonical archive commit. openclaw/skills and clawdbot/skills repos and commit now return 404. Exact SKILL.md mirror verified in danstrem2/clawdbot-skill-master-pack; mirror is not proven author-maintained source. Preserve rather than silently switch updates to unrelated mirror.",
-      "localName": "pptx-creator"
     },
     {
       "path": "skills/marketing/professional-communication",
@@ -1445,19 +587,6 @@
       ],
       "notes": "Upstream SKILL.md content directly verified; text similarity 100.0%.",
       "localName": "startup-validator"
-    },
-    {
-      "path": "skills/marketing/viz",
-      "source": "joshua-heygen/viz-pack",
-      "upstreamPath": ".",
-      "upstreamName": "viz",
-      "status": "local",
-      "evidence": [
-        "https://github.com/joshua-heygen/viz-pack",
-        "https://raw.githubusercontent.com/joshua-heygen/viz-pack/HEAD/nano-this.md"
-      ],
-      "notes": "Local dispatcher adaptation of four upstream individual Markdown prompts (diagram-it.md, nano-this.md, vis-it.md, ver-it.md). Upstream tree has no SKILL.md. Shared Swiss Pulse design system and mode semantics directly verified. Cannot install/update wholesale through skills CLI without losing local dispatcher and resources.",
-      "localName": "viz"
     },
     {
       "path": "skills/marketing/writing-clearly-and-concisely",

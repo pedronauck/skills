@@ -1,27 +1,11 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
     "exa-search": {
       "source": "exa-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/exa-search/SKILL.md",
-      "computedHash": "a17794b791526225e07ff123b51b0b925bd80469cab5c751f1f6454a5472ffbb"
-    },
-    "impeccable": {
-      "source": "pbakaus/impeccable",
-      "sourceType": "github",
-      "skillPath": "skill/SKILL.md",
-      "computedHash": "8cdf2e788eaca3af7d02026ef9cec55b506100a00d130f938e3fb1ad669c0ad0"
-    },
-    "opentui": {
-      "source": "msmps/opentui-skill",
-      "sourceType": "github",
-      "computedHash": "2915038bb3297e759f740f9e6bfa885ed80a4a7fe945825f5874b48db9ce0fd2"
-    },
-    "tui-design": {
-      "source": "hyperb1iss/hyperskills",
-      "sourceType": "github",
-      "computedHash": "848e926c0bb1e9c6b24e8a913baec8377478b82880603c305432a9ce5cf1395a"
+      "computedHash": "79e732e0be4fd8fc7bd339cf3ac412bee7e1a0e74b1a97cff2b94855c64553a4"
     }
   }
 }
