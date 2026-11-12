@@ -1,0 +1,104 @@
+diff --git a/lib/st/footage/autozoom.py b/lib/st/footage/autozoom.py
+index 6b0cac4..9d6ee04 100644
+--- a/lib/st/footage/autozoom.py
++++ b/lib/st/footage/autozoom.py
+@@ -408,13 +408,29 @@ def simulate_camera(n_frames: int, fps: float, shots: Sequence[Shot], lay: Layou
+                     dead_zone: float = 0.75, dead_zone_typing: float = 0.6) -> List[Tuple[float, float, float]]:
+     """Per-frame (zoom, cx, cy) with cx/cy in canvas pixels."""
+     cx0, cy0 = lay.wx + lay.ww / 2, lay.wy + lay.wh / 2
+-    zs = Spring(0.0, zoom_response, zeta)         # log zoom
++    # One motion per camera move: zoom and position share a single progress value, and the zoom runs
++    # around the fixed point of the start and end views, so every edge of the view moves one way.
+     xs = Spring(cx0, pan_response, zeta)
+     ys = Spring(cy0, pan_response, zeta)
++    z, cx, cy = 1.0, cx0, cy0
++    progress: Optional[Spring] = None
++    start_view = end_view = (1.0, cx0, cy0)
++    active_key: Any = "wide"
+     out = []
+     dt = 1.0 / fps
+     si = 0
+     target_c = (cx0, cy0)
++
++    def bounds(sh: Optional[Shot]) -> Tuple[float, float]:
++        spx = lay.wx if sh and (sh.x * lay.ws < 0.05 * lay.ww or sh.x * lay.ws > 0.95 * lay.ww) else 0.0
++        spy = lay.wy if sh and (sh.y * lay.ws < 0.05 * lay.wh or sh.y * lay.ws > 0.95 * lay.wh) else 0.0
++        return spx, spy
++
++    def clamp_view(zoom: float, c: Tuple[float, float], sh: Optional[Shot]) -> Tuple[float, float]:
++        spx, spy = bounds(sh)
++        return (_clamp_axis(c[0], lay.out_w / (2 * zoom), lay.wx - spx, lay.ww + 2 * spx, lay.out_w),
++                _clamp_axis(c[1], lay.out_h / (2 * zoom), lay.wy - spy, lay.wh + 2 * spy, lay.out_h))
++
+     for i in range(n_frames):
+         t = i * dt
+         while si < len(shots) and shots[si].end < t:
+@@ -442,19 +458,32 @@ def simulate_camera(n_frames: int, fps: float, shots: Sequence[Shot], lay: Layou
+         else:
+             z_t = 1.0
+             target_c = (cx0, cy0)
+-        lz = zs.step(math.log(z_t), dt)
+-        z = math.exp(lz)
+-        hx, hy = lay.out_w / (2 * z), lay.out_h / (2 * z)
+-        # a target in a window corner may use the frame's padding (framed look) so it is not stuck
+-        # on the edge of the picture
+-        spx = lay.wx if shot and (shot.x * lay.ws < 0.05 * lay.ww or shot.x * lay.ws > 0.95 * lay.ww) else 0.0
+-        spy = lay.wy if shot and (shot.y * lay.ws < 0.05 * lay.wh or shot.y * lay.ws > 0.95 * lay.wh) else 0.0
+-        tx = _clamp_axis(target_c[0], hx, lay.wx - spx, lay.ww + 2 * spx, lay.out_w)
+-        ty = _clamp_axis(target_c[1], hy, lay.wy - spy, lay.wh + 2 * spy, lay.out_h)
+-        cx = xs.step(tx, dt)
+-        cy = ys.step(ty, dt)
+-        cx = _clamp_axis(cx, hx, lay.wx - spx, lay.ww + 2 * spx, lay.out_w)
+-        cy = _clamp_axis(cy, hy, lay.wy - spy, lay.wh + 2 * spy, lay.out_h)
++        key = si if shot else "wide"
++        if key != active_key:
++            active_key = key
++            start_view = (z, cx, cy)
++            end_view = (z_t,) + clamp_view(z_t, target_c, shot)
++            progress = Spring(0.0, zoom_response, 1.0)
++        if progress is not None:
++            u = min(1.0, progress.step(1.0, dt))
++            z0, c0x, c0y = start_view
++            z1, c1x, c1y = end_view
++            if abs(z1 - z0) < 1e-4:
++                z, cx, cy = z1, c0x + (c1x - c0x) * u, c0y + (c1y - c0y) * u
++            else:
++                z = z0 * (z1 / z0) ** u
++                ax = (c1x * z1 - c0x * z0) / (z1 - z0)
++                ay = (c1y * z1 - c0y * z0) / (z1 - z0)
++                cx = ax - (ax - c0x) * z0 / z
++                cy = ay - (ay - c0y) * z0 / z
++            if u >= 0.9995:
++                z, cx, cy = end_view
++                progress = None
++                xs.x, ys.x, xs.v, ys.v = cx, cy, 0.0, 0.0
++        else:
++            z = z_t
++            tx, ty = clamp_view(z, target_c, shot)
++            cx, cy = clamp_view(z, (xs.step(tx, dt), ys.step(ty, dt)), shot)
+         out.append((z, cx, cy))
+     return out
+ 
+@@ -901,9 +930,6 @@ def render(src_path: Path, *, out: Optional[Path] = None, events_path: Optional[
+                             p = dtc / 0.35
+                             draw_ripple(img, rx, ry, (6 + 22 * (1 - (1 - p) ** 3)) * scale_px, 0.45 * (1 - p))
+                     dip = 1.0
+-                    for (ct, _, _) in clicks:
+-                        if 0 <= t - ct <= 0.12:
+-                            dip = 0.85
+                     draw_cursor(img, ox, oy, 19.5 * cursor_size * scale_px * dip, idle[i] if idle else 1.0)
+             if keycaps is not None:
+                 cur = [o for o in ktl if o[0] <= t]
+diff --git a/scripts/demo.mjs b/scripts/demo.mjs
+index 09e4027..02b2f37 100644
+--- a/scripts/demo.mjs
++++ b/scripts/demo.mjs
+@@ -193,7 +193,7 @@ class Recorder {
+     const k = Math.max(1, Math.round(dur * this.fps));
+     // slight arc: control point offset perpendicular to the path
+     const side = hash01(this.events.length + 1, 7) < 0.5 ? -1 : 1;
+-    const mx = (from.x + p.x) / 2 - ((p.y - from.y) * 0.12) * side, my = (from.y + p.y) / 2 + ((p.x - from.x) * 0.12) * side;
++    const mx = (from.x + p.x) / 2, my = (from.y + p.y) / 2; // straight path: no sideways bow on arrival
+     if (d > 1) {
+       for (let i = 1; i <= k; i++) {
+         const u = easeInOut(i / k);
