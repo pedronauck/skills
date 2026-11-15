@@ -1,6 +1,6 @@
 # Pedro Nauck's Skills
 
-A curated collection of **88 agent skills** for Claude Code and compatible AI coding assistants — **42 original** (⭐️), **33 hand-picked** (💎), and **13 marketing & business** (📣). Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
+A curated collection of **89 agent skills** for Claude Code and compatible AI coding assistants — **43 original** (⭐️), **33 hand-picked** (💎), and **13 marketing & business** (📣). Each skill provides domain-specific knowledge, best practices, and guided workflows that enhance an agent's ability to perform specialized tasks.
 
 ## Installation
 
@@ -44,7 +44,7 @@ ln -s $(pwd)/skills/mine ~/.claude/skills/mine
 
 Skills are organized into three top-level buckets:
 
-- `skills/mine/` — 42 original skills authored in this repository (⭐️)
+- `skills/mine/` — 43 original skills authored in this repository (⭐️)
 - `skills/curated/` — 33 hand-picked skills, including locally authored skills (💎)
 - `skills/marketing/` — 13 marketing, business, and writing skills (📣)
 
@@ -81,6 +81,7 @@ Original skills authored in this repository.
 - **[kb-yt-channel](./skills/mine/kb-yt-channel)** — Turn a YouTube channel into a Karpathy KB topic — resolves recent or full uploads, scaffolds `yt-channels` topics, ingests transcripts via `kb ingest youtube` (captions / auto / STT), and validates plus indexes the result
 - **[no-workarounds](./skills/mine/no-workarounds)** — Enforce root-cause fixes over workarounds, hacks, and symptom patches
 - **[product-demo](./skills/mine/product-demo)** — Record Screen Studio-style product demo clips of a running web app, driven by an agent: cursor, clicks, drag and zoom through a patched `showtime` pipeline (single-spring camera, straight cursor path, no click shrink), script rules for focus/zoom ordering, a motion-measurement script for rendered pixels, and a CompozyOS recording lab. Requires the `showtime` skill installed alongside
+- **[proto-spec-ui](./skills/mine/proto-spec-ui)** — Prototype a spec's screens in the proto gallery (`@compozy/proto` / `@protohq/cli`) to a reviewed quality bar distilled from 100+ gallery comments: reference research before drawing, one gallery entry per real screen, components shaped by the information they carry (never a default KPI strip + table), roomy density and calm surfaces, product components before hand-made ones, conductor visual QA before review, comment rounds that fix the whole class of a problem, and prototype-to-implementation parity. Companion to the `proto` and `proto-apply-comments` skills
 - **[qa-execution](./skills/mine/qa-execution)** — Run scoped dogfooding through public product interfaces, record findings in living QA docs, and repair within authorization; assess PR or release readiness when included in the request
 - **[qa-report](./skills/mine/qa-report)** — Plan real-user QA as living repo docs: owns the canonical `docs/qa/` tree, merge-safe by construction — content-addressed ids and one file per scenario/bug/charter, so parallel branches never contend (enum-disciplined scenario tracker materialized into a gitignored `state.csv` view, global bug registry with the five-tier user-impact rubric, project personas, journey flowcharts, session charters, coverage taxonomy, automation backlog). Maps every user-visible change as a Mermaid journey flow *before* deriving scenarios (flows-before-matrix), plans persona×journey×tour session charters by cadence tier (smoke/targeted/full/sanity), and enforces "every journey walked by a persona this cycle" completeness — sessions, not test-case accumulation.
 - **[react](./skills/mine/react)** — React 19 under the React Compiler — the Rules of React as a build-time contract (purity, immutability, refs, globals, static components) with each rule mapped to its `eslint-plugin-react-hooks` v7 lint rule, a memoization decision table for when `useMemo`/`useCallback`/`memo` still earn their place, the full bail-out catalogue (three hard syntax errors plus the silent `Todo` skips) with `"use no memo"` bisection and DevTools/healthcheck detection, compiler setup per bundler and incremental adoption, effects (anti-pattern catalogue, `useEffectEvent`, `useSyncExternalStore`), component and composition patterns, React 19 TypeScript migration (`ref` as prop, `React.JSX`, `useRef` arity) with codemods, state placement plus interior-mutability libraries, React 19/19.2 APIs (`use()`, Actions, `useOptimistic`, `<Activity>`, metadata, `cacheSignal`), and Vitest/RTL v16 testing
