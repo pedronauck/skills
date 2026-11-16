@@ -47,6 +47,21 @@ navigate({ to: '.', search: prev => ({ ...prev, ...newFilters, page: 1 }) })
 
 Search params are inherited by child routes. Validation runs on every navigation — keep it fast.
 
+## Keep Defaults Out of the URL and Scope Shared Filters
+
+A layout route that validates a shared filter schema (`.catch(default)`) writes every default into every URL below it. Strip defaults with a search middleware so a default URL stays clean and an explicit default canonicalizes to the bare path:
+
+```tsx
+import { stripSearchParams } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/_app')({
+  validateSearch: analyticsSearchSchema,
+  search: { middlewares: [stripSearchParams(ANALYTICS_DEFAULTS)] },
+})
+```
+
+Forward shared filters only to destinations that consume them (`search: (prev) => pickFor(destination, prev)` on shell links), not to every link: a period filter that leaks into unrelated sections becomes state nobody asked for. Non-default values stay in the URL, so filtered views remain shareable and refresh-stable.
+
 ## Configure Custom Search Param Serializers
 
 TanStack Router serializes search params as JSON by default (`?data=%7B...%7D`, ugly URLs). For cleaner URLs or external-API compatibility, provide a global custom serializer via `search.serialize`/`parse`.

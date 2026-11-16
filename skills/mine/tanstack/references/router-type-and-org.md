@@ -147,7 +147,7 @@ export const Route = createFileRoute('/dashboard')({
     if (!context.auth.isAuthenticated) throw redirect({ to: '/login' })
   },
   loader: async ({ context: { queryClient } }) => {
-    await queryClient.ensureQueryData(dashboardQueries.stats())
+    await queryClient.query(dashboardQueries.stats())
   },
 })
 

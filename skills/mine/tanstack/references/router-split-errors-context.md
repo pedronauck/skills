@@ -8,7 +8,7 @@ Split route components into `.lazy.tsx` files to shrink the initial bundle, rath
 // routes/dashboard.tsx - only critical config
 export const Route = createFileRoute('/dashboard')({
   loader: async ({ context }) => {
-    return context.queryClient.ensureQueryData(dashboardQueries.stats())
+    return context.queryClient.query(dashboardQueries.stats())
   },
 })
 
@@ -225,7 +225,7 @@ export function getRouter(auth: RouterContext['auth'] = { user: null, isAuthenti
 // routes/posts.tsx
 export const Route = createFileRoute('/posts')({
   loader: async ({ context: { queryClient } }) => {
-    return queryClient.ensureQueryData(postQueries.list())
+    return queryClient.query(postQueries.list())
   },
 })
 ```
@@ -277,7 +277,7 @@ export const Route = createFileRoute('/_authenticated')({
 // routes/_authenticated/dashboard.tsx
 export const Route = createFileRoute('/_authenticated/dashboard')({
   loader: async ({ context: { queryClient, auth } }) => {
-    return queryClient.ensureQueryData(dashboardQueries.forUser(auth.user!.id))
+    return queryClient.query(dashboardQueries.forUser(auth.user!.id))
   },
 })
 ```
@@ -285,3 +285,30 @@ export const Route = createFileRoute('/_authenticated/dashboard')({
 - Use `throw redirect({...})`, not `return redirect({...})`.
 - Pass `redirect: location.href` in search params for post-login return navigation.
 - An individual route can run the same `beforeLoad` auth check inline instead of nesting under a layout route.
+
+### Cache the Session Read in `beforeLoad`
+
+`beforeLoad` runs on every navigation, every hover preload and every search-param change, and it blocks every child loader. An uncached session RPC there (often several DB round trips) taxes opening a drawer or changing a filter. Read the session through the router's QueryClient with a `staleTime`, and invalidate it explicitly:
+
+```tsx
+export const SESSION_QUERY_KEY = ['session'] as const
+export const sessionQueryOptions = () =>
+  queryOptions({ queryKey: SESSION_QUERY_KEY, queryFn: () => getSession(), staleTime: 5 * 60_000 })
+
+export const Route = createFileRoute('/_app')({
+  beforeLoad: async ({ location, context: { queryClient } }) => {
+    const session = await queryClient.query(sessionQueryOptions())
+    // Never keep a signed-out answer: the next guarded navigation asks the server again
+    if (!session?.user) {
+      queryClient.removeQueries({ queryKey: SESSION_QUERY_KEY })
+      throw redirect({ to: '/login', search: { redirect: location.href } })
+    }
+    return { user: session.user }
+  },
+})
+```
+
+- Remove the cached session on sign-out and when access changes (a role change, a deactivation pushed over a live channel), then `router.invalidate()`.
+- SSR builds a fresh QueryClient per request, so a full page load always re-reads it.
+- The guard is navigation UX, not the access boundary: every server function still authorizes itself (`start.md`).
+- Hydration does not re-run `beforeLoad`. A `beforeLoad` that redirects based on browser-only state (localStorage, a saved view) must run in the browser: make the route `ssr: false` for the URLs that need it (`ssr` accepts a function of `{ params, search }`).

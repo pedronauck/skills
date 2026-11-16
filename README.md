@@ -91,7 +91,7 @@ Original skills authored in this repository.
 - **[spec-peer-review](./skills/mine/spec-peer-review)** — Optional cross-LLM peer review of a spec (TechSpec/design doc/RFC/PRD) via Compozy — an independent model writes one scoped findings file (blockers/nits + READY/BLOCKED/NEEDS_REWORK) for user-directed incorporation. Project-agnostic with configurable `--ide`/`--model`/`--reasoning` runtime, six tech-agnostic quality markers, and auto-discovered project rules
 - **[storybook-stories](./skills/mine/storybook-stories)** — Create, update, or refactor Storybook stories following project patterns
 - **[tailwindcss](./skills/mine/tailwindcss)** — Tailwind CSS v4 patterns, design tokens, and tailwind-variants
-- **[tanstack](./skills/mine/tanstack)** — TanStack Query, Router, and Form patterns for React — query keys, caching, mutations, prefetching, SSR/offline, file-based routes, search params, loaders, and Form validation
+- **[tanstack](./skills/mine/tanstack)** — TanStack Query, Router, Start, and Form patterns for React — query keys, caching, live invalidation, mutations, prefetching, SSR/offline, file-based routes, search params, loaders, server functions and selective SSR, and Form validation
 - **[tech-logos](./skills/mine/tech-logos)** — Install official tech brand logos from the Elements registry via shadcn
 - **[testing-boss](./skills/mine/testing-boss)** — Choose owning test suites and independent behavioral oracles, use mocks at unit I/O boundaries, validate the relevant real integration, and diagnose flaky tests or agent evals without mandatory companion-test quotas
 - **[to-prompt](./skills/mine/to-prompt)** — Create a handoff brief in `docs/prompts/` with relevant evidence, accepted user decisions, and unresolved implementation choices

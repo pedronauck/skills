@@ -2,7 +2,7 @@
 
 ## Prefetch on User Intent
 
-Prefetch on intent signals (hover, focus, touch) instead of waiting for the click, so likely-next data is warm before navigation eliminates the perceived load. Use `queryClient.prefetchQuery` with a `staleTime` so the prefetched entry isn't immediately refetched.
+Prefetch on intent signals (hover, focus, touch) instead of waiting for the click, so likely-next data is warm before navigation eliminates the perceived load. Use `queryClient.prefetchQuery` (from Query 5.104: `void queryClient.query(opts).catch(noop)`) with a `staleTime` so the prefetched entry isn't immediately refetched. With TanStack Router, real route links already preload through the loader on intent; don't add hover prefetch to list rows that open a drawer or panel — sweeping the pointer down a long list reads every row.
 
 ```tsx
 import { useQueryClient } from '@tanstack/react-query'

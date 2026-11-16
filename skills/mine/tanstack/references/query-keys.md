@@ -102,7 +102,7 @@ queryClient.invalidateQueries({ queryKey: todoKeys.all })       // Everything
 queryClient.invalidateQueries({ queryKey: todoKeys.detail(5) }) // Specific todo + comments
 ```
 
-Combine with `queryOptions` for full type-safe query definitions reusable across `useQuery`, `prefetchQuery`, etc.:
+Combine with `queryOptions` for full type-safe query definitions reusable across `useQuery`, route loaders (`queryClient.query`), prefetching, etc.:
 
 ```tsx
 import { queryOptions } from '@tanstack/react-query'

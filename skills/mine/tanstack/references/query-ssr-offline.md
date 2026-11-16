@@ -23,14 +23,14 @@ export default async function PostsPage() {
 }
 ```
 
-TanStack Router — prefetch in the route `loader` via `ensureQueryData`:
+TanStack Router / Start — start the read in the route `loader` with `queryClient.query` (`ensureQueryData` before Query 5.104) and let `setupRouterSsrQueryIntegration` dehydrate and hydrate; the loader's server/client waiting rules and error handling are in `router-data-loading.md`:
 
 ```tsx
 import { createFileRoute } from '@tanstack/react-router'
 import { postQueries } from '@/lib/queries'
 
 export const Route = createFileRoute('/posts')({
-  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(postQueries.list()),
+  loader: ({ context: { queryClient } }) => queryClient.query(postQueries.list()),
   component: () => {
     const { data: posts } = useSuspenseQuery(postQueries.list())
     return <PostList posts={posts} />
@@ -55,7 +55,7 @@ hydrate(queryClient, window.__DEHYDRATED_STATE__)
 hydrateRoot(el, <QueryClientProvider client={queryClient}><App /></QueryClientProvider>)
 ```
 
-Set `staleTime > 0` on the server so the client doesn't immediately refetch. Use a safe serializer, not `JSON.stringify`, to prevent XSS. Failed queries aren't dehydrated by default — override with `shouldDehydrateQuery`. `HydrationBoundary` nests for route-level prefetching.
+Set `staleTime > 0` on the server so the client doesn't immediately refetch. Use a safe serializer, not `JSON.stringify`, to prevent XSS. Failed queries aren't dehydrated by default — override with `shouldDehydrateQuery`; with the Router SSR integration, remove a failed loader read from the cache on the server instead of letting a redacted error cross into the page. Only data started by a loader (or `useSuspenseQuery`) is in the SSR HTML: `useQuery` never runs on the server. `HydrationBoundary` nests for route-level prefetching.
 
 ## Configure Network Mode for Offline Support
 

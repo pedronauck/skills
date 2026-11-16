@@ -105,3 +105,16 @@ const { data, isPlaceholderData } = useQuery({
 | Use case | SSR, complete known data | Preview, previous page |
 
 For pagination, `placeholderData: keepPreviousData` keeps the last page visible while the next loads — check `isPlaceholderData` to dim the UI.
+
+## Coalesce Live and Focus Invalidation
+
+When the server pushes change signals (WebSocket, Pusher, SSE) or the app refreshes on window focus, uncoordinated invalidation becomes the dominant load: every hook instance with its own listener, every signal invalidating a whole key family with `cancelRefetch: true`, and a cron publishing every minute re-read everything on screen. Route all of it through one coalescer per QueryClient:
+
+- **One window per client** (e.g. 200 ms, fixed — continuous traffic must not postpone it forever). Collect targets, drop a key already covered by a pending prefix, then flush once.
+- **Refetch only what is mounted, never cancel what is in flight**: `invalidateQueries({ queryKey, refetchType: 'active', predicate }, { cancelRefetch: false })`. A read that was mid-fetch when its signal arrived may have read old data: invalidate it again when that fetch settles.
+- **One shared focus/visibility listener** for every consumer, not one per hook. After a long hidden period (frozen tab, sleeping laptop) refresh what the channel would have refreshed.
+- **Map each signal to the narrowest keys**: a key prefix, or a prefix narrowed by a `predicate` (one team's reads, one record's detail). Invalidating the module root (`['tasks']`) on every signal refetches other teams' boards and every open list.
+- **Skip the author's own echo.** The tab that made the change already patched its cache (optimistic update or authoritative response). Send its socket id with the mutation (a server-function middleware header) and exclude that socket when publishing; then make sure the author's *other* reads the patch cannot settle (counts, other lists, comments) are refreshed explicitly, or they go stale for the author only.
+- **After a mutation, refresh only what the patch cannot settle**, through the same coalescer. When the caller awaits fresh data (a form that closes on success), flush the window and resolve once the targeted mounted reads have refetched.
+
+Size `staleTime` per factory to how fast the data actually changes (analytics recomputed every few hours: minutes; live collaborative data: the global default). A short global `staleTime` on slow-moving data refetches on every page change.
