@@ -70,6 +70,7 @@ Original skills authored in this repository.
 - **[bubbletea](./skills/mine/bubbletea)** — Build terminal UIs with Go and Bubbletea -- Elm architecture, Lipgloss styling, dual-pane layouts, and reusable components
 - **[ddd-master](./skills/mine/ddd-master)** — Assess DDD fit and model language, bounded contexts, and aggregates using scoped references and existing domain evidence
 - **[deep-review](./skills/mine/deep-review)** — Review branch diffs, working trees, and PRs with automated preparation, staged rule discovery, compact per-job assessments, targeted repairs, complete defect/polish coverage, and optional PR publication
+- **[deps-update](./skills/mine/deps-update)** — Upgrade every dependency of a Bun repo to latest (`bun update --recursive --latest`) in an isolated git worktree: baseline checks first, breaking-change research per major via context7 or release notes, code adapted until the checks match the baseline (no silencing, explicit hold-backs), then a PR in a fixed format (updated packages table, adaptations, reviewed-no-change, held back, before/after validation, risks)
 - **[deslop](./skills/mine/deslop)** — Remove AI-generated code slop from the branch diff — unnecessary comments, abnormal defensive checks, `any` casts, deep nesting — before claiming a task complete or opening a PR
 - **[drizzle-safe-migrations](./skills/mine/drizzle-safe-migrations)** — Production-safe Drizzle migration workflows for schema changes
 - **[git-rebase](./skills/mine/git-rebase)** — Git rebase operations and merge conflict resolution with clean history
