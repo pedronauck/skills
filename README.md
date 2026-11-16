@@ -214,4 +214,4 @@ To add a new skill:
 
 ## License
 
-See repository root for license information.
+The original skills in `skills/mine/` are released under the [MIT License](LICENSE). Skills in `skills/curated/` and `skills/marketing/` come from other authors and keep the license of their upstream repository; each one's source is recorded in [`upstream/sources.json`](upstream/sources.json), and any license file shipped upstream stays in the skill folder.
