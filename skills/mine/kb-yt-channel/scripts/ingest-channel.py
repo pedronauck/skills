@@ -1,29 +1,32 @@
 #!/usr/bin/env python3
 """Create or update a KB topic from a YouTube channel.
 
-Thin orchestrator over ``kb ingest channel``. This script owns the KB-side
-*organization* of a channel topic; ``kb ingest channel`` owns the ingest
-*mechanics*.
+Thin orchestrator over ``kb ingest channel`` and ``kb ingest youtube``.
+This script owns the KB-side *organization* of a channel topic; ``kb`` owns the
+ingest *mechanics*.
 
-Delegated to ``kb ingest channel`` (do not reimplement here):
-  - channel/playlist URL normalization and video enumeration
-  - resume/dedup (videos already present in raw/youtube are skipped)
+Supported selection branches:
+  1. Full channel uploads or newest N uploads: ``--all`` or ``--limit N``
+  2. Channel playlist: ``--playlist <name_or_url>``
+  3. Thematic query: ``--query <query>`` (YouTube channel search)
+  4. Thematic regex: ``--title-regex <pattern>`` (filter uploads by title)
+
+Delegated to ``kb``:
+  - resume/dedup against existing files in raw/youtube/
   - bounded concurrency, throttling, adaptive backoff, and per-video retries
   - native-language caption selection (``--sub-langs orig``)
   - transcription policy (captions | auto | stt) and STT
-  - per-video frontmatter and the raw/youtube/*.md files
+  - per-video frontmatter and raw/youtube/*.md generation
 
-Owned by this script (not done by kb):
+Owned by this script:
+  - playlist discovery and name-to-URL resolution
+  - thematic video discovery and candidate filtering
   - scaffolding the topic under ``yt-channels/<slug>/`` with topic.yaml
   - maintaining the ``yt-channels/`` category docs
   - patching the topic CLAUDE.md with channel metadata
   - wiki index dashboards (Dashboard.md, Source Index.md)
   - the run report under outputs/reports/
   - post-ingest validation (topic info, lint, index, search)
-
-Rate-limit, proxy, and cookie settings are read by ``kb`` from its config and
-environment (``[youtube]`` in kb.toml, ``YOUTUBE_PROXY``,
-``YOUTUBE_COOKIES_FILE`` ...), not from this script.
 """
 
 from __future__ import annotations
@@ -36,6 +39,8 @@ import re
 import shutil
 import subprocess
 import sys
+import time
+import urllib.parse
 from pathlib import Path
 from typing import Any
 
@@ -57,12 +62,18 @@ def eprint(message: str) -> None:
 
 def run(args: list[str], cwd: Path, check: bool = True) -> subprocess.CompletedProcess[str]:
     eprint("$ " + " ".join(args))
+    cmd = list(args)
+    if cmd and not Path(cmd[0]).is_file():
+        resolved = shutil.which(cmd[0])
+        if resolved:
+            cmd[0] = resolved
     completed = subprocess.run(
-        args,
+        cmd,
         cwd=str(cwd),
         text=True,
         capture_output=True,
         env=os.environ.copy(),
+        errors="replace",
     )
     if check and completed.returncode != 0:
         raise CommandError(args, completed.returncode, completed.stdout, completed.stderr)
@@ -76,6 +87,10 @@ def validate_inputs(args: argparse.Namespace) -> None:
         raise ValueError("title is required")
     if not args.domain.strip():
         raise ValueError("domain is required")
+    if args.playlist and args.query:
+        raise ValueError("cannot combine --playlist and --query")
+    if args.playlist and args.title_regex:
+        raise ValueError("cannot combine --playlist and --title-regex")
 
 
 def topic_paths(vault: Path, slug: str) -> tuple[Path, Path]:
@@ -265,6 +280,15 @@ def read_frontmatter(path: Path) -> dict[str, str]:
     return values
 
 
+def extract_video_id(url_or_id: str) -> str:
+    m = re.search(r"(?:v=|youtu\.be/|shorts/)([a-zA-Z0-9_-]{11})", url_or_id)
+    if m:
+        return m.group(1)
+    if len(url_or_id) == 11 and " " not in url_or_id:
+        return url_or_id
+    return url_or_id
+
+
 def youtube_sources(topic_dir: Path) -> list[dict[str, str]]:
     sources: list[dict[str, str]] = []
     raw_youtube = topic_dir / "raw" / "youtube"
@@ -423,9 +447,45 @@ def parse_json_output(text: str) -> Any:
         return None
 
 
+def parse_duration_seconds(dur_str: str | None, default: float = 2.0) -> float:
+    if not dur_str:
+        return default
+    s = dur_str.strip().lower()
+    if s.endswith("ms"):
+        try:
+            return float(s[:-2]) / 1000.0
+        except ValueError:
+            return default
+    if s.endswith("s"):
+        try:
+            return float(s[:-1])
+        except ValueError:
+            return default
+    if s.endswith("m"):
+        try:
+            return float(s[:-1]) * 60.0
+        except ValueError:
+            return default
+    try:
+        return float(s)
+    except ValueError:
+        return default
+
+
 def build_command_line(args: argparse.Namespace) -> str:
-    selector = "--all" if args.all else f"--limit {args.limit}"
-    extras = f" --sub-langs {args.sub_langs}" if args.sub_langs else ""
+    extras = ""
+    if args.playlist:
+        extras += f" --playlist {json.dumps(args.playlist)}"
+    if args.query:
+        extras += f" --query {json.dumps(args.query)}"
+    if args.title_regex:
+        extras += f" --title-regex {json.dumps(args.title_regex)}"
+    if args.all:
+        extras += " --all"
+    elif args.limit is not None:
+        extras += f" --limit {args.limit}"
+    if args.sub_langs:
+        extras += f" --sub-langs {args.sub_langs}"
     if args.concurrency is not None:
         extras += f" --concurrency {args.concurrency}"
     if args.throttle is not None:
@@ -437,16 +497,192 @@ def build_command_line(args: argparse.Namespace) -> str:
     return (
         "python3 .agents/skills/kb-yt-channel/scripts/ingest-channel.py "
         f"--vault {args.vault} --channel-url {args.channel_url} --topic-slug {args.topic_slug} "
-        f"--title {json.dumps(args.title)} --domain {args.domain} {selector} --transcribe {args.transcribe}{extras}"
+        f"--title {json.dumps(args.title)} --domain {args.domain} --transcribe {args.transcribe}{extras}"
     )
 
 
-def ingest_channel(args: argparse.Namespace, vault: Path, dry_run: bool) -> dict[str, Any]:
-    """Delegate channel ingest to ``kb ingest channel`` and return its JSON summary.
+def resolve_playlist(channel_url: str, playlist_input: str, yt_dlp_cmd: str = "yt-dlp") -> tuple[str, str]:
+    if "list=" in playlist_input:
+        return playlist_input, playlist_input
+    if playlist_input.startswith("PL") and len(playlist_input) >= 15 and " " not in playlist_input:
+        return f"https://www.youtube.com/playlist?list={playlist_input}", playlist_input
 
-    stdout (the JSON summary) is captured; stderr is inherited so kb's per-video
-    progress and diagnostics stream live to the caller.
-    """
+    channel_base = channel_url.rstrip("/")
+    for suffix in ("/videos", "/featured", "/streams", "/playlists", "/search"):
+        if channel_base.endswith(suffix):
+            channel_base = channel_base[: -len(suffix)]
+            break
+    playlists_url = f"{channel_base}/playlists"
+
+    eprint(f"resolving playlist {playlist_input!r} from {playlists_url}")
+    result = subprocess.run(
+        [yt_dlp_cmd, "--flat-playlist", "--print", "%(id)s\t%(title)s\t%(url)s", playlists_url],
+        capture_output=True,
+        text=True,
+        errors="replace",
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"failed to fetch playlists from {playlists_url}: {result.stderr.strip()}")
+
+    matches: list[tuple[str, str, str]] = []
+    all_playlists: list[str] = []
+    target = playlist_input.lower().strip()
+    for line in result.stdout.splitlines():
+        parts = line.split("\t")
+        if len(parts) >= 3:
+            pid, title, url = parts[0].strip(), parts[1].strip(), parts[2].strip()
+            all_playlists.append(f"- {title} ({pid})")
+            if target == title.lower():
+                return url, title
+            if target in title.lower():
+                matches.append((pid, title, url))
+
+    if len(matches) == 1:
+        return matches[0][2], matches[0][1]
+    if len(matches) > 1:
+        options = "\n".join(f"  - {m[1]} ({m[2]})" for m in matches)
+        raise RuntimeError(f"ambiguous playlist name {playlist_input!r}, multiple matched:\n{options}")
+
+    available = "\n".join(all_playlists[:20])
+    raise RuntimeError(
+        f"playlist {playlist_input!r} not found on channel {channel_url}.\nAvailable playlists:\n{available}"
+    )
+
+
+def resolve_thematic_videos(
+    channel_url: str,
+    query: str | None,
+    title_regex: str | None,
+    limit: int | None,
+    yt_dlp_cmd: str = "yt-dlp",
+) -> list[dict[str, str]]:
+    channel_base = channel_url.rstrip("/")
+    for suffix in ("/videos", "/featured", "/streams", "/playlists", "/search"):
+        if channel_base.endswith(suffix):
+            channel_base = channel_base[: -len(suffix)]
+            break
+
+    cmd = [yt_dlp_cmd, "--flat-playlist", "--print", "%(id)s\t%(title)s\t%(url)s"]
+    if query:
+        encoded_query = urllib.parse.quote_plus(query)
+        target_url = f"{channel_base}/search?query={encoded_query}"
+    else:
+        target_url = f"{channel_base}/videos"
+        if title_regex:
+            cmd.extend(["--match-title", title_regex])
+
+    cmd.append(target_url)
+    eprint(f"resolving thematic videos from {target_url}...")
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        errors="replace",
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"failed to resolve thematic videos: {result.stderr.strip()}")
+
+    videos: list[dict[str, str]] = []
+    seen_ids: set[str] = set()
+    regex_matcher = re.compile(title_regex) if (query and title_regex) else None
+
+    for line in result.stdout.splitlines():
+        parts = line.split("\t")
+        if len(parts) >= 3:
+            vid, title, url = parts[0].strip(), parts[1].strip(), parts[2].strip()
+            if vid.startswith("PL") or "playlist?list=" in url:
+                continue
+            if vid in seen_ids:
+                continue
+            if regex_matcher and not regex_matcher.search(title):
+                continue
+            seen_ids.add(vid)
+            video_url = url if url.startswith("http") else f"https://www.youtube.com/watch?v={vid}"
+            videos.append({"video_id": vid, "title": title, "url": video_url})
+            if limit and len(videos) >= limit:
+                break
+
+    return videos
+
+
+def ingest_thematic(
+    args: argparse.Namespace,
+    vault: Path,
+    topic_dir: Path,
+    videos: list[dict[str, str]],
+    selection_desc: str,
+    dry_run: bool,
+) -> dict[str, Any]:
+    summary: dict[str, Any] = {
+        "topic": f"yt-channels/{args.topic_slug}",
+        "channel_url": args.channel_url,
+        "normalized_channel_url": args.channel_url,
+        "selection": selection_desc,
+        "transcribe": args.transcribe,
+        "caption_languages": [args.sub_langs or "orig"],
+        "resolved": len(videos),
+        "dry_run": dry_run,
+        "videos": videos,
+        "ingested": [],
+        "skipped": [],
+        "failures": [],
+    }
+    if dry_run:
+        return summary
+
+    existing_sources = youtube_sources(topic_dir)
+    existing_ids = {extract_video_id(s["source_url"]) for s in existing_sources if s.get("source_url")}
+    throttle_sec = parse_duration_seconds(args.throttle, default=2.0)
+
+    total = len(videos)
+    for idx, video in enumerate(videos, start=1):
+        vid = video["video_id"]
+        title = video["title"]
+        url = video["url"]
+
+        if vid in existing_ids:
+            eprint(f"[{idx}/{total}] skipping already ingested video: {title} ({vid})")
+            summary["skipped"].append(video)
+            continue
+
+        eprint(f"[{idx}/{total}] ingesting: {title} ({vid})")
+        command = [
+            args.kb_path,
+            "ingest",
+            "youtube",
+            url,
+            "--topic",
+            f"yt-channels/{args.topic_slug}",
+            "--transcribe",
+            args.transcribe,
+        ]
+        if args.sub_langs:
+            command.extend(["--sub-langs", args.sub_langs])
+
+        proc = run(command, cwd=vault, check=False)
+        if proc.returncode == 0:
+            summary["ingested"].append(video)
+            existing_ids.add(vid)
+        else:
+            summary["failures"].append(
+                {
+                    "video_id": vid,
+                    "title": title,
+                    "url": url,
+                    "error": f"kb ingest youtube failed with exit code {proc.returncode}",
+                    "stdout": proc.stdout,
+                    "stderr": proc.stderr,
+                }
+            )
+
+        if idx < total and throttle_sec > 0:
+            time.sleep(throttle_sec)
+
+    return summary
+
+
+def ingest_channel(args: argparse.Namespace, vault: Path, dry_run: bool) -> dict[str, Any]:
+    """Delegate channel or playlist ingest to ``kb ingest channel`` and return summary."""
     command = [
         args.kb_path,
         "ingest",
@@ -459,7 +695,7 @@ def ingest_channel(args: argparse.Namespace, vault: Path, dry_run: bool) -> dict
     ]
     if args.all:
         command.append("--all")
-    else:
+    elif args.limit is not None:
         command.extend(["--limit", str(args.limit)])
     if args.sub_langs:
         command.extend(["--sub-langs", args.sub_langs])
@@ -470,13 +706,19 @@ def ingest_channel(args: argparse.Namespace, vault: Path, dry_run: bool) -> dict
     if dry_run:
         command.append("--dry-run")
     eprint("$ " + " ".join(command))
+    cmd = list(command)
+    if cmd and not Path(cmd[0]).is_file():
+        resolved = shutil.which(cmd[0])
+        if resolved:
+            cmd[0] = resolved
     completed = subprocess.run(
-        command,
+        cmd,
         cwd=str(vault),
         text=True,
         stdout=subprocess.PIPE,
         stderr=None,
         env=os.environ.copy(),
+        errors="replace",
     )
     summary = parse_json_output(completed.stdout)
     if not isinstance(summary, dict):
@@ -646,7 +888,24 @@ def run_ingest(args: argparse.Namespace) -> dict[str, Any]:
     ensure_agents_symlink(topic_dir)
     update_category_docs(vault)
 
-    channel = ingest_channel(args, vault, args.dry_run)
+    if args.query or args.title_regex:
+        selection_desc = f"thematic: query={args.query!r}" if args.query else f"thematic: regex={args.title_regex!r}"
+        videos = resolve_thematic_videos(
+            args.channel_url,
+            args.query,
+            args.title_regex,
+            args.limit,
+            args.yt_dlp_path,
+        )
+        channel = ingest_thematic(args, vault, topic_dir, videos, selection_desc, args.dry_run)
+    elif args.playlist:
+        playlist_url, playlist_title = resolve_playlist(args.channel_url, args.playlist, args.yt_dlp_path)
+        args.channel_url = playlist_url
+        channel = ingest_channel(args, vault, args.dry_run)
+        channel["selection"] = f"playlist: {playlist_title} ({playlist_url})"
+    else:
+        channel = ingest_channel(args, vault, args.dry_run)
+
     summary: dict[str, Any] = dict(channel)
     summary["topic"] = f"yt-channels/{args.topic_slug}"
     summary["topic_path"] = str(topic_dir)
@@ -690,9 +949,15 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--topic-slug", required=True, help="Topic slug under yt-channels/")
     parser.add_argument("--title", required=True, help="Topic title")
     parser.add_argument("--domain", required=True, help="Topic domain")
-    selector = parser.add_mutually_exclusive_group(required=True)
-    selector.add_argument("--limit", type=int, help="Maximum newest uploads to ingest")
-    selector.add_argument("--all", action="store_true", help="Ingest all channel uploads")
+
+    parser.add_argument("--playlist", help="Playlist title, ID, or URL to ingest from the channel")
+    parser.add_argument("--query", help="Search query to find thematic videos on the channel")
+    parser.add_argument("--title-regex", help="Regex pattern to filter video titles on the channel")
+
+    selector = parser.add_mutually_exclusive_group(required=False)
+    selector.add_argument("--limit", type=int, help="Maximum videos to ingest")
+    selector.add_argument("--all", action="store_true", help="Ingest all matching/channel uploads")
+
     parser.add_argument("--transcribe", choices=["captions", "auto", "stt"], default="captions")
     parser.add_argument(
         "--sub-langs",
@@ -709,9 +974,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--throttle",
         default=None,
-        help="Delay between transcript fetches for kb, e.g. 2s (default from [youtube].bulk_throttle).",
+        help="Delay between transcript fetches, e.g. 2s (default from [youtube].bulk_throttle).",
     )
     parser.add_argument("--kb-path", default="kb")
+    parser.add_argument("--yt-dlp-path", default="yt-dlp", help="yt-dlp executable path")
     parser.add_argument("--embed", action="store_true", help="Run vector embedding during the index validation step")
     parser.add_argument(
         "--no-index",
@@ -725,10 +991,19 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Scaffold the topic skeleton and list the videos kb would ingest, without ingesting any.",
     )
     args = parser.parse_args(argv)
+
     if args.limit is not None and args.limit < 1:
         parser.error("--limit must be greater than zero")
     if args.concurrency is not None and args.concurrency < 1:
         parser.error("--concurrency must be at least 1")
+
+    is_specialized = bool(args.playlist or args.query or args.title_regex)
+    if not is_specialized and not (args.limit or args.all):
+        parser.error("one of --limit N or --all is required for whole-channel ingest")
+
+    if is_specialized and not args.limit:
+        args.all = True
+
     return args
 
 
