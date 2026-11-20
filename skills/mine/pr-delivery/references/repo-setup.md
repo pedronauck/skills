@@ -14,7 +14,7 @@ Write guidance as plain paragraphs, never HTML comments: the check rejects comme
 
 ## 2. Check: `.github/scripts/check-pr-body.py` and `.github/workflows/pr-body.yml`
 
-Copy `assets/check-pr-body.py` and `assets/pr-body.yml` unchanged. The script reads the required headings from the template, so it needs no per-repository edits, and the workflow runs its self-test before validating the PR. Release branches `release/v*` and Dependabot/Renovate are exempt.
+Copy `assets/check-pr-body.py` and `assets/pr-body.yml` unchanged. The script reads the required headings from the template, so it needs no per-repository edits, and the workflow runs its self-test before validating the PR. Release branches `release/v*` and Dependabot/Renovate are exempt, and the summary CodeRabbit appends between its auto-generated markers is ignored.
 
 When the repository has commitlint but no PR-title check, add one in the repository's existing CI style: `printf '%s\n' "$PR_TITLE" | bunx --no-install commitlint` with `PR_TITLE: ${{ github.event.pull_request.title }}` on `pull_request` events.
 
