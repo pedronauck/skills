@@ -19,6 +19,12 @@ TEMPLATE_PATHS = (
     "docs/PULL_REQUEST_TEMPLATE.md",
 )
 EXEMPT_BOTS = ("dependabot[bot]", "dependabot-preview[bot]", "renovate[bot]")
+# CodeRabbit appends its summary to the PR body between these markers; only the authored body is checked.
+CODERABBIT_BLOCK = re.compile(
+    r"<!-- This is an auto-generated comment: (.+?) by coderabbit\.ai -->.*?"
+    r"<!-- end of auto-generated comment: \1 by coderabbit\.ai -->",
+    re.S,
+)
 
 
 def section_headings(body):
@@ -50,7 +56,7 @@ def violations(pr, headings):
     """Return fixed messages only: never echo untrusted PR text as annotations."""
     if pr.get("head", {}).get("ref", "").startswith("release/v") or pr.get("user", {}).get("login") in EXEMPT_BOTS:
         return []
-    body = (pr.get("body") or "").replace("\r\n", "\n")
+    body = CODERABBIT_BLOCK.sub("", (pr.get("body") or "").replace("\r\n", "\n"))
     errors = []
     sections = section_headings(body)
     for heading in headings:
@@ -166,6 +172,19 @@ class PRBodyTests(unittest.TestCase):
             "## How you verified it\n![Desktop, light](https://pub-0.r2.dev/o/r/branch/abc1234-0f0f/01-desktop.png)",
         )
         self.assertEqual([], violations(pr, HEADINGS))
+
+    def test_coderabbit_summary_is_ignored(self):
+        block = ("<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n"
+                 "<!-- coderabbit-ai-generated:v1 -->\n## Summary by CodeRabbit\n* **New Features**\n"
+                 "<!-- end of auto-generated comment: release notes by coderabbit.ai -->")
+        pr = self.pr()
+        pr["body"] += "\n\n" + block
+        self.assertEqual([], violations(pr, HEADINGS))
+        pr["body"] = pr["body"].replace("## Impact\nConcrete evidence.", "## Impact\n")
+        self.assertIn("Empty required section: ## Impact", violations(pr, HEADINGS))
+        pr = self.pr()
+        pr["body"] += "\n\n" + block.rsplit("\n", 1)[0]
+        self.assertIn("Remove all HTML comments from the PR body.", violations(pr, HEADINGS))
 
     def test_exemptions(self):
         self.assertEqual([], violations(self.pr(body=None, head={"ref": "release/v0.6.1"}), HEADINGS))
