@@ -11,11 +11,11 @@ TypeSafe released these on 2026-10-14 behind "danger zone" request headers: feat
 | Long context: 262k tokens per request and per question | `TypeSafe-Danger-Zone-Long-Context: true` | both | same price per token; slower and less accurate than the default 64k request / 32k question. The header and those defaults belong to the TypeSafe API: OpenRouter accepts ~262k without it (measured 2026-11-02) |
 | Opt-in to share queries for debugging | console setting, not a header | — | TypeSafe still does not train on queries |
 
-## Routes (image behavior checked live 2026-10-17, context limits 2026-11-02)
+## Routes (image behavior checked live 2026-11-20, context limits 2026-11-02)
 
 - **TypeSafe API** (`api.typesafe.ai/v1/systemone`): images, Box and long context all work, both as multipart (what the SDKs send) and as base64 inside JSON (what the bundled clients send).
-- **OpenRouter Decisions**: `typesafe/jev-1.14` answers text (reports `typesafe/jev-1.14-20261014`), and accepts a Box question, but **silently drops `assets`**: the same request billed 305 input tokens instead of ~1.6k and returned a box at confidence 0.03 in the wrong corner. Never send images there; the bundled clients refuse before the network.
-- **Vercel AI Gateway** lists `typesafe-ai/jev-1.14.0` with a `vision` tag; images there were not tested. The bundled clients refuse images on it until someone verifies it.
+- **OpenRouter**: images and Box work on `typesafe/jev-1.14` (reports `typesafe/jev-1.14-20261014`), with the same base64 `assets` body, on both `/api/alpha/decisions` and the TypeSafe-SDK-compatible `/api/v1/systemone` (point an SDK at base URL `https://openrouter.ai/api`). The images header is not required there (same answers and tokens with and without it); sending it is harmless, so the bundled clients always send it. Measured 2026-11-20: a 400×400 red vs blue image answered "predominantly red?" 0.99 vs 0.00–0.01 and billed 770 input tokens against 287 for a text-only request; a red rectangle at 12.5–37.5% × 16.7–41.7% of an 800×600 image came back as a box at 0.12–0.39 × 0.15–0.42, confidence 0.96, billing 1,593 tokens. On 8 real image-only X bookmarks the image moved 3 empty or vague posts from `other` to the right topic. (On 2026-10-17 the same route dropped `assets` silently: 305 tokens and a wrong box. Keep the token check below, a route can regress.)
+- **Vercel AI Gateway** (`/v4/ai/evaluation-model`, `typesafe-ai/jev-1.14.0`, listed with a `vision` tag) **drops `assets`** sent in the native body shape: 318 tokens for red and blue alike, 0.19 vs 0.18, and a wrong box (checked 2026-11-20). No image shape that works there is known; the bundled clients refuse images on it.
 - A check that catches a dropped image on any route: `usage.input_tokens` must grow by roughly the image's token cost (below). A receipt with an image that costs text-only tokens is a failure, not an answer.
 
 ## Request shape

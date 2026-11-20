@@ -51,7 +51,7 @@ Bind every decision to an observation: fingerprint the page/document/state the m
 
 ## Non-text inputs
 
-For decisions that act, keep images as text: describe them with a vision model into labeled fields (`description`, `visibleText`) that say they are model output. Jev can read images directly behind the `TypeSafe-Danger-Zone-Images` header (TypeSafe API only, not production-grade yet; `references/images.md`), which suits POCs, shadow runs and comparisons against the described path. Audio and video stay out: transcribe audio, export video frames as stills; fetch the parent message only after an abstention says the context is missing, then re-judge with the new material as a new version.
+For decisions that act, keep images as text: describe them with a vision model into labeled fields (`description`, `visibleText`) that say they are model output. Jev can read images directly behind the `TypeSafe-Danger-Zone-Images` header (TypeSafe API or OpenRouter, not production-grade yet; `references/images.md`), which suits POCs, shadow runs and comparisons against the described path. Audio and video stay out: transcribe audio, export video frames as stills; fetch the parent message only after an abstention says the context is missing, then re-judge with the new material as a new version.
 
 ## Two contracts, two results
 

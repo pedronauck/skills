@@ -4,7 +4,7 @@ All three expose the same model id family, but the version actually served, the 
 
 | | TypeSafe API | OpenRouter Decisions | Vercel AI Gateway |
 |---|---|---|---|
-| Endpoint | `POST https://api.typesafe.ai/v1/systemone` | `POST https://openrouter.ai/api/alpha/decisions` | `POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model` |
+| Endpoint | `POST https://api.typesafe.ai/v1/systemone` | `POST https://openrouter.ai/api/alpha/decisions`, or `POST https://openrouter.ai/api/v1/systemone` for the TypeSafe SDKs (base URL `https://openrouter.ai/api`; same answers, checked 2026-11-20) | `POST https://ai-gateway.vercel.sh/v4/ai/evaluation-model` |
 | Auth | `Authorization: Bearer <TYPESAFE_API_KEY>` | `Authorization: Bearer <OPENROUTER_API_KEY>` | `Authorization: Bearer <gateway key>` + headers below |
 | Model id | `jev-1.14.0`, `jev-1.13.0`, or the aliases `jev-latest` and `jev-preview` (both → 1.14.0; `GET /v1/models` lists only aliases, versioned ids are accepted anyway) | `typesafe/jev-1.14` or `typesafe/jev-1.13` (`jev-latest`, `jev-preview`, `jev-1.14.0` and `typesafe-ai/jev` are not valid here) | header `ai-model-id: typesafe-ai/jev`, `typesafe-ai/jev-1.13.0` or `typesafe-ai/jev-1.14.0` (listed 2026-11-02 with `context_window: 32000`; the alias returns no dated version) |
 | Body | `{model, state, questions}` | `{model, state, questions}` | `{state, questions}` with every `noul` question sent as `type: "boolean"` |
@@ -12,7 +12,7 @@ All three expose the same model id family, but the version actually served, the 
 | Answers | native shape (below) | native shape; probabilities may be rounded to two decimals and can appear as float noise (`0.9299999999999999`); a `rounding` object may declare the precision | `boolean` answers carry `probability`; `choice`/`score` may omit `confidence`, observed under `providerMetadata.typesafe.confidence[id]` (observed behavior, not a documented guarantee of the generic v4 contract); `score.legend` may be absent |
 | Usage | `usage.input_tokens`, `usage.output_tokens` | same, plus `usage.cost` (USD) | `usage.inputTokens`, `usage.outputTokens`; cost in `providerMetadata.gateway.cost` as a string, often `"0"` during promotions or missing |
 | Model in response | `model` = versioned id | `model` = versioned id (e.g. `typesafe/jev-1.14-20261014`) | `response.modelId` when present |
-| Images and Box | yes, with the images header (multipart or base64 JSON) | **no**: `assets` dropped silently, a Box answers with garbage (live 2026-10-17) | not tested; the bundled clients refuse |
+| Images and Box | yes, with the images header (multipart or base64 JSON) | yes, base64 `assets` in the JSON body, header not required (live 2026-11-20; it dropped them on 2026-10-17) | **no**: `assets` dropped silently (live 2026-11-20); the bundled clients refuse |
 | Dominant failure seen | 429 under burst | 503/524 rare; 400 `invalid_union` when the question schema is wrong; 400 `max_tokens_exceeded` over the limit | 503 in bursts; timeouts |
 
 ## Native answer shape (what the reference clients return on every route)

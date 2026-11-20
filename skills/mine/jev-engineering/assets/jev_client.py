@@ -10,7 +10,7 @@ attempts (connect, headers, body and backoff), and a cost tri-state (reported / 
     r = client.decide(state, questions)
     r.answers["is_urgent"]["noul"], r.model, r.cost, r.cost_known, r.cache_hit
 
-Images and Box (jev-1.14 danger zone, route "typesafe" only; OpenRouter drops `assets` silently):
+Images and Box (jev-1.14 danger zone, routes "typesafe" and "openrouter"; the Gateway drops `assets` silently):
     ref, asset = image_asset("door.jpg")             # uuid reference + base64 asset, limits checked locally
     r = JevClient(route="typesafe", model="jev-1.14.0").decide(
         {"door": ref}, {"person": {"type": "box", "instructions": "the person in `door`"}}, assets={ref: asset})
@@ -86,7 +86,7 @@ EPS = 1e-9
 # OpenRouter ignores the header and already allows ~262k per request (measured 2026-11-02).
 IMAGES_HEADER = "TypeSafe-Danger-Zone-Images"
 LONG_CONTEXT_HEADER = "TypeSafe-Danger-Zone-Long-Context"
-IMAGE_ROUTES = {"typesafe"}       # live 2026-10-17: OpenRouter accepts the body but drops `assets` (305 tokens, wrong box)
+IMAGE_ROUTES = {"typesafe", "openrouter"}  # live 2026-11-20: OpenRouter reads `assets` (dropped them 2026-10-17); the Gateway drops them
 IMAGE_SIDE = (280, 1568)          # px, each side, both ends included; outside it the API rejects, never resizes
 IMAGE_MAX_BYTES = 16 * 1024 * 1024
 PIXELS_PER_IMAGE_TOKEN = 390      # fit to live receipts: 280² ≈ 216, 800×600 ≈ 1.3k, 1568² ≈ 6.3k tokens
@@ -588,7 +588,7 @@ def main(argv: list[str] | None = None) -> int:
     d.add_argument("--model")
     d.add_argument("--state", required=True)
     d.add_argument("--questions", required=True)
-    d.add_argument("--assets", help='JSON map {"<reference>": "image path"}; route typesafe only')
+    d.add_argument("--assets", help='JSON map {"<reference>": "image path"}; routes typesafe and openrouter')
     d.add_argument("--long-context", action="store_true", help="danger zone: 262k-token limits on the TypeSafe API (a no-op on OpenRouter), slower and less accurate")
     d.add_argument("--no-cache", action="store_true")
     d.add_argument("--cache-dir", default=".jev-cache")

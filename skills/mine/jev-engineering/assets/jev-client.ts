@@ -10,7 +10,7 @@
  *   const r = await client.decide(state, questions);
  *   r.answers.is_urgent.type === "noul" && r.answers.is_urgent.noul
  *
- * Images and Box (jev-1.14 danger zone, route "typesafe" only; OpenRouter drops `assets` silently):
+ * Images and Box (jev-1.14 danger zone, routes "typesafe" and "openrouter"; the Gateway drops `assets` silently):
  *   const [ref, asset] = imageAsset(new Uint8Array(await Bun.file("door.jpg").arrayBuffer()));
  *   await new JevClient({ route: "typesafe", model: "jev-1.14.0" }).decide(
  *     { door: ref }, { person: { type: "box", instructions: "the person in `door`" } }, { assets: { [ref]: asset } });
@@ -103,7 +103,7 @@ const EPS = 1e-9;
 // OpenRouter ignores the header and already allows ~262k per request (measured 2026-11-02).
 export const IMAGES_HEADER = "TypeSafe-Danger-Zone-Images";
 export const LONG_CONTEXT_HEADER = "TypeSafe-Danger-Zone-Long-Context";
-const IMAGE_ROUTES = new Set<Route>(["typesafe"]); // live 2026-10-17: OpenRouter accepts the body but drops `assets`
+const IMAGE_ROUTES = new Set<Route>(["typesafe", "openrouter"]); // live 2026-11-20: OpenRouter reads `assets` (was dropping them 2026-10-17); the Gateway drops them
 const IMAGE_SIDE = [280, 1568] as const; // px, each side, both ends included; the API rejects, never resizes
 const IMAGE_MAX_BYTES = 16 * 1024 * 1024;
 const PIXELS_PER_IMAGE_TOKEN = 390; // fit to live receipts: 280² ≈ 216, 800×600 ≈ 1.3k, 1568² ≈ 6.3k tokens
