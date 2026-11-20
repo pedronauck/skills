@@ -35,7 +35,15 @@ done
 
 git rev-parse --show-toplevel >/dev/null 2>&1 || die "run inside the PR's git repository"
 remote="$(git remote get-url origin 2>/dev/null)" || die "no origin remote"
-owner_repo="$(printf '%s' "$remote" | sed -E 's#^(git@|ssh://git@|https?://)[^/:]+[/:]##; s#\.git$##')"
+# Keep only the path: scheme, userinfo (tokens!), host and port never reach the public key.
+case "$remote" in
+    *://*) owner_repo="${remote#*://}"; owner_repo="${owner_repo#*/}" ;;
+    *:*) owner_repo="${remote##*:}" ;;
+    *) owner_repo="$remote" ;;
+esac
+owner_repo="${owner_repo%/}"
+owner_repo="${owner_repo%.git}"
+case "$owner_repo" in */*/*) owner_repo="${owner_repo#"${owner_repo%/*/*}/"}" ;; esac
 case "$owner_repo" in */*) ;; *) die "cannot parse owner/repo from origin" ;; esac
 owner_repo="$(sanitize "${owner_repo%%/*}")/$(sanitize "${owner_repo#*/}")"
 
@@ -84,7 +92,7 @@ for spec in "${files[@]}"; do
     url="$PUBLIC_URL/$key"
     headers=""
     for _ in 1 2 3; do
-        headers="$(curl -sSI "$url" | tr -d '\r')" || headers=""
+        headers="$(curl -sSI --connect-timeout 5 --max-time 15 "$url" | tr -d '\r')" || headers=""
         printf '%s\n' "$headers" | head -1 | grep -q ' 200' && break
         sleep 2
     done

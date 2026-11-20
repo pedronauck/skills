@@ -47,12 +47,30 @@ def section_headings(body):
     return sections
 
 
+CHECKLIST_LINE = re.compile(r"^\s*[-*] \[([ xX])\]\s*(.*?)\s*$")
+
+
 def template_headings(template):
     """Every `## ` heading of the PR template is a required, nonempty PR section."""
     return tuple(h[3:].strip() for h, _, _ in section_headings(template) if h.startswith("## "))
 
 
-def violations(pr, headings):
+def template_checklist(template):
+    """Checklist items the template ships; ticking one is not section content."""
+    return frozenset(m[2] for m in map(CHECKLIST_LINE.match, template.splitlines()) if m)
+
+
+def is_content(line, checklist):
+    """A rule, an unticked box, or a template item is scaffolding; a ticked box with new text is evidence."""
+    if re.fullmatch(r"\s*---+\s*", line):
+        return False
+    box = CHECKLIST_LINE.match(line)
+    if box:
+        return box[1] != " " and box[2] not in checklist
+    return bool(line.strip())
+
+
+def violations(pr, headings, checklist=frozenset()):
     """Return fixed messages only: never echo untrusted PR text as annotations."""
     if pr.get("head", {}).get("ref", "").startswith("release/v") or pr.get("user", {}).get("login") in EXEMPT_BOTS:
         return []
@@ -67,8 +85,7 @@ def violations(pr, headings):
         for i in matches:
             end = sections[i + 1][1] if i + 1 < len(sections) else len(body)
             content = body[sections[i][2]:end]
-            content = re.sub(r"(?m)^\s*(?:---+|[-*] \[[ xX]\].*)\s*$", "", content)
-            if not content.strip():
+            if not any(is_content(line, checklist) for line in content.splitlines()):
                 errors.append(f"Empty required section: ## {heading}")
     if "<!--" in body:
         errors.append("Remove all HTML comments from the PR body.")
@@ -76,21 +93,23 @@ def violations(pr, headings):
         r"(?m)^No issue: [^\S\n]*\S[^\n]*$", body
     ):
         errors.append("Include Closes/Fixes/Resolves/Refs #<number> or a No issue: <reason> line.")
-    if re.search(r"/Users/|/home/[^/\s]+/", body):
+    # A host path starts a token; `/home/` inside a URL such as https://app.test/home/x is not one.
+    if re.search(r"(?<![\w.~-])/(?:Users|home/[^/\s]+)/", body):
         errors.append("Remove host paths from the PR body.")
     if re.search(r"github\.com/user-attachments|user-images\.githubusercontent\.com|private-user-images", body, re.I):
         errors.append("Host screenshots in the R2 evidence bucket (pr-delivery skill), not as GitHub attachments.")
     return errors
 
 
-def load_headings(root="."):
+def load_template(root="."):
+    """Return (required headings, checklist items) from the repository's PR template, or None."""
     for path in TEMPLATE_PATHS:
         full = os.path.join(root, path)
         if os.path.isfile(full):
             with open(full, encoding="utf-8") as template:
-                headings = template_headings(template.read())
-            if headings:
-                return headings
+                text = template.read()
+            if template_headings(text):
+                return template_headings(text), template_checklist(text)
     return None
 
 
@@ -109,9 +128,9 @@ class PRBodyTests(unittest.TestCase):
         self.assertEqual(("What & why", "Impact"), template_headings(template))
 
     def test_repository_template_is_readable(self):
-        headings = load_headings(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
-        if headings is not None:
-            self.assertTrue(all(headings))
+        template = load_template(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+        if template is not None:
+            self.assertTrue(all(template[0]))
 
     def test_valid_metadata(self):
         for link in ("Closes #12", "Fixes #12", "Resolves #12", "Refs #12", "Refs owner/repo#12", "No issue: process change"):
@@ -132,6 +151,19 @@ class PRBodyTests(unittest.TestCase):
         self.assertIn("Empty required section: ## Impact", violations(pr, HEADINGS))
         pr["body"] = "```md\n" + self.pr()["body"] + "\n```"
         self.assertEqual(3, len(violations(pr, HEADINGS)))
+
+    def test_checklist_lines(self):
+        template = "## Impact\n\n---\n\n- [ ] Checks pass\n* [ ] Tests cover it\n"
+        self.assertEqual(frozenset({"Checks pass", "Tests cover it"}), template_checklist(template))
+        checklist = template_checklist(template)
+        for section, ok in (("- [x] bun run verify passed; 154 tests passed", True),
+                            ("- [ ] bun run verify passed", False),
+                            ("---\n- [x] Checks pass\n- [X] Tests cover it", False)):
+            with self.subTest(section=section):
+                pr = self.pr()
+                pr["body"] = pr["body"].replace("## Impact\nConcrete evidence.", "## Impact\n" + section)
+                errors = violations(pr, HEADINGS, checklist)
+                self.assertEqual(ok, "Empty required section: ## Impact" not in errors)
 
     def test_extra_template_sections_are_required(self):
         headings = HEADINGS + ("Observability",)
@@ -162,6 +194,16 @@ class PRBodyTests(unittest.TestCase):
                 pr = self.pr()
                 pr["body"] += "\n" + text
                 self.assertTrue(violations(pr, HEADINGS))
+        for text in ("https://app.example.test/home/alice/settings", "https://x.dev/Users/list", "~/notes/home/a/b"):
+            with self.subTest(text=text):
+                pr = self.pr()
+                pr["body"] += "\n" + text
+                self.assertEqual([], violations(pr, HEADINGS))
+        for text in ("`/Users/example/project`", "(/home/alice/project)", "path=/home/alice/x"):
+            with self.subTest(text=text):
+                pr = self.pr()
+                pr["body"] += "\n" + text
+                self.assertIn("Remove host paths from the PR body.", violations(pr, HEADINGS))
         for body in (None, "", "No issue:   ", self.pr()["body"].replace("No issue: process change", "")):
             self.assertTrue(violations(self.pr(body=body), HEADINGS))
 
@@ -197,12 +239,12 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["--self-test"]:
         unittest.main(argv=[sys.argv[0]])
     else:
-        required = load_headings()
-        if required is None:
+        template = load_template()
+        if template is None:
             print("::error title=PR body::Add .github/PULL_REQUEST_TEMPLATE.md with ## section headings.")
             sys.exit(1)
         with open(os.environ["GITHUB_EVENT_PATH"], encoding="utf-8") as event_file:
-            errors = violations(json.load(event_file)["pull_request"], required)
+            errors = violations(json.load(event_file)["pull_request"], *template)
         for error in errors:
             print(f"::error title=PR body::{error}")
         sys.exit(bool(errors))
