@@ -1,0 +1,119 @@
+# Skeleton for .github/workflows/ci.yml. Adapt to the repository; do not paste over a working pipeline.
+# Replace every <pin> with the repository's pinning style and every <...> with real values.
+# Private or internal repo: heavy jobs use Ubicloud labels (they need the Ubicloud GitHub App on the
+# organization). Public repo: replace the ubicloud-* labels with ubuntu-latest.
+name: CI # workflow_run listeners match this name: do not rename an existing workflow
+on:
+  pull_request:
+    # Code events only: `edited` would restart and cancel the suite on every title or body change.
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  # Superseded pull-request runs are cancelled. Default-branch runs finish: they seed caches and
+  # deploy listeners wait for them.
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+env:
+  HUSKY: "0"
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      scope: ${{ steps.paths.outputs.scope }}
+    steps:
+      - uses: actions/checkout@<pin>
+        with:
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+      - run: python3 scripts/ci-scope.py --self-test
+      - id: paths
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/ci-scope.py
+
+  # Runs for every scope when the format check covers Markdown.
+  quality:
+    runs-on: ubicloud-standard-2
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@<pin>
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: bun run format:check
+      - run: bun run lint
+
+  tasks:
+    name: ${{ matrix.task }}
+    needs: changes
+    if: needs.changes.outputs.scope != 'docs'
+    runs-on: ubicloud-standard-4
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [typecheck, build]
+    steps:
+      - uses: actions/checkout@<pin>
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+        with:
+          turbo-key: ${{ matrix.task }}
+      - run: bunx --no-install turbo run "$TASK"
+        env:
+          TASK: ${{ matrix.task }}
+
+  test:
+    name: test (${{ matrix.shard }}/2)
+    needs: changes
+    if: needs.changes.outputs.scope != 'docs'
+    runs-on: ubicloud-standard-4
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    # Declare services only here, in the job that uses them.
+    steps:
+      - uses: actions/checkout@<pin>
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: bunx --no-install turbo run test --filter=<package> -- --shard=${{ matrix.shard }}/2
+
+  ci:
+    name: CI gate # the only check to require on the default branch
+    needs: [changes, quality, tasks, test]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every job the change needs
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+          # Jobs that may report `skipped` for this scope: the same condition as their `if:`.
+          ALLOWED_SKIPS: ${{ needs.changes.outputs.scope == 'docs' && 'tasks test' || '' }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          results = json.loads(os.environ["RESULTS"])
+          allowed = set(os.environ["ALLOWED_SKIPS"].split())
+          bad = [
+              f"{name}={job['result']}"
+              for name, job in results.items()
+              if job["result"] != "success" and not (job["result"] == "skipped" and name in allowed)
+          ]
+          if results.get("changes", {}).get("result") != "success":
+              bad.append("changes did not succeed")
+          if bad:
+              raise SystemExit("Unsuccessful jobs: " + ", ".join(bad))
+          PY

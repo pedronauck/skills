@@ -1,0 +1,93 @@
+# Copy to .github/actions/setup/action.yml and adapt.
+# Replace every <pin> with the repository's pinning style (commit SHA + "# vX.Y.Z", or a tag).
+name: Setup
+description: Install pinned runtimes and dependencies; caches restore everywhere and save on default-branch pushes
+inputs:
+  turbo-key:
+    description: Name of this job's Turborepo cache writer (for example the task name). "none" skips the Turbo cache.
+    default: none
+  playwright:
+    description: Space-separated browsers to install (for example "chromium"). Empty installs none.
+    default: ""
+  playwright-dir:
+    description: Workspace directory that owns the Playwright dependency.
+    default: .
+runs:
+  using: composite
+  steps:
+    # Cache policy for this file: every run restores, only default-branch pushes save.
+    - id: policy
+      shell: bash
+      env:
+        SAVE: ${{ github.event_name == 'push' && github.ref_name == github.event.repository.default_branch }}
+      run: echo "save=$SAVE" >> "$GITHUB_OUTPUT"
+
+    - uses: oven-sh/setup-bun@<pin>
+      with:
+        bun-version-file: .bun-version
+        # setup-bun saves the Bun executable in its post step unless told not to.
+        no-cache: ${{ steps.policy.outputs.save != 'true' }}
+
+    - if: steps.policy.outputs.save == 'true'
+      uses: actions/cache@<pin>
+      with:
+        path: ~/.bun/install/cache
+        key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.bun-version', 'bun.lock') }}
+        restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+    - if: steps.policy.outputs.save != 'true'
+      uses: actions/cache/restore@<pin>
+      with:
+        path: ~/.bun/install/cache
+        key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.bun-version', 'bun.lock') }}
+        restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+
+    - shell: bash
+      run: bun install --frozen-lockfile
+      env:
+        HUSKY: "0"
+
+    # Run-scoped Turbo cache: one entry per default-branch push.
+    - if: inputs.turbo-key != 'none' && steps.policy.outputs.save == 'true'
+      uses: actions/cache@<pin>
+      with:
+        path: .turbo/cache
+        key: turbo-${{ runner.os }}-${{ runner.arch }}-${{ inputs.turbo-key }}-${{ github.sha }}
+        restore-keys: turbo-${{ runner.os }}-${{ runner.arch }}-${{ inputs.turbo-key }}-
+    - if: inputs.turbo-key != 'none' && steps.policy.outputs.save != 'true'
+      uses: actions/cache/restore@<pin>
+      with:
+        path: .turbo/cache
+        key: turbo-${{ runner.os }}-${{ runner.arch }}-${{ inputs.turbo-key }}-${{ github.sha }}
+        restore-keys: turbo-${{ runner.os }}-${{ runner.arch }}-${{ inputs.turbo-key }}-
+
+    # Browsers keyed by the installed Playwright version, so other dependency bumps keep the cache.
+    - id: playwright-version
+      if: inputs.playwright != ''
+      shell: bash
+      working-directory: ${{ inputs.playwright-dir }}
+      run: echo "version=$(bunx --no-install playwright --version | sed 's/^Version //')" >> "$GITHUB_OUTPUT"
+    - id: playwright-cache
+      if: inputs.playwright != ''
+      uses: actions/cache/restore@<pin>
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ inputs.playwright }}-${{ steps.playwright-version.outputs.version }}
+    - if: inputs.playwright != ''
+      shell: bash
+      working-directory: ${{ inputs.playwright-dir }}
+      env:
+        BROWSERS: ${{ inputs.playwright }}
+        CACHE_HIT: ${{ steps.playwright-cache.outputs.cache-hit }}
+      run: |
+        # The cache holds browser binaries only; the OS libraries are installed on every run.
+        read -r -a browsers <<<"$BROWSERS"
+        if [ "$CACHE_HIT" = true ]; then
+          bunx --no-install playwright install-deps "${browsers[@]}"
+        else
+          bunx --no-install playwright install --with-deps "${browsers[@]}"
+        fi
+    - if: inputs.playwright != '' && steps.policy.outputs.save == 'true' && steps.playwright-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@<pin>
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ steps.playwright-cache.outputs.cache-primary-key }}
